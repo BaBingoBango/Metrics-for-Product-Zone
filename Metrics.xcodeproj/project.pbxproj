@@ -231,6 +231,7 @@
 		AA34428A26B4FED3004A2259 = {
 			isa = PBXGroup;
 			children = (
+				AA8D17FC27A5E13100889EF0 /* README.md */,
 				AA34429526B4FED3004A2259 /* Metrics */,
 				AA3442AC26B4FED6004A2259 /* MetricsTests */,
 				AA3442B726B4FED6004A2259 /* MetricsUITests */,
@@ -261,7 +262,6 @@
 			isa = PBXGroup;
 			children = (
 				AA9767B326C84B2600805514 /* Metrics.entitlements */,
-				AA8D17FC27A5E13100889EF0 /* README.md */,
 				AA34429626B4FED3004A2259 /* MetricsApp.swift */,
 				AA3442C826B4FEF9004A2259 /* Main Views */,
 				AA9EEC5F26B50033003D719C /* Support Views */,
