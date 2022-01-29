@@ -163,6 +163,7 @@
 		AA4BC33026BC987200DEF225 /* GraphDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDetailView.swift; sourceTree = "<group>"; };
 		AA6632E426C459D200CFBE38 /* MathServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathServices.swift; sourceTree = "<group>"; };
 		AA6D746B26C7678F00157734 /* DataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewer.swift; sourceTree = "<group>"; };
+		AA8D17FC27A5E13100889EF0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AA9140C826BC81D800C281C7 /* ThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThisWeekView.swift; sourceTree = "<group>"; };
 		AA9140CA26BC820200C281C7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		AA9767A926C8327000805514 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
@@ -260,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				AA9767B326C84B2600805514 /* Metrics.entitlements */,
+				AA8D17FC27A5E13100889EF0 /* README.md */,
 				AA34429626B4FED3004A2259 /* MetricsApp.swift */,
 				AA3442C826B4FEF9004A2259 /* Main Views */,
 				AA9EEC5F26B50033003D719C /* Support Views */,
