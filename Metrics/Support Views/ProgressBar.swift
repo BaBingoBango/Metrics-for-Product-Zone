@@ -30,10 +30,6 @@ struct ProgressBar: View {
             
             Image(systemName: imageName)
                 .imageScale(.large)
-            
-//            Text(String(format: "%.0f %%", min(self.progress, 1.0)*100.0))
-//                .font(.largeTitle)
-//                .bold()
         }
         .padding(.horizontal)
     }
