@@ -16,22 +16,27 @@ struct ProgressBar: View {
     var imageName: String
     
     var body: some View {
-        ZStack {
-            Circle()
-                .stroke(lineWidth: CGFloat(lineWidth))
-                .opacity(0.3)
-                .foregroundColor(color)
-            
-            Circle()
-                .trim(from: 0.0, to: CGFloat(min(self.progress, 1.0)))
-                .stroke(style: StrokeStyle(lineWidth: CGFloat(lineWidth), lineCap: .round, lineJoin: .round))
-                .foregroundColor(color)
-                .rotationEffect(Angle(degrees: 270.0))
-            
-            Image(systemName: imageName)
-                .imageScale(.large)
+        GeometryReader { geometry in
+            ZStack {
+                Circle()
+                    .stroke(lineWidth: CGFloat(lineWidth))
+                    .opacity(0.3)
+                    .foregroundColor(color)
+                    .padding(.horizontal, lineWidth / 1.5)
+                
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(self.progress, 1.0)))
+                    .stroke(style: StrokeStyle(lineWidth: CGFloat(lineWidth), lineCap: .round, lineJoin: .round))
+                    .foregroundColor(color)
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .padding(.horizontal, lineWidth / 1.5)
+                
+                Image(systemName: imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: geometry.size.height / 2.85)
+            }
         }
-        .padding(.horizontal)
     }
 }
 

@@ -50,6 +50,7 @@
 		AA9C0CE126BE17B800B7EA5C /* LifetimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9C0CE026BE17B800B7EA5C /* LifetimeView.swift */; };
 		AA9C0CE326BE182100B7EA5C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9C0CE226BE182100B7EA5C /* SettingsView.swift */; };
 		AA9EEC5E26B50027003D719C /* Text Support Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9EEC5D26B50027003D719C /* Text Support Views.swift */; };
+		AAB43E51286108830084D66C /* TodayTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB43E50286108830084D66C /* TodayTabView.swift */; };
 		AACEB1BC26BE2733006AACA7 /* TransactionServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */; };
 		AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEA99E926B5123D00179B19 /* ColorServices.swift */; };
 		AAEEF4B426C8A6C300E777AC /* ComplicationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEEF4B326C8A6C300E777AC /* ComplicationViews.swift */; };
@@ -175,6 +176,7 @@
 		AA9C0CE026BE17B800B7EA5C /* LifetimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifetimeView.swift; sourceTree = "<group>"; };
 		AA9C0CE226BE182100B7EA5C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA9EEC5D26B50027003D719C /* Text Support Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text Support Views.swift"; sourceTree = "<group>"; };
+		AAB43E50286108830084D66C /* TodayTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayTabView.swift; sourceTree = "<group>"; };
 		AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionServices.swift; sourceTree = "<group>"; };
 		AAEA99E926B5123D00179B19 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AAEEF4B326C8A6C300E777AC /* ComplicationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationViews.swift; sourceTree = "<group>"; };
@@ -306,6 +308,7 @@
 			children = (
 				AA9140CA26BC820200C281C7 /* MainTabView.swift */,
 				AA35876026BA380700384DCF /* TodayView.swift */,
+				AAB43E50286108830084D66C /* TodayTabView.swift */,
 				AA3442C626B4FEEE004A2259 /* AdderView.swift */,
 				AA9140C826BC81D800C281C7 /* ThisWeekView.swift */,
 				AA4BC33026BC987200DEF225 /* GraphDetailView.swift */,
@@ -665,6 +668,7 @@
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,
 				AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */,
 				AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */,
+				AAB43E51286108830084D66C /* TodayTabView.swift in Sources */,
 				AA9C0CE326BE182100B7EA5C /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
