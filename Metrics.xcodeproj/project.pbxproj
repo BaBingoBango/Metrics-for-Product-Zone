@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */; };
+		AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */; };
 		AA22C70726C1EA7300CDE6B4 /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22C70626C1EA7300CDE6B4 /* DateServices.swift */; };
 		AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA34429626B4FED3004A2259 /* MetricsApp.swift */; };
 		AA34429B26B4FED5004A2259 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA34429A26B4FED5004A2259 /* Assets.xcassets */; };
@@ -127,6 +129,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
+		AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto Mono.ttf"; sourceTree = "<group>"; };
 		AA22C70626C1EA7300CDE6B4 /* DateServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateServices.swift; sourceTree = "<group>"; };
 		AA34429326B4FED3004A2259 /* Metrics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metrics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA34429626B4FED3004A2259 /* MetricsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsApp.swift; sourceTree = "<group>"; };
@@ -315,6 +319,7 @@
 				AA9C0CE026BE17B800B7EA5C /* LifetimeView.swift */,
 				AA9C0CE226BE182100B7EA5C /* SettingsView.swift */,
 				AA6D746B26C7678F00157734 /* DataViewer.swift */,
+				AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */,
 			);
 			path = "Main Views";
 			sourceTree = "<group>";
@@ -393,6 +398,7 @@
 		AAEA99EB26B5124300179B19 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
+				AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */,
 				AAEA99E926B5123D00179B19 /* ColorServices.swift */,
 				AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */,
 				AA22C70626C1EA7300CDE6B4 /* DateServices.swift */,
@@ -594,6 +600,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */,
 				AA34429E26B4FED5004A2259 /* Preview Assets.xcassets in Resources */,
 				AA34429B26B4FED5004A2259 /* Assets.xcassets in Resources */,
 			);
@@ -665,6 +672,7 @@
 				AA3442A326B4FED5004A2259 /* Metrics.xcdatamodeld in Sources */,
 				AA35876326BA408900384DCF /* ProgressBar.swift in Sources */,
 				AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */,
+				AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */,
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,
 				AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */,
 				AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */,
@@ -891,7 +899,7 @@
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Metrics/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -916,7 +924,7 @@
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Metrics/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

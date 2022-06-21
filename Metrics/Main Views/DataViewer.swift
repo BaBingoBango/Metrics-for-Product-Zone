@@ -28,16 +28,44 @@ struct DataViewer: View {
                         .frame(width: 63, height: 75)
                         .padding(.top, 30)
 
-                    Text("Transaction Save Data")
+                    Text("Transaction Data")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding(.top)
+                    
+                    if transactions.isEmpty {
+                        ZStack {
+                            Rectangle()
+                                .foregroundColor(.gray)
+                                .opacity(0.15)
+                                .cornerRadius(20)
+                            
+                            VStack(spacing: 4) {
+                                Image(systemName: "figure.wave")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .foregroundColor(.secondary)
+                                    .frame(height: 100)
+                                
+                                Text("No Data Yet")
+                                    .foregroundColor(.secondary)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                
+                                Text("Nice to see you here though!")
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.all)
+                        }
+                        .padding(.horizontal)
+                    }
                     
                     ForEach(transactions.reversed()) { transaction in
                         TransactionDataOption(transaction: transaction)
                     }
                     
                 }
+                .padding(.bottom)
             }
             
             // MARK: Nav Bar Settings
@@ -67,34 +95,46 @@ struct TransactionDataOption: View {
         answer.timeStyle = .short
         return answer
     }
+    @State var showingDetail = false
     
     var body: some View {
-        ZStack {
-            HStack {
-                Image(systemName: imageDelegator())
-                    .imageScale(.small)
-                    .font(Font.title.weight(.medium))
-                Text(dateFormatter.string(from: transaction.date!))
-                Spacer()
-                Button(action: {
-                    viewContext.delete(transaction)
-                    do {
-                        try viewContext.save()
-                    } catch {
-                        print(error.localizedDescription)
+        Button(action: {
+            showingDetail = true
+        }) {
+            ZStack {
+                HStack {
+                    Image(systemName: imageDelegator())
+                        .imageScale(.small)
+                        .font(Font.title.weight(.medium))
+                        .foregroundColor(.primary)
+                    
+                    VStack(alignment: .leading) {
+                        Text(transaction.deviceType ?? "Unknown Device")
+                            .fontWeight(.bold)
+                            .font(.title3)
+                            .foregroundColor(.primary)
+                        
+                        Text(dateFormatter.string(from: transaction.date!))
+                            .foregroundColor(.secondary)
                     }
-                }) {
-                    Image(systemName: "minus.circle.fill").foregroundColor(.red)
+                    .padding(.vertical)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
                 }
+                .padding(.horizontal, 30)
+                
+                Rectangle()
+                    .foregroundColor(.gray)
+                    .opacity(0.15)
+                    .cornerRadius(20)
+                    .padding(.horizontal)
             }
-            .padding(.horizontal, 30)
-            
-            Rectangle()
-                .foregroundColor(.gray)
-                .opacity(0.3)
-                .frame(height: 50)
-                .cornerRadius(10)
-                .padding(.horizontal)
+        }
+        .sheet(isPresented: $showingDetail) {
+            TransactionDetailView(transaction: transaction)
         }
     }
     

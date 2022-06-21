@@ -141,6 +141,8 @@ struct ThisWeekView: View {
                                             .font(.title3)
                                             .fontWeight(.bold)
                                             .foregroundColor(.brown)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.1)
                                             .padding(.trailing, 30)
                                     }
                                 }

@@ -10,6 +10,8 @@ import SwiftUI
 struct TodayTabView: View {
     
     // MARK: View Variables
+    /// Whether or not the transaction adder view is being presented.
+    @State var showingAdderView = false
     /// The complete list of the user's transactions, fetched from Core Data.
     @FetchRequest(entity: Transaction.entity(), sortDescriptors: []) var transactions: FetchedResults<Transaction>
     /// A `TransactionServices` object used to interact with all of the user's transactions.
@@ -285,6 +287,19 @@ struct TodayTabView: View {
             
             // MARK: Navigation View Settings
             .navigationTitle(Text("Today"))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingAdderView.toggle()
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                    }
+                    .sheet(isPresented: $showingAdderView) {
+                        AdderView()
+                    }
+                }
+            }
         }
     }
 }

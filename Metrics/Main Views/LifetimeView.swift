@@ -45,7 +45,7 @@ struct LifetimeView: View {
                     }
                     .padding([.top, .leading])
 
-                    LifetimeStatView(description: "\(totalDevices != 1 ? "Units" : "Unit") Sold", stat: Double(totalDevices), color: .red, SFsymbol: "applelogo", secondDescription: "Attach Rate", secondStat: Double(data.appleCarePercent()), secondIsPercent: true)
+                    LifetimeStatView(description: "\(data.appleCareNumerator() != 1 ? "Units" : "Unit") Sold", stat: Double(data.appleCareNumerator()), color: .red, SFsymbol: "applelogo", secondDescription: "Attach Rate", secondStat: Double(data.appleCarePercent()), secondIsPercent: true)
                     
                     HStack {
                         Text("Business Leads")
