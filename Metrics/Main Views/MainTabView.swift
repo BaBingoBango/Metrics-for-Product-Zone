@@ -12,7 +12,7 @@ struct MainTabView: View {
         
         TabView {
             
-            TodayView()
+            TodayTabView()
                 .tabItem {
                     Image(systemName: "sun.max.fill"); Text("Today")
                 }
