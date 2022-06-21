@@ -36,7 +36,6 @@ struct ThisWeekView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    
                     HStack {
                         Text("\(dateFormatter.string(from: Date().previous(.sunday))) - \(dateFormatter.string(from: Date().next(.saturday)))".uppercased())
                             .fontWeight(.bold)
@@ -77,6 +76,8 @@ struct ThisWeekView: View {
                                             .font(.title3)
                                             .fontWeight(.bold)
                                             .foregroundColor(.red)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.1)
                                             .padding(.trailing, 30)
                                     }
                                 }
@@ -132,8 +133,11 @@ struct ThisWeekView: View {
                                             .font(.headline)
                                             .fontWeight(.bold)
                                             .foregroundColor(.secondary)
+                                        
                                         let bizServices = TransactionServices(data.allWeek())
-                                        Text(String(((Double(bizServices.numBusinessLeads()) / Double(bizServices.numUniqueDays())).truncate(places: 3))))
+                                        let bizAverage = ((Double(bizServices.numBusinessLeads()) / Double(bizServices.numUniqueDays())).truncate(places: 3))
+                                        
+                                        Text(bizAverage.isNaN ? "0" : String(bizAverage))
                                             .font(.title3)
                                             .fontWeight(.bold)
                                             .foregroundColor(.brown)
@@ -197,6 +201,8 @@ struct ThisWeekView: View {
                                             .font(.title3)
                                             .fontWeight(.bold)
                                             .foregroundColor(.blue)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.1)
                                             .padding(.trailing, 30)
                                     }
                                 }
