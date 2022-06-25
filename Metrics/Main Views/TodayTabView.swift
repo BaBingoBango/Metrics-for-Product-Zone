@@ -30,6 +30,16 @@ struct TodayTabView: View {
         return answer
     }
     
+    // Daily Goals variables
+    /// Whether or not the user's daily goals should show in the Today view.
+    @AppStorage("showGoalsInTodayView") var showGoalsInTodayView = true
+    /// In percent, the user's daily AppleCare+ goal.
+    @AppStorage("appleCareGoal") var appleCareGoal = 60
+    /// The users daily business lead goal.
+    @AppStorage("businessLeadsGoal") var businessLeadsGoal = 2
+    /// In percent, the user's daily connectivity goal.
+    @AppStorage("connectivityGoal") var connectivityGoal = 75
+    
     // MARK: View Body
     var body: some View {
         NavigationView {
@@ -52,48 +62,51 @@ struct TodayTabView: View {
                         .padding(.horizontal)
                         .padding(.top, 10)
 
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .hidden()
+                    if !showGoalsInTodayView {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .hidden()
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .hidden()
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .hidden()
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .foregroundColor(.green)
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .foregroundColor(.green)
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .foregroundColor(.green)
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .foregroundColor(.green)
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .foregroundColor(.green)
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .foregroundColor(.green)
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .hidden()
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .hidden()
 
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .hidden()
+                            Image(systemName: "checkmark.circle.fill")
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .hidden()
+                        }
+                        .padding(.bottom, 10)
+
+                        Text("Woohoo, Monday! All your goals are green right now! Great job, and keep it up!")
+                            .fontWeight(.semibold)
+                            .multilineTextAlignment(.center)
+                            .padding([.leading, .bottom, .trailing])
+                        
                     }
-                    .padding(.bottom, 10)
-
-                    Text("Woohoo, Monday! All your goals are green right now! Great job, and keep it up!")
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.center)
-                        .padding([.leading, .bottom, .trailing])
                     
                     ZStack {
                         Rectangle()
@@ -168,11 +181,11 @@ struct TodayTabView: View {
                                     HStack(alignment: .center) {
                                         Image(systemName: "briefcase.fill")
                                             .imageScale(.large)
-                                            .foregroundColor(.brown)
+                                            .foregroundColor(Color("brown"))
                                         
                                         Text("Leads")
                                             .fontWeight(.bold)
-                                            .foregroundColor(.brown)
+                                            .foregroundColor(Color("brown"))
                                             .lineLimit(1)
                                             .minimumScaleFactor(0.1)
                                     }
@@ -180,13 +193,13 @@ struct TodayTabView: View {
                                     .padding(.horizontal, 5)
                                     
                                     ZStack {
-                                        ProgressBar(progress: 0.0, color: .brown, lineWidth: 8.5, imageName: "")
+                                        ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
                                             .aspectRatio(1, contentMode: .fit)
                                         
                                         Text("\(todayData.numBusinessLeads())")
                                             .font(.system(size: 30))
                                             .fontWeight(.bold)
-                                            .foregroundColor(.brown)
+                                            .foregroundColor(Color("brown"))
                                     }
                                     .padding(.bottom)
                                 }
@@ -269,7 +282,7 @@ struct TodayTabView: View {
                                 
                                 Spacer()
                                 
-                                ProgressBar(progress: 0, color: .brown, lineWidth: 8.5, imageName: "briefcase.fill")
+                                ProgressBar(progress: 0, color: Color("brown"), lineWidth: 8.5, imageName: "briefcase.fill")
                                     .aspectRatio(1, contentMode: .fit)
                                 
                                 Spacer()

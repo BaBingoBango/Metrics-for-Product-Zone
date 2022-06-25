@@ -32,7 +32,7 @@ struct SettingsView: View {
                         Text("Show Goals in Today")
                     }
                     
-                    NavigationLink(destination: EmptyView()) {
+                    NavigationLink(destination: GoalEditorView(goalName: "AppleCare+", goal: $appleCareGoal)) {
                         HStack {
                             Text("AppleCare+ Goal")
                             
@@ -43,7 +43,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    NavigationLink(destination: EmptyView()) {
+                    NavigationLink(destination: GoalEditorView(goalName: "Business Leads", goal: $businessLeadsGoal)) {
                         HStack {
                             Text("Business Leads Goal")
                             
@@ -54,7 +54,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    NavigationLink(destination: EmptyView()) {
+                    NavigationLink(destination: GoalEditorView(goalName: "Connectivity", goal: $connectivityGoal)) {
                         HStack {
                             Text("Connectivity Goal")
                             

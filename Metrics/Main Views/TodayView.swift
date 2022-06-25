@@ -111,23 +111,23 @@ struct TodayView: View {
                                 
                                 Image(systemName: "briefcase.fill")
                                     .imageScale(.large)
-                                    .foregroundColor(.brown)
+                                    .foregroundColor(Color("brown"))
                                     .padding(.top)
                                 Text("Business Leads")
                                     .fontWeight(.bold)
-                                    .foregroundColor(.brown)
+                                    .foregroundColor(Color("brown"))
                                     .padding(.top, 1)
                                 
                                 ZStack {
                                     
-                                    ProgressBar(progress: 0.0, color: .brown, lineWidth: 5.0, imageName: "")
+                                    ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 5.0, imageName: "")
                                         .frame(width: 100, height: 100)
                                     
                                     HStack(spacing: 4) {
                                         Text("\(todayData.numBusinessLeads())")
                                             .font(.title2)
                                             .fontWeight(.bold)
-                                            .foregroundColor(.brown)
+                                            .foregroundColor(Color("brown"))
                                     }
                                     
                                 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A view which surfaces controls for editing one of the user's Daily Goals.
 struct GoalEditorView: View {
     
     // MARK: - View Variables
@@ -15,7 +16,18 @@ struct GoalEditorView: View {
     /// The goal this view should edit.
     @Binding var goal: Int
     /// Whether or not a % sign should be displayed after the goal.
-    var shouldShowPercent: Bool
+    var shouldShowPercent: Bool {
+        switch goalName {
+        case "AppleCare+":
+            return true
+        case "Business Leads":
+            return false
+        case "Connectivity":
+            return true
+        default:
+            return false
+        }
+    }
     /// The accent color for the goal this view displays.
     var accentColor: Color {
         switch goalName {
@@ -33,11 +45,11 @@ struct GoalEditorView: View {
     var description: String {
         switch goalName {
         case "AppleCare+":
-            return "eeeeee"
+            return "Attachment Rate"
         case "Business Leads":
-            return ""
+            return "Leads"
         case "Connectivity":
-            return ""
+            return "Connection Rate"
         default:
             return ""
         }
@@ -45,9 +57,11 @@ struct GoalEditorView: View {
     
     // MARK: - View Body
     var body: some View {
-        NavigationView {
+        GeometryReader { geometry in
             VStack {
                 HStack {
+                    Spacer()
+                    
                     Button(action: {
                         goal -= 1
                     }) {
@@ -56,10 +70,17 @@ struct GoalEditorView: View {
                             .foregroundColor(accentColor)
                     }
                     
+                    Spacer()
+                    
                     Text("\(goal)\(shouldShowPercent ? "%" : "")")
-                        .font(.system(size: 70))
+                        .font(.system(size: 50))
                         .fontWeight(.heavy)
                         .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.1)
+                        .frame(width: geometry.size.width / 2.5, height: 75)
+                    
+                    Spacer()
                     
                     Button(action: {
                         goal += 1
@@ -68,22 +89,26 @@ struct GoalEditorView: View {
                             .font(.system(size: 30))
                             .foregroundColor(accentColor)
                     }
+                    
+                    Spacer()
                 }
                 
                 Text(description)
+                    .fontWeight(.bold)
+                    .foregroundColor(accentColor)
                 
                 Spacer()
             }
-            
-            // MARK: - Navigation View Settings
-            .navigationTitle(Text("Daily \(goalName) Goal"))
-            .navigationBarTitleDisplayMode(.inline)
         }
+        
+        // MARK: - Navigation View Settings
+        .navigationTitle(Text("Daily \(goalName) Goal"))
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct GoalEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        GoalEditorView(goalName: "AppleCare+", goal: .constant(60), shouldShowPercent: true)
+        GoalEditorView(goalName: "AppleCare+", goal: .constant(99))
     }
 }
