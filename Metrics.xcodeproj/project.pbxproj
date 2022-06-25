@@ -32,6 +32,7 @@
 		AA493A5826C7760400B79B92 /* WatchMetrics.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA493A2126C7760200B79B92 /* WatchMetrics.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4BC33026BC987200DEF225 /* GraphDetailView.swift */; };
 		AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
+		AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA697F032867AB9A00F49A37 /* GoalEditorView.swift */; };
 		AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6D746B26C7678F00157734 /* DataViewer.swift */; };
 		AA9140C926BC81D800C281C7 /* ThisWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140C826BC81D800C281C7 /* ThisWeekView.swift */; };
 		AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140CA26BC820200C281C7 /* MainTabView.swift */; };
@@ -167,6 +168,7 @@
 		AA493A5526C7760400B79B92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA4BC33026BC987200DEF225 /* GraphDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDetailView.swift; sourceTree = "<group>"; };
 		AA6632E426C459D200CFBE38 /* MathServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathServices.swift; sourceTree = "<group>"; };
+		AA697F032867AB9A00F49A37 /* GoalEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEditorView.swift; sourceTree = "<group>"; };
 		AA6D746B26C7678F00157734 /* DataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewer.swift; sourceTree = "<group>"; };
 		AA8D17FC27A5E13100889EF0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AA9140C826BC81D800C281C7 /* ThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThisWeekView.swift; sourceTree = "<group>"; };
@@ -318,6 +320,7 @@
 				AA4BC33026BC987200DEF225 /* GraphDetailView.swift */,
 				AA9C0CE026BE17B800B7EA5C /* LifetimeView.swift */,
 				AA9C0CE226BE182100B7EA5C /* SettingsView.swift */,
+				AA697F032867AB9A00F49A37 /* GoalEditorView.swift */,
 				AA6D746B26C7678F00157734 /* DataViewer.swift */,
 				AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */,
 			);
@@ -671,6 +674,7 @@
 				AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */,
 				AA3442A326B4FED5004A2259 /* Metrics.xcdatamodeld in Sources */,
 				AA35876326BA408900384DCF /* ProgressBar.swift in Sources */,
+				AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */,
 				AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */,
 				AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */,
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,
