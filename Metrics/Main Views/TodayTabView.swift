@@ -29,6 +29,8 @@ struct TodayTabView: View {
         answer.timeStyle = .none
         return answer
     }
+    /// The amount to horizontally pad the entire view by.
+    var horizontalPadding = 0
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -42,7 +44,7 @@ struct TodayTabView: View {
     
     // MARK: View Body
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 VStack {
                     HStack {
@@ -319,7 +321,7 @@ struct TodayTabView: View {
                     }
                 }
             }
-        }
+//        }
     }
     
     // MARK: - View Functions
@@ -421,5 +423,6 @@ struct TodayTabView: View {
 struct TodayTabView_Previews: PreviewProvider {
     static var previews: some View {
         TodayTabView()
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }

@@ -36,5 +36,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>WKRunsIndependentlyOfCompanionApp</key>
+	<true/>
 </dict>
 </plist>

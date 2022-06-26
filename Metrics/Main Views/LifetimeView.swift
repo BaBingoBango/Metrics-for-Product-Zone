@@ -20,7 +20,7 @@ struct LifetimeView: View {
     }
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 VStack {
                     /// The lifetime number of transacted devices for the user.
@@ -74,7 +74,7 @@ struct LifetimeView: View {
                 // MARK: Nav Bar Settings
                 .navigationBarTitle(Text("Lifetime"))
             }
-        }
+//        }
     }
 }
 

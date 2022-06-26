@@ -33,7 +33,7 @@ struct ThisWeekView: View {
     @State var showingC = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             ScrollView {
                 VStack {
                     HStack {
@@ -241,7 +241,7 @@ struct ThisWeekView: View {
                 .navigationBarTitle(Text("This Week"))
             }
             
-        }
+//        }
     }
 }
 

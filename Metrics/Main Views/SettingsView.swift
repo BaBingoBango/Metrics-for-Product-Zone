@@ -25,7 +25,7 @@ struct SettingsView: View {
     
     // MARK: - View Variables
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section(header: Text("Daily Goals")) {
                     Toggle(isOn: $showGoalsInTodayView) {
@@ -95,7 +95,7 @@ struct SettingsView: View {
             // MARK: Nav Bar Settings
             .navigationBarTitle(Text("Settings"))
             
-        }
+//        }
     }
 }
 
