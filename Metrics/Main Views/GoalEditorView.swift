@@ -57,6 +57,9 @@ struct GoalEditorView: View {
     
     // MARK: - View Body
     var body: some View {
+        let isLeftButtonDisabled = goal == 0
+        let isRightButtonDisabled = goal == 100 && shouldShowPercent
+        
         GeometryReader { geometry in
             VStack {
                 HStack {
@@ -67,8 +70,9 @@ struct GoalEditorView: View {
                     }) {
                         Image(systemName: "minus.circle.fill")
                             .font(.system(size: 30))
-                            .foregroundColor(accentColor)
+                            .foregroundColor(!isLeftButtonDisabled ? accentColor : .gray)
                     }
+                    .disabled(isLeftButtonDisabled)
                     
                     Spacer()
                     
@@ -87,8 +91,9 @@ struct GoalEditorView: View {
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 30))
-                            .foregroundColor(accentColor)
+                            .foregroundColor(!isRightButtonDisabled ? accentColor : .gray)
                     }
+                    .disabled(isRightButtonDisabled)
                     
                     Spacer()
                 }

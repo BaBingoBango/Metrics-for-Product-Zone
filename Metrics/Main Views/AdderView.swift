@@ -25,40 +25,43 @@ struct AdderView: View {
     var body: some View {
         NavigationView {
             
-            VStack {
-                
-                // MARK: Device Sold Selection
-                SmallHeadingText(text: "Device Purchased")
-                    .padding(.top, 20)
-                HStack {
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "iphone", deviceTypeName: "iPhone")
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "ipad.landscape", deviceTypeName: "iPad")
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "desktopcomputer", deviceTypeName: "Mac")
-                }
-                .padding(.horizontal)
-                HStack {
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "applewatch", deviceTypeName: "Apple Watch")
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "appletv", deviceTypeName: "Apple TV")
-                    DevicePurchasedOption(deviceType: $deviceType, imageName: "headphones", deviceTypeName: "Headphones")
-                }
-                .padding(.horizontal)
-                
-                // MARK: Additions Selection
-                SmallHeadingText(text: "Additions")
-                    .padding(.top)
-                HStack {
-                    if deviceType != "No Device" {
-                        AdditionsOption(buttonState: $boughtAppleCare, standaloneState: $isAppleCareStandalone, text: "AppleCare+", imageName: "applelogo", color: .red)
+            ScrollView {
+                VStack {
+                    
+                    // MARK: Device Sold Selection
+                    SmallHeadingText(text: "Device Purchased")
+                        .padding(.top, 20)
+                    HStack {
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "iphone", deviceTypeName: "iPhone")
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "ipad.landscape", deviceTypeName: "iPad")
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "desktopcomputer", deviceTypeName: "Mac")
                     }
-                    AdditionsOption(buttonState: $gotLead, standaloneState: $isAppleCareStandalone, text: "Business Lead", imageName: "briefcase.fill", color: .brown)
-                    if deviceType == "iPhone" {
-                        AdditionsOption(buttonState: $connected, standaloneState: $isAppleCareStandalone, text: "Connected", imageName: "antenna.radiowaves.left.and.right", color: .blue)
+                    .padding(.horizontal)
+                    HStack {
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "applewatch", deviceTypeName: "Apple Watch")
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "appletv", deviceTypeName: "Apple TV")
+                        DevicePurchasedOption(deviceType: $deviceType, imageName: "headphones", deviceTypeName: "Headphones")
                     }
+                    .padding(.horizontal)
+                    
+                    // MARK: Additions Selection
+                    SmallHeadingText(text: "Additions")
+                        .padding(.top)
+                    HStack {
+                        if deviceType != "No Device" {
+                            AdditionsOption(buttonState: $boughtAppleCare, standaloneState: $isAppleCareStandalone, text: "AppleCare+", imageName: "applelogo", color: .red)
+                        }
+                        AdditionsOption(buttonState: $gotLead, standaloneState: $isAppleCareStandalone, text: "Business Lead", imageName: "briefcase.fill", color: .brown)
+                        if deviceType == "iPhone" {
+                            AdditionsOption(buttonState: $connected, standaloneState: $isAppleCareStandalone, text: "Connected", imageName: "antenna.radiowaves.left.and.right", color: .blue)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer()
+                    
                 }
-                .padding(.horizontal)
-                
-                Spacer()
-                
+                .padding(.bottom)
             }
             
             // MARK: Nav Bar Settings
@@ -204,6 +207,9 @@ struct AdditionsOption: View {
                         .multilineTextAlignment(.center)
                         .padding(.top, 7.5)
                         .foregroundColor(buttonState ? .white : .black)
+                        .padding(.horizontal, 5)
+                        .lineLimit(text != "Business Lead" ? 1 : 2)
+                        .minimumScaleFactor(0.1)
                     
                 }
                 

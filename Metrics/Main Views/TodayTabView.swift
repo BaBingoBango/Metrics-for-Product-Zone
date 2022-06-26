@@ -53,7 +53,7 @@ struct TodayTabView: View {
                         Spacer()
                     }
                     
-                    Text("Good morning, Name!")
+                    Text("Good \(getGenericTimeDescription())!")
                         .font(.title)
                         .fontWeight(.bold)
                         .lineLimit(1)
@@ -62,37 +62,42 @@ struct TodayTabView: View {
                         .padding(.horizontal)
                         .padding(.top, 10)
 
-                    if !showGoalsInTodayView {
+                    if showGoalsInTodayView {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .aspectRatio(1, contentMode: .fit)
                                 .hidden()
 
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .hidden()
-
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .foregroundColor(.green)
-
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .foregroundColor(.green)
-
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .foregroundColor(.green)
-
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .hidden()
+                            if todayData.appleCarePercent() < appleCareGoal {
+                                ProgressBar(progress: Double(todayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "")
+                            } else {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .foregroundColor(.green)
+                                    .padding(2.5)
+                            }
+                            
+                            if todayData.numBusinessLeads() < businessLeadsGoal {
+                                ProgressBar(progress: Double(todayData.numBusinessLeads()) / Double(businessLeadsGoal), color: Color("brown"), lineWidth: 8.5, imageName: "")
+                            } else {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .foregroundColor(.green)
+                                    .padding(2.5)
+                            }
+                            
+                            if todayData.connectivityPercent() < connectivityGoal {
+                                ProgressBar(progress: Double(todayData.connectivityPercent()) / 100.0, color: .blue, lineWidth: 8.5, imageName: "")
+                            } else {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .foregroundColor(.green)
+                                    .padding(2.5)
+                            }
 
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
@@ -101,7 +106,7 @@ struct TodayTabView: View {
                         }
                         .padding(.bottom, 10)
 
-                        Text("Woohoo, Monday! All your goals are green right now! Great job, and keep it up!")
+                        Text("\(getDayOfWeekDescription()) \(getGoalProgressDescription())")
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                             .padding([.leading, .bottom, .trailing])
@@ -313,6 +318,100 @@ struct TodayTabView: View {
                     }
                 }
             }
+        }
+    }
+    
+    // MARK: - View Functions
+    /// Uses the current time to generate a generic word that describes the current part of the day.
+    func getGenericTimeDescription() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        let militaryTime = dateFormatter.string(from: Date())
+        let hour = Int(militaryTime.components(separatedBy: ":")[0])!
+        
+        if hour >= 22 {
+            // 9 PM - 11:59 PM
+            return "evening"
+        } else if hour >= 12 {
+            // Noon - 9 PM
+            return "afternoon"
+        } else if hour >= 6 {
+            // 6 AM - 11:59 AM
+            return "morning"
+        } else {
+            // Midnight - 5:59 AM
+            return "evening"
+        }
+    }
+    /// Returns a short exclamatory string about the current day of the week.
+    func getDayOfWeekDescription() -> String {
+        if Date().dayOfWeek() == nil {
+            return "Hello!"
+        } else {
+            switch Date().dayOfWeek()! {
+            case "Monday":
+                return [
+                    "Happy Monday!",
+                    "It's another week!",
+                    "It's Monday..."
+                ].randomElement()!
+            case "Tuesday":
+                return [
+                    "Happy Tuesday!",
+                    "Happy 2's day!",
+                    "Happy not Monday!"
+                ].randomElement()!
+            case "Wednesday":
+                return [
+                    "Happy Wednesday!",
+                    "Happy hump day!",
+                    "Happy mid-week!"
+                ].randomElement()!
+            case "Thursday":
+                return [
+                    "Happy Thursday!",
+                    "It's Thursday almost Friday!"
+                ].randomElement()!
+            case "Friday":
+                return [
+                    "Happy Friday!",
+                    "TGIF!",
+                    "It's Friday!!"
+                ].randomElement()!
+            case "Saturday":
+                return [
+                    "Happy Saturday!",
+                    "Happy weekend!",
+                    "It's the weekend!"
+                ].randomElement()!
+            case "Sunday":
+                return [
+                    "Happy Sunday!",
+                    "Sunday funday!"
+                ].randomElement()!
+            default:
+                return "Hello!"
+            }
+        }
+    }
+    /// Returns a string describing the user's progress on their Daily Goals.
+    func getGoalProgressDescription() -> String {
+        var goalsClear = 0
+        if todayData.appleCarePercent() >= appleCareGoal { goalsClear += 1 }
+        if todayData.numBusinessLeads() >= businessLeadsGoal { goalsClear += 1 }
+        if todayData.connectivityPercent() >= connectivityGoal { goalsClear += 1 }
+        
+        switch goalsClear {
+        case 0:
+            return "It's a great time to get started on your goals! You can do it!"
+        case 1:
+            return "One down, two to go! Keep going, you got this!"
+        case 2:
+            return "You only have one goal to go! You're almost there!"
+        case 3:
+            return "All your goals are green right now! Great job, you did it!"
+        default:
+            return ""
         }
     }
 }
