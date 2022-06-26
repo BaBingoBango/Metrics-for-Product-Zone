@@ -56,7 +56,7 @@ struct LifetimeView: View {
                     }
                     .padding([.top, .leading])
                     
-                    LifetimeStatView(description: "\(totalLeads != 1 ? "Business Leads" : "Lead")", stat: Double(totalLeads), color: .brown, SFsymbol: "briefcase.fill", secondDescription: "Average Per Day", secondStat: averageLeads.isNaN ? 0 : averageLeads, secondIsPercent: true)
+                    LifetimeStatView(description: "\(totalLeads != 1 ? "Business Leads" : "Lead")", stat: Double(totalLeads), color: .brown, SFsymbol: "briefcase.fill", secondDescription: "Average Per Day", secondStat: averageLeads.isNaN ? 0 : averageLeads, secondIsPercent: false)
                     
                     HStack {
                         Text("Connected")

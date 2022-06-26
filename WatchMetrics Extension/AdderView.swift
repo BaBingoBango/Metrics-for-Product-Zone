@@ -26,10 +26,8 @@ struct AdderView: View {
     @State var connected = false
     
     var body: some View {
-        
         NavigationView {
             TabView(selection: $tabSelection) {
-                
                 VStack {
                     HStack {
                         WatchDevicePurchasedOption(deviceType: $deviceType, tabSelection: $tabSelection, imageName: "iphone", deviceTypeName: "iPhone")
@@ -49,7 +47,7 @@ struct AdderView: View {
                         if deviceType != "No Device" {
                             WatchAdditionsOption(buttonState: $boughtAppleCare, standaloneState: $isAppleCareStandalone, text: "AppleCare+", imageName: "applelogo", color: .red)
                         }
-                        WatchAdditionsOption(buttonState: $gotLead, standaloneState: $isAppleCareStandalone, text: "Business Lead", imageName: "briefcase.fill", color: .brown)
+                        WatchAdditionsOption(buttonState: $gotLead, standaloneState: $isAppleCareStandalone, text: "Business Lead", imageName: "briefcase.fill", color: Color("brown"))
                         if deviceType == "iPhone" {
                             WatchAdditionsOption(buttonState: $connected, standaloneState: $isAppleCareStandalone, text: "Connected", imageName: "antenna.radiowaves.left.and.right", color: .blue)
                         }
@@ -94,8 +92,6 @@ struct AdderView: View {
             .tabViewStyle(PageTabViewStyle())
             
             // MARK: Nav Bar Settings
-            
-            
         }
         
     }
@@ -140,9 +136,9 @@ struct WatchDevicePurchasedOption: View {
                 
                 Rectangle()
                     .foregroundColor(buttonSelected ? .green : .gray)
-                    .opacity(buttonSelected ? 1.0 : 0.7)
+                    .opacity(buttonSelected ? 1.0 : 0.85)
                     .cornerRadius(10)
-                    .frame(height: 70)
+//                    .frame(height: 60)
                 
                 Image(systemName: imageName)
                     .imageScale(.large)
@@ -206,7 +202,7 @@ struct WatchAdditionsOption: View {
                 
                 Rectangle()
                     .foregroundColor(buttonState ? (standaloneState && isAppleCareButton ? .gold : color) : .gray)
-                    .opacity(buttonState ? 1.0 : 0.7)
+                    .opacity(buttonState ? 1.0 : 0.85)
                     .cornerRadius(10)
                     .frame(height: 40)
                 

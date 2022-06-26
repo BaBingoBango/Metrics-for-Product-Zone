@@ -53,6 +53,15 @@ struct MainTabView: View {
                     .buttonStyle(PlainButtonStyle())
                     .sheet(isPresented: $showingAdderView) {
                         AdderView()
+                            .toolbar(content: {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button(action: {
+                                        showingAdderView = false
+                                    }) {
+                                        Text("Cancel")
+                                    }
+                                }
+                            })
                     }
                     
                     // AppleCare+ indicator
@@ -67,13 +76,13 @@ struct MainTabView: View {
                     HStack {
                         // Leads indicator
                         ZStack {
-                            ProgressBar(progress: 0.0, color: .brown, lineWidth: 10.0, imageName: "")
+                            ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 10.0, imageName: "")
                                 .frame(width: 75, height: 75)
                             HStack(spacing: 4) {
                                 Text("\(todayData.numBusinessLeads())")
                                     .font(.title2)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.brown)
+                                    .foregroundColor(Color("brown"))
                             }
                         }
                         // Connectivity indicator
@@ -93,7 +102,7 @@ struct MainTabView: View {
             
             // MARK: Nav Bar Settings
             .navigationBarTitle(Text("Metrics"))
-            
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

@@ -61,6 +61,7 @@ struct TodayTabView: View {
                         .truncationMode(.middle)
                         .padding(.horizontal)
                         .padding(.top, 10)
+                        .padding(.bottom, showGoalsInTodayView ? 0 : 15)
 
                     if showGoalsInTodayView {
                         HStack {
