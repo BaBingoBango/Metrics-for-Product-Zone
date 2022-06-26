@@ -247,6 +247,7 @@ struct TransactionDetailView: View {
                     }
                 }
             }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
     

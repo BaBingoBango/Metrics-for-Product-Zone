@@ -10,6 +10,12 @@ import SwiftUI
 struct TodayTabView: View {
     
     // MARK: View Variables
+    #if os(iOS)
+    /// The horizontal size class of the current app environment.
+    ///
+    /// It is only relevant in iOS and iPadOS, since macOS and tvOS feature a consistent layout experience.
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    #endif
     /// Whether or not the transaction adder view is being presented.
     @State var showingAdderView = false
     /// The complete list of the user's transactions, fetched from Core Data.
@@ -67,6 +73,18 @@ struct TodayTabView: View {
 
                     if showGoalsInTodayView {
                         HStack {
+                            if horizontalSizeClass != .compact {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .hidden()
+                                
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .hidden()
+                            }
+                            
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .aspectRatio(1, contentMode: .fit)
@@ -106,6 +124,18 @@ struct TodayTabView: View {
                                 .resizable()
                                 .aspectRatio(1, contentMode: .fit)
                                 .hidden()
+                            
+                            if horizontalSizeClass != .compact {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .hidden()
+                                
+                                Image(systemName: "checkmark.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .hidden()
+                            }
                         }
                         .padding(.bottom, 10)
 
@@ -116,144 +146,102 @@ struct TodayTabView: View {
                         
                     }
                     
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(.gray)
-                            .opacity(0.15)
-                            .cornerRadius(20)
+                    if horizontalSizeClass == .compact {
+                        AppleCareSummaryView(todayData: todayData)
                         
-                        VStack {
-                            HStack {
-                                Image(systemName: "applelogo")
-                                    .imageScale(.large)
-                                    .foregroundColor(.red)
-                                
-                                Text("AppleCare+")
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.red)
-                                Spacer()
-                                
-                                Text("\(todayData.appleCarePercent())%")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.red)
-                            }
-                            .padding([.top, .leading, .trailing])
+                        HStack {
+                            BusinessLeadsSummaryView(todayData: todayData)
                             
-                            HStack(spacing: 0) {
-                                
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("iPhone")) / 100, color: .red, lineWidth: 8.5, imageName: "iphone")
-                                    .aspectRatio(1, contentMode: .fit)
-                                
-                                Spacer()
-                                
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("iPad")) / 100, color: .red, lineWidth: 8.5, imageName: "ipad.landscape")
-                                    .aspectRatio(1, contentMode: .fit)
-                                
-                                Spacer()
-                                
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("Mac")) / 100, color: .red, lineWidth: 8.5, imageName: "desktopcomputer")
-                                    .aspectRatio(1, contentMode: .fit)
-                            }
-                            .padding(.horizontal)
-                            
-                            HStack(spacing: 0) {
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple Watch")) / 100, color: .red, lineWidth: 8.5, imageName: "applewatch")
-                                    .aspectRatio(1, contentMode: .fit)
-                                
-                                Spacer()
-                                
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple TV")) / 100, color: .red, lineWidth: 8.5, imageName: "appletv")
-                                    .aspectRatio(1, contentMode: .fit)
-                                
-                                Spacer()
-                                
-                                ProgressBar(progress: Double(todayData.customAppleCarePercent("Headphones")) / 100, color: .red, lineWidth: 8.5, imageName: "headphones")
-                                    .aspectRatio(1, contentMode: .fit)
-                            }
-                            .padding(.horizontal)
+                            ConnectivitySummaryView(todayData: todayData)
                         }
-                        .padding(.bottom)
-                    }
-                    .padding(.horizontal)
-                    
-                    HStack {
+                        .padding(.horizontal)
+                    } else {
                         ZStack {
                             Rectangle()
                                 .foregroundColor(.gray)
                                 .opacity(0.15)
                                 .cornerRadius(20)
                             
-                            HStack {
-                                VStack {
-                                    HStack(alignment: .center) {
-                                        Image(systemName: "briefcase.fill")
-                                            .imageScale(.large)
-                                            .foregroundColor(Color("brown"))
-                                        
-                                        Text("Leads")
-                                            .fontWeight(.bold)
-                                            .foregroundColor(Color("brown"))
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.1)
-                                    }
-                                    .padding(.top)
-                                    .padding(.horizontal, 5)
+                            VStack {
+                                HStack {
+                                    Image(systemName: "applelogo")
+                                        .imageScale(.large)
+                                        .foregroundColor(.red)
+                                    
+                                    Text("AppleCare+   | ")
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.red)
+                                    
+                                    Text("\(todayData.appleCarePercent())%")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.red)
+                                    
+                                    Spacer()
+                                }
+                                
+                                HStack {
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPhone")) / 100, color: .red, lineWidth: 8.5, imageName: "iphone")
+                                        .aspectRatio(1, contentMode: .fit)
+                                    
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPad")) / 100, color: .red, lineWidth: 8.5, imageName: "ipad.landscape")
+                                        .aspectRatio(1, contentMode: .fit)
+                                    
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Mac")) / 100, color: .red, lineWidth: 8.5, imageName: "desktopcomputer")
+                                        .aspectRatio(1, contentMode: .fit)
+                                    
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple Watch")) / 100, color: .red, lineWidth: 8.5, imageName: "applewatch")
+                                        .aspectRatio(1, contentMode: .fit)
+                                    
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple TV")) / 100, color: .red, lineWidth: 8.5, imageName: "appletv")
+                                        .aspectRatio(1, contentMode: .fit)
+                                    
+                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Headphones")) / 100, color: .red, lineWidth: 8.5, imageName: "headphones")
+                                        .aspectRatio(1, contentMode: .fit)
                                     
                                     ZStack {
                                         ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
                                             .aspectRatio(1, contentMode: .fit)
                                         
-                                        Text("\(todayData.numBusinessLeads())")
-                                            .font(.system(size: 30))
-                                            .fontWeight(.bold)
-                                            .foregroundColor(Color("brown"))
+                                        VStack {
+                                            Text("\(todayData.numBusinessLeads())")
+                                                .font(.system(size: 30))
+                                                .fontWeight(.bold)
+                                                .foregroundColor(Color("brown"))
+                                            
+                                            Text("Leads")
+                                                .font(.caption)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(Color("brown"))
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.1)
+                                        }
                                     }
-                                    .padding(.bottom)
-                                }
-                            }
-                        }
-                        .aspectRatio(1, contentMode: .fit)
-                        
-                        
-                        ZStack {
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.15)
-                                .cornerRadius(20)
-                            
-                            HStack {
-                                VStack {
-                                    HStack(alignment: .center) {
-                                        Image(systemName: "antenna.radiowaves.left.and.right")
-                                            .imageScale(.large)
-                                            .foregroundColor(.blue)
-                                        
-                                        Text("Connected")
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.blue)
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.1)
-                                    }
-                                    .padding(.top)
-                                    .padding(.horizontal, 5)
                                     
                                     ZStack {
                                         ProgressBar(progress: Double(todayData.connectivityPercent()) / 100, color: .blue, lineWidth: 8.5, imageName: "")
                                             .aspectRatio(1, contentMode: .fit)
                                         
-                                        Text("\(todayData.connectivityPercent())%")
-                                            .font(.body)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.blue)
+                                        VStack {
+                                            Text("\(todayData.connectivityPercent())%")
+                                                .font(.body)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.blue)
+                                            
+                                            Text("Connect")
+                                                .font(.caption)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.blue)
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.1)
+                                        }
                                     }
-                                    .padding(.bottom)
                                 }
                             }
+                            .padding(.all)
                         }
-                        .aspectRatio(1, contentMode: .fit)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                     
                     HStack {
                         Text("Sharing")
@@ -424,5 +412,161 @@ struct TodayTabView_Previews: PreviewProvider {
     static var previews: some View {
         TodayTabView()
             .previewInterfaceOrientation(.landscapeLeft)
+    }
+}
+
+struct AppleCareSummaryView: View {
+    
+    var todayData: TransactionServices
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(.gray)
+                .opacity(0.15)
+                .cornerRadius(20)
+            
+            VStack {
+                HStack {
+                    Image(systemName: "applelogo")
+                        .imageScale(.large)
+                        .foregroundColor(.red)
+                    
+                    Text("AppleCare+")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                    Spacer()
+                    
+                    Text("\(todayData.appleCarePercent())%")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                .padding([.top, .leading, .trailing])
+                
+                HStack(spacing: 0) {
+                    
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPhone")) / 100, color: .red, lineWidth: 8.5, imageName: "iphone")
+                        .aspectRatio(1, contentMode: .fit)
+                    
+                    Spacer()
+                    
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPad")) / 100, color: .red, lineWidth: 8.5, imageName: "ipad.landscape")
+                        .aspectRatio(1, contentMode: .fit)
+                    
+                    Spacer()
+                    
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Mac")) / 100, color: .red, lineWidth: 8.5, imageName: "desktopcomputer")
+                        .aspectRatio(1, contentMode: .fit)
+                }
+                .padding(.horizontal)
+                
+                HStack(spacing: 0) {
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple Watch")) / 100, color: .red, lineWidth: 8.5, imageName: "applewatch")
+                        .aspectRatio(1, contentMode: .fit)
+                    
+                    Spacer()
+                    
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple TV")) / 100, color: .red, lineWidth: 8.5, imageName: "appletv")
+                        .aspectRatio(1, contentMode: .fit)
+                    
+                    Spacer()
+                    
+                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Headphones")) / 100, color: .red, lineWidth: 8.5, imageName: "headphones")
+                        .aspectRatio(1, contentMode: .fit)
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom)
+        }
+        .padding(.horizontal)
+    }
+}
+
+struct BusinessLeadsSummaryView: View {
+    
+    var todayData: TransactionServices
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(.gray)
+                .opacity(0.15)
+                .cornerRadius(20)
+            
+            HStack {
+                VStack {
+                    HStack(alignment: .center) {
+                        Image(systemName: "briefcase.fill")
+                            .imageScale(.large)
+                            .foregroundColor(Color("brown"))
+                        
+                        Text("Leads")
+                            .fontWeight(.bold)
+                            .foregroundColor(Color("brown"))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                    }
+                    .padding(.top)
+                    .padding(.horizontal, 5)
+                    
+                    ZStack {
+                        ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
+                            .aspectRatio(1, contentMode: .fit)
+                        
+                        Text("\(todayData.numBusinessLeads())")
+                            .font(.system(size: 30))
+                            .fontWeight(.bold)
+                            .foregroundColor(Color("brown"))
+                    }
+                    .padding(.bottom)
+                }
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+struct ConnectivitySummaryView: View {
+    
+    var todayData: TransactionServices
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(.gray)
+                .opacity(0.15)
+                .cornerRadius(20)
+            
+            HStack {
+                VStack {
+                    HStack(alignment: .center) {
+                        Image(systemName: "antenna.radiowaves.left.and.right")
+                            .imageScale(.large)
+                            .foregroundColor(.blue)
+                        
+                        Text("Connected")
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                    }
+                    .padding(.top)
+                    .padding(.horizontal, 5)
+                    
+                    ZStack {
+                        ProgressBar(progress: Double(todayData.connectivityPercent()) / 100, color: .blue, lineWidth: 8.5, imageName: "")
+                            .aspectRatio(1, contentMode: .fit)
+                        
+                        Text("\(todayData.connectivityPercent())%")
+                            .font(.body)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.bottom)
+                }
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
     }
 }
