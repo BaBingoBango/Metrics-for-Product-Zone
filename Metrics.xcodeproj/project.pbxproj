@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -29,7 +29,7 @@
 		AA493A3D26C7760400B79B92 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA493A3C26C7760400B79B92 /* Preview Assets.xcassets */; };
 		AA493A4926C7760400B79B92 /* WatchMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA493A4826C7760400B79B92 /* WatchMetricsTests.swift */; };
 		AA493A5426C7760400B79B92 /* WatchMetricsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA493A5326C7760400B79B92 /* WatchMetricsUITests.swift */; };
-		AA493A5826C7760400B79B92 /* WatchMetrics.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA493A2126C7760200B79B92 /* WatchMetrics.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA493A5826C7760400B79B92 /* WatchMetrics.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA493A2126C7760200B79B92 /* WatchMetrics.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4BC33026BC987200DEF225 /* GraphDetailView.swift */; };
 		AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
 		AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA697F032867AB9A00F49A37 /* GoalEditorView.swift */; };
@@ -769,6 +769,7 @@
 		};
 		AA493A5726C7760400B79B92 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = AA493A2026C7760200B79B92 /* WatchMetrics */;
 			targetProxy = AA493A5626C7760400B79B92 /* PBXContainerItemProxy */;
 		};
@@ -911,6 +912,7 @@
 				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -936,6 +938,7 @@
 				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
