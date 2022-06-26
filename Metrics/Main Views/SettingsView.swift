@@ -89,6 +89,8 @@ struct SettingsView: View {
                     
                     HStack { Text("Build Number"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String).foregroundColor(.secondary) }
                     
+                    HStack { Text("Bundle ID"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as! String).foregroundColor(.secondary) }
+                    
                 }
             }
             

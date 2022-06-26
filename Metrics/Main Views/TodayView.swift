@@ -189,6 +189,7 @@ struct TodayView: View {
                     AdderView()
             }
             }
+        
             
 //        }
     }
