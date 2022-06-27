@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CKSharingSuppported</key>
+	<true/>
 	<key>CFBundleDisplayName</key>
 	<string>Metrics</string>
 	<key>CFBundleExecutable</key>

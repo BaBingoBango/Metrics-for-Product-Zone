@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct SharingView: View {
     
@@ -49,7 +50,9 @@ struct SharingView: View {
                 .padding([.top, .leading, .trailing])
                 
                 Button(action: {
-                    // FIXME: add sharing code!
+                    let share = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName))
+                    share[CKShare.SystemFieldKey.title] = "Title!"
+                    share[CKShare.SystemFieldKey.shareType] = "com.metrics.sharing"
                 }) {
                     ZStack {
                         Rectangle()
