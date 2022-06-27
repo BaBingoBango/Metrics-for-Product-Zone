@@ -65,12 +65,6 @@ struct MainTabView: View {
                 
                 .navigationTitle("Metrics")
             }
-            .onOpenURL { url in
-            guard url.path == "/logTransaction" else {
-              return
-            }
-//                showingAdderView = true
-          }
         }
     }
 }

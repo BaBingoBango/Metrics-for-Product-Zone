@@ -10,6 +10,12 @@ import SwiftUI
 struct SettingsView: View {
     
     // MARK: - View Variables
+    /// Whether or not the AppleCare+ goal viewer is being presented.
+    @State var showingAppleCareGoalViewer = false
+    /// Whether or not the business leads goal viewer is being presented.
+    @State var showingBusinessLeadsGoalViewer = false
+    /// Whether or not the connectivity goal viewer is being presented.
+    @State var showingConnectivityGoalViewer = false
     /// Whether or not the transaction data viewer is being presented.
     @State var showingTransactionData = false
     
@@ -23,6 +29,10 @@ struct SettingsView: View {
     /// In percent, the user's daily connectivity goal.
     @AppStorage("connectivityGoal") var connectivityGoal = 75
     
+    // Sharing variable
+    /// Whether or not the the Sharing section should show in the Today view.
+    @AppStorage("showSharingInTodayView") var showSharingInTodayView = true
+    
     // MARK: - View Variables
     var body: some View {
 //        NavigationView {
@@ -32,37 +42,83 @@ struct SettingsView: View {
                         Text("Show Goals in Today")
                     }
                     
-                    NavigationLink(destination: GoalEditorView(goalName: "AppleCare+", goal: $appleCareGoal)) {
+                    Button(action: {
+                        showingAppleCareGoalViewer = true
+                    }) {
                         HStack {
                             Text("AppleCare+ Goal")
+                                .foregroundColor(.primary)
                             
                             Spacer()
                             
                             Text("\(appleCareGoal)%")
                                 .foregroundColor(.secondary)
+                            
+                            Image(systemName: "chevron.right")
+                                .font(Font.body.weight(.semibold))
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                                .opacity(0.25)
                         }
                     }
+                    .sheet(isPresented: $showingAppleCareGoalViewer) {
+                        GoalEditorView(goalName: "AppleCare+", goal: $appleCareGoal)
+                    }
                     
-                    NavigationLink(destination: GoalEditorView(goalName: "Business Leads", goal: $businessLeadsGoal)) {
+                    Button(action: {
+                        showingBusinessLeadsGoalViewer = true
+                    }) {
                         HStack {
                             Text("Business Leads Goal")
+                                .foregroundColor(.primary)
                             
                             Spacer()
                             
                             Text("\(businessLeadsGoal) Leads")
                                 .foregroundColor(.secondary)
+                            
+                            Image(systemName: "chevron.right")
+                                .font(Font.body.weight(.semibold))
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                                .opacity(0.25)
                         }
                     }
+                    .sheet(isPresented: $showingBusinessLeadsGoalViewer) {
+                        GoalEditorView(goalName: "Business Leads", goal: $businessLeadsGoal)
+                    }
                     
-                    NavigationLink(destination: GoalEditorView(goalName: "Connectivity", goal: $connectivityGoal)) {
+                    Button(action: {
+                        showingAppleCareGoalViewer = true
+                    }) {
                         HStack {
                             Text("Connectivity Goal")
+                                .foregroundColor(.primary)
                             
                             Spacer()
                             
                             Text("\(connectivityGoal)%")
                                 .foregroundColor(.secondary)
+                            
+                            Image(systemName: "chevron.right")
+                                .font(Font.body.weight(.semibold))
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                                .opacity(0.25)
                         }
+                    }
+                    .sheet(isPresented: $showingAppleCareGoalViewer) {
+                        GoalEditorView(goalName: "Connectivity", goal: $connectivityGoal)
+                    }
+                }
+                
+                Section(header: Text("Sharing")) {
+                    Toggle(isOn: $showSharingInTodayView) {
+                        Text("Show Sharing in Today")
+                    }
+                    
+                    NavigationLink(destination: SharingView()) {
+                        Text("Configure Sharing")
                     }
                 }
                 
@@ -88,9 +144,6 @@ struct SettingsView: View {
                     HStack { Text("App Version"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String).foregroundColor(.secondary) }
                     
                     HStack { Text("Build Number"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String).foregroundColor(.secondary) }
-                    
-                    HStack { Text("Bundle ID"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as! String).foregroundColor(.secondary) }
-                    
                 }
             }
             

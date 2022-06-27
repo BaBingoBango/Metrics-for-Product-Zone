@@ -11,6 +11,8 @@ import SwiftUI
 struct GoalEditorView: View {
     
     // MARK: - View Variables
+    /// Whether or not this view is being presented.
+    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     /// The name of the goal this view should edit.
     var goalName: String
     /// The goal this view should edit.
@@ -60,55 +62,68 @@ struct GoalEditorView: View {
         let isLeftButtonDisabled = goal == 0
         let isRightButtonDisabled = goal == 100 && shouldShowPercent
         
-        GeometryReader { geometry in
-            VStack {
-                HStack {
-                    Spacer()
-                    
-                    Button(action: {
-                        goal -= 1
-                    }) {
-                        Image(systemName: "minus.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(!isLeftButtonDisabled ? accentColor : .gray)
+        NavigationView {
+            GeometryReader { geometry in
+                VStack {
+                    HStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            goal -= 1
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(!isLeftButtonDisabled ? accentColor : .gray)
+                        }
+                        .disabled(isLeftButtonDisabled)
+                        
+                        Spacer()
+                        
+                        Text("\(goal)\(shouldShowPercent ? "%" : "")")
+                            .font(.system(size: 50))
+                            .fontWeight(.heavy)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                            .frame(width: geometry.size.width / 2.5, height: 75)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            goal += 1
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(!isRightButtonDisabled ? accentColor : .gray)
+                        }
+                        .disabled(isRightButtonDisabled)
+                        
+                        Spacer()
                     }
-                    .disabled(isLeftButtonDisabled)
                     
-                    Spacer()
-                    
-                    Text("\(goal)\(shouldShowPercent ? "%" : "")")
-                        .font(.system(size: 50))
-                        .fontWeight(.heavy)
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .frame(width: geometry.size.width / 2.5, height: 75)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        goal += 1
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(!isRightButtonDisabled ? accentColor : .gray)
-                    }
-                    .disabled(isRightButtonDisabled)
+                    Text(description)
+                        .fontWeight(.bold)
+                        .foregroundColor(accentColor)
                     
                     Spacer()
                 }
-                
-                Text(description)
-                    .fontWeight(.bold)
-                    .foregroundColor(accentColor)
-                
-                Spacer()
             }
+            
+            // MARK: - Navigation View Settings
+            .navigationTitle(Text("Daily \(goalName) Goal"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Done")
+                            .fontWeight(.bold)
+                            .foregroundColor(accentColor)
+                    }
+                }
+            })
         }
-        
-        // MARK: - Navigation View Settings
-        .navigationTitle(Text("Daily \(goalName) Goal"))
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

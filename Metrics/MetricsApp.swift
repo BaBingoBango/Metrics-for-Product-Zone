@@ -8,57 +8,67 @@
 import SwiftUI
 import UIKit
 
+#if os(iOS)
+var shortcutItemToProcess: UIApplicationShortcutItem?
+#endif
+
 @main
 struct MetricsApp: App {
     #if os(iOS)
     /// A custom app delegate which launches the root view.
-    @UIApplicationDelegateAdaptor(MyAppDelegate.self) var appDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     #endif
     /// The persistence controller for Core Data.
     let persistenceController = PersistenceController.shared
     /// Whether or not the transaction adder is being presented.
     @State var isShowingAdder = false
+    @Environment(\.scenePhase) var phase
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
-    }
-    
-#if os(iOS)
-
-/// A custom app delegate class.
-///
-/// This class was downloaded from https://stackoverflow.com/questions/57260051/iphone-x-home-indicator-dimming-undimming
-class MyAppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let config = UISceneConfiguration(name: "My Scene Delegate", sessionRole: connectingSceneSession.role)
-        config.delegateClass = MySceneDelegate.self
-        return config
+        .onChange(of: phase) { (newPhase) in
+            switch newPhase {
+            case .active :
+                print("App is active!")
+                #if os(iOS)
+                guard let name = shortcutItemToProcess?.userInfo?["name"] as? String else {
+                    return
+                }
+                #endif
+            case .inactive:
+                // inactive
+                 print("App is inactive!")
+            case .background:
+                print("App in background!")
+            @unknown default:
+                print("default")
+            }
+        }
     }
 }
 
-/// A custom scene delegate class.
-///
-/// This class was downloaded from https://stackoverflow.com/questions/57260051/iphone-x-home-indicator-dimming-undimming
-class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var window: UIWindow?
-    @Environment(\.openURL) private var openURL: OpenURLAction
-    
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        if let _ = connectionOptions.shortcutItem {
-            openURL(URL(string: "Ethan.Metrics://logTransaction")!)
+#if os(iOS)
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        if let shortcutItem = options.shortcutItem {
+            shortcutItemToProcess = shortcutItem
         }
+        
+        let sceneConfiguration = UISceneConfiguration(name: "Custom Configuration", sessionRole: connectingSceneSession.role)
+        sceneConfiguration.delegateClass = CustomSceneDelegate.self
+        
+        return sceneConfiguration
     }
-    
+}
+
+class CustomSceneDelegate: UIResponder, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        openURL(URL(string: "Ethan.Metrics://logTransaction")!) { completed in
-              completionHandler(completed)
-        }
+        shortcutItemToProcess = shortcutItem
     }
 }
 
 #endif
-
-}
