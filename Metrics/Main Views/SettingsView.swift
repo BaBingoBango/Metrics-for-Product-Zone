@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct SettingsView: View {
     
@@ -18,6 +19,8 @@ struct SettingsView: View {
     @State var showingConnectivityGoalViewer = false
     /// Whether or not the transaction data viewer is being presented.
     @State var showingTransactionData = false
+    /// Whether or not the sharing view is being presented.
+    @State var isShowingSharingView = false
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -117,8 +120,17 @@ struct SettingsView: View {
                         Text("Show Sharing in Today")
                     }
                     
-                    NavigationLink(destination: SharingView()) {
-                        Text("Configure Sharing")
+                    Button(action: {
+                        isShowingSharingView = true
+                    }) {
+                        Text("Share My Metrics...")
+                    }
+                    .sheet(isPresented: $isShowingSharingView) {
+                        CloudKitSharingView(cloudKitShare: CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)), cloudKitContainer: CKContainer(identifier: "iCloud.Metrics"))
+                    }
+                    
+                    NavigationLink(destination: EmptyView()) {
+                        Text("Shared With Me")
                     }
                 }
                 

@@ -58,6 +58,7 @@
 		AACEB1BC26BE2733006AACA7 /* TransactionServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */; };
 		AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEA99E926B5123D00179B19 /* ColorServices.swift */; };
 		AAEEF4B426C8A6C300E777AC /* ComplicationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEEF4B326C8A6C300E777AC /* ComplicationViews.swift */; };
+		AAF39B022870DAAA001E2703 /* CloudKitSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF39B012870DAAA001E2703 /* CloudKitSharingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -188,6 +189,7 @@
 		AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionServices.swift; sourceTree = "<group>"; };
 		AAEA99E926B5123D00179B19 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AAEEF4B326C8A6C300E777AC /* ComplicationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationViews.swift; sourceTree = "<group>"; };
+		AAF39B012870DAAA001E2703 /* CloudKitSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitSharingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -397,6 +399,7 @@
 			children = (
 				AA9EEC5D26B50027003D719C /* Text Support Views.swift */,
 				AA35876226BA408900384DCF /* ProgressBar.swift */,
+				AAF39B012870DAAA001E2703 /* CloudKitSharingView.swift */,
 			);
 			path = "Support Views";
 			sourceTree = "<group>";
@@ -675,6 +678,7 @@
 				AA3442C726B4FEEE004A2259 /* AdderView.swift in Sources */,
 				AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */,
 				AA35876126BA380700384DCF /* TodayView.swift in Sources */,
+				AAF39B022870DAAA001E2703 /* CloudKitSharingView.swift in Sources */,
 				AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */,
 				AA3442A326B4FED5004A2259 /* Metrics.xcdatamodeld in Sources */,
 				AA35876326BA408900384DCF /* ProgressBar.swift in Sources */,
@@ -1039,11 +1043,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				IBSC_MODULE = WatchMetrics_Extension;
 				INFOPLIST_FILE = WatchMetrics/Info.plist;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1061,11 +1065,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				IBSC_MODULE = WatchMetrics_Extension;
 				INFOPLIST_FILE = WatchMetrics/Info.plist;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1092,7 +1096,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
@@ -1119,7 +1123,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.Metrics.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;

@@ -33,11 +33,6 @@ struct MetricsApp: App {
             switch newPhase {
             case .active :
                 print("App is active!")
-                #if os(iOS)
-                guard let name = shortcutItemToProcess?.userInfo?["name"] as? String else {
-                    return
-                }
-                #endif
             case .inactive:
                 // inactive
                  print("App is inactive!")
