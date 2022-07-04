@@ -50,7 +50,18 @@ class MetricsAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
 class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     /// The function called when a user opens a CloudKit share link on iOS when the app is running.
     func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        // 1
+        if cloudKitShareMetadata.participantStatus == .pending {
+            let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [cloudKitShareMetadata])
+            acceptShareOperation.acceptSharesResultBlock = { (_ result: Result<Void, Error>) -> Void in
+                switch result {
+                case .success():
+                    print("Share accepted!")
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            CKContainer(identifier: "iCloud.Metrics").add(acceptShareOperation)
+        }
     }
     
     /// The function called when a user opens a CloudKit share link on iOS when the app is not running.

@@ -19,8 +19,18 @@ struct SettingsView: View {
     @State var showingConnectivityGoalViewer = false
     /// Whether or not the transaction data viewer is being presented.
     @State var showingTransactionData = false
-    /// Whether or not the sharing view is being presented.
+    /// The URL for the currently existing CloudKit share.
+    @AppStorage("cloudKitShareURL") var cloudKitShareURL: String?
+    /// The CloudKit share object for the Sharing view.
+    @State var cloudKitShare: CKShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "?", ownerName: "?"))
+    /// Whether or not the Sharing progress indicator is being presented.
+    @State var isShowingSharingProgress = false
+    /// Whether or not the Sharing view is being presented.
     @State var isShowingSharingView = false
+    /// Whether or not the Sharing failure indicator is being presented.
+    @State var isShowingSharingFailure = false
+    /// The error message from a failed share preperation, if there is one.
+    @State var sharingErrorMessage: String?
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -121,15 +131,76 @@ struct SettingsView: View {
                     }
                     
                     Button(action: {
-                        isShowingSharingView = true
+                        isShowingSharingProgress = true
+                        
+                        let zoneFetchOperation = CKFetchRecordZonesOperation(recordZoneIDs: [CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)])
+                        zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
+                            switch recordZoneResult {
+                            case .success(let result):
+                                if let shareReference = result.share {
+                                    CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.fetch(withRecordID: shareReference.recordID) { (record, error) in
+                                        guard let shareRecord = record as? CKShare else {
+                                            if let error = error {
+                                                print(error.localizedDescription)
+                                                isShowingSharingProgress = false
+                                                isShowingSharingFailure = true
+                                            }
+                                            return
+                                        }
+                                    
+                                        if let url = shareRecord.url {
+                                            print("URL (Old): \(url)")
+                                            
+                                        }
+                                        
+                                        cloudKitShare = shareRecord
+                                        cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
+                                        cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                        cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
+                                        isShowingSharingProgress = false
+                                        isShowingSharingView = true
+                                    }
+                                } else {
+                                    cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName))
+                                    cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
+                                    cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                    cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
+                                    
+                                    let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
+                                    saveOperation.modifyRecordsResultBlock = { (_ result: Result<Void, Error>) -> Void in
+                                        switch result {
+                                        case .success():
+                                            print("URL (Old): \(cloudKitShare.url?.description ?? "No URL")")
+                                            isShowingSharingProgress = false
+                                            isShowingSharingView = true
+                                        case .failure(let error):
+                                            print(error.localizedDescription)
+                                            isShowingSharingProgress = false
+                                            isShowingSharingFailure = true
+                                        }
+                                    }
+                                    CKContainer(
+                                        identifier: "iCloud.Metrics").privateCloudDatabase.add(saveOperation)
+                                }
+                            case .failure(let error):
+                                print(error.localizedDescription)
+                                isShowingSharingProgress = false
+                                isShowingSharingFailure = true
+                            }
+                        }
+                        CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.add(zoneFetchOperation)
                     }) {
                         Text("Share My Metrics...")
                     }
+//                    .alert("Preparing to Share...", isPresented: $isShowingSharingProgress) {}
                     .sheet(isPresented: $isShowingSharingView) {
-                        CloudKitSharingView(sharedZoneName: "com.apple.coredata.cloudkit.zone", sharedZoneOwnerName: CKCurrentUserDefaultName, containerID: "Metrics.iCloud")
+                        CloudKitSharingView(share: cloudKitShare, container: CKContainer(identifier: "iCloud.Metrics"))
                     }
+//                    .alert(isPresented: $isShowingSharingFailure) {
+//                        Alert(title: Text("Sharing Preperation Failed"), message: Text(sharingErrorMessage ?? "No error message was found."), dismissButton: .default(Text("Close")))
+//                    }
                     
-                    NavigationLink(destination: EmptyView()) {
+                    NavigationLink(destination: SharedWithYouView()) {
                         Text("Shared With You")
                     }
                 }

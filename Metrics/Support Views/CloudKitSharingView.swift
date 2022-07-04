@@ -13,32 +13,14 @@ import CloudKit
 /// A SwiftUI view for displaying the Game Center dashboard via a modal.
 struct CloudKitSharingView: UIViewControllerRepresentable {
     // MARK: View Variables
-    var sharedZoneName: String
-    var sharedZoneOwnerName: String
-    var containerID: String
+    var share: CKShare
+    var container: CKContainer
     
     // MARK: View Controller Generator
     func makeUIViewController(context: Context) -> UICloudSharingController {
-        // MARK: Sharing View Setup
-        let cloudSharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
-            let cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: sharedZoneName, ownerName: sharedZoneOwnerName))
-            let cloudKitContainer = CKContainer(identifier: containerID)
-            
-            let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
-            saveOperation.modifyRecordsResultBlock = { (_ result: Result<Void, Error>) -> Void in
-                switch result {
-                case .success():
-                    completion(cloudKitShare, cloudKitContainer, nil)
-                case .failure(let error):
-                    completion(nil, nil, error)
-                }
-            }
-            cloudKitContainer.privateCloudDatabase.add(saveOperation)
-        }
-        
         // MARK: Sharing View Settings
-        cloudSharingController.title = "AAAEEEEAAAEEE"
-        cloudSharingController.availablePermissions = [.allowPrivate, .allowReadOnly]
+        let cloudSharingController = UICloudSharingController(share: share, container: container)
+        cloudSharingController.title = "Transaction History"
         
         cloudSharingController.delegate = context.coordinator
         cloudSharingController.modalPresentationStyle = .formSheet
@@ -73,12 +55,11 @@ struct CloudKitSharingView: UIViewControllerRepresentable {
         }
         
         func itemTitle(for csc: UICloudSharingController) -> String? {
-            "Hellloooooooooooo"
+            "Transaction History"
         }
         
         func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
-            let icon = NSDataAsset(name: "alien")!
-            return icon.data
+            return NSDataAsset(name: "sharing thumbnail")!.data
         }
     }
 }

@@ -20,6 +20,7 @@
 		AA3442C726B4FEEE004A2259 /* AdderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3442C626B4FEEE004A2259 /* AdderView.swift */; };
 		AA35876126BA380700384DCF /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA35876026BA380700384DCF /* TodayView.swift */; };
 		AA35876326BA408900384DCF /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA35876226BA408900384DCF /* ProgressBar.swift */; };
+		AA3988E728729B91009C8697 /* SharedWithYouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3988E628729B91009C8697 /* SharedWithYouView.swift */; };
 		AA493A2426C7760300B79B92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA493A2326C7760300B79B92 /* Assets.xcassets */; };
 		AA493A2B26C7760300B79B92 /* WatchMetrics Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AA493A2A26C7760300B79B92 /* WatchMetrics Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA493A3426C7760400B79B92 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA493A3326C7760400B79B92 /* NotificationController.swift */; };
@@ -151,6 +152,7 @@
 		AA3442C626B4FEEE004A2259 /* AdderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdderView.swift; sourceTree = "<group>"; };
 		AA35876026BA380700384DCF /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		AA35876226BA408900384DCF /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
+		AA3988E628729B91009C8697 /* SharedWithYouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedWithYouView.swift; sourceTree = "<group>"; };
 		AA493A2126C7760200B79B92 /* WatchMetrics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WatchMetrics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA493A2326C7760300B79B92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA493A2526C7760300B79B92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				AA9C0CE226BE182100B7EA5C /* SettingsView.swift */,
 				AA697F032867AB9A00F49A37 /* GoalEditorView.swift */,
 				AABAAA8F28696AFD007EC3A5 /* SharingView.swift */,
+				AA3988E628729B91009C8697 /* SharedWithYouView.swift */,
 				AA6D746B26C7678F00157734 /* DataViewer.swift */,
 				AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */,
 			);
@@ -676,6 +679,7 @@
 				AA9EEC5E26B50027003D719C /* Text Support Views.swift in Sources */,
 				AA9C0CE126BE17B800B7EA5C /* LifetimeView.swift in Sources */,
 				AA3442C726B4FEEE004A2259 /* AdderView.swift in Sources */,
+				AA3988E728729B91009C8697 /* SharedWithYouView.swift in Sources */,
 				AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */,
 				AA35876126BA380700384DCF /* TodayView.swift in Sources */,
 				AAF39B022870DAAA001E2703 /* CloudKitSharingView.swift in Sources */,
