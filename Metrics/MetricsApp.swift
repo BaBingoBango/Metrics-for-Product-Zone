@@ -6,64 +6,62 @@
 //
 
 import SwiftUI
-import UIKit
-
 #if os(iOS)
-var shortcutItemToProcess: UIApplicationShortcutItem?
+import UIKit
 #endif
+import CloudKit
 
 @main
 struct MetricsApp: App {
     #if os(iOS)
-    /// A custom app delegate which launches the root view.
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    /// The custom app delegate for the app.
+    @UIApplicationDelegateAdaptor var delegate: MetricsAppDelegate
     #endif
     /// The persistence controller for Core Data.
     let persistenceController = PersistenceController.shared
-    /// Whether or not the transaction adder is being presented.
-    @State var isShowingAdder = false
-    @Environment(\.scenePhase) var phase
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
-        .onChange(of: phase) { (newPhase) in
-            switch newPhase {
-            case .active :
-                print("App is active!")
-            case .inactive:
-                // inactive
-                 print("App is inactive!")
-            case .background:
-                print("App in background!")
-            @unknown default:
-                print("default")
-            }
-        }
     }
 }
 
 #if os(iOS)
-
-class AppDelegate: NSObject, UIApplicationDelegate {
+/// The custom app delegate class for the app.
+class MetricsAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+    /// The function called to configure the app's custom scene delegate.
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        if let shortcutItem = options.shortcutItem {
-            shortcutItemToProcess = shortcutItem
-        }
-        
-        let sceneConfiguration = UISceneConfiguration(name: "Custom Configuration", sessionRole: connectingSceneSession.role)
-        sceneConfiguration.delegateClass = CustomSceneDelegate.self
-        
-        return sceneConfiguration
+        let sceneConfig = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        sceneConfig.delegateClass = MetricsSceneDelegate.self
+        return sceneConfig
+    }
+    
+    /// The function called when a user opens a CloudKit share link on macOS or an iOS app that does not use scenes.
+    func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        // 3 & 4
     }
 }
-
-class CustomSceneDelegate: UIResponder, UIWindowSceneDelegate {
-    func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        shortcutItemToProcess = shortcutItem
-    }
-}
-
 #endif
+
+#if os(iOS)
+/// The custom scene delegate class for the app.
+class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
+    /// The function called when a user opens a CloudKit share link on iOS when the app is running.
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        // 1
+    }
+    
+    /// The function called when a user opens a CloudKit share link on iOS when the app is not running.
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        // 2
+    }
+}
+#endif
+
+func acceptCloudKitSharingInvitation(cloudKitShareMetadata: CKShare.Metadata) {
+    if cloudKitShareMetadata.participantStatus == .pending {
+        
+    }
+}

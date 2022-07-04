@@ -126,11 +126,11 @@ struct SettingsView: View {
                         Text("Share My Metrics...")
                     }
                     .sheet(isPresented: $isShowingSharingView) {
-                        CloudKitSharingView(cloudKitShare: CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)), cloudKitContainer: CKContainer(identifier: "iCloud.Metrics"))
+                        CloudKitSharingView(sharedZoneName: "com.apple.coredata.cloudkit.zone", sharedZoneOwnerName: CKCurrentUserDefaultName, containerID: "Metrics.iCloud")
                     }
                     
                     NavigationLink(destination: EmptyView()) {
-                        Text("Shared With Me")
+                        Text("Shared With You")
                     }
                 }
                 

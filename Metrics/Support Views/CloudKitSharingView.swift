@@ -13,16 +13,35 @@ import CloudKit
 /// A SwiftUI view for displaying the Game Center dashboard via a modal.
 struct CloudKitSharingView: UIViewControllerRepresentable {
     // MARK: View Variables
-    var cloudKitShare: CKShare
-    var cloudKitContainer: CKContainer
+    var sharedZoneName: String
+    var sharedZoneOwnerName: String
+    var containerID: String
     
     // MARK: View Controller Generator
     func makeUIViewController(context: Context) -> UICloudSharingController {
-        // MARK: Sharing View Settings
-        let cloudSharingController = UICloudSharingController(share: cloudKitShare, container: cloudKitContainer)
-        cloudSharingController.title = "Share Title!"
-        cloudSharingController.availablePermissions = [.allowPrivate, .allowReadOnly, .allowPublic]
+        // MARK: Sharing View Setup
+        let cloudSharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+            let cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: sharedZoneName, ownerName: sharedZoneOwnerName))
+            let cloudKitContainer = CKContainer(identifier: containerID)
+            
+            let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
+            saveOperation.modifyRecordsResultBlock = { (_ result: Result<Void, Error>) -> Void in
+                switch result {
+                case .success():
+                    completion(cloudKitShare, cloudKitContainer, nil)
+                case .failure(let error):
+                    completion(nil, nil, error)
+                }
+            }
+            cloudKitContainer.privateCloudDatabase.add(saveOperation)
+        }
         
+        // MARK: Sharing View Settings
+        cloudSharingController.title = "AAAEEEEAAAEEE"
+        cloudSharingController.availablePermissions = [.allowPrivate, .allowReadOnly]
+        
+        cloudSharingController.delegate = context.coordinator
+        cloudSharingController.modalPresentationStyle = .formSheet
         return cloudSharingController
     }
     
@@ -43,16 +62,22 @@ struct CloudKitSharingView: UIViewControllerRepresentable {
         }
         
         // MARK: Sharing View Delegate Functions
+        func cloudSharingControllerDidSaveShare(_ csc: UICloudSharingController) {
+            print("Share save complete!")
+            csc.dismiss(animated: true)
+        }
+        
         func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
             print("Share save error!")
+            csc.dismiss(animated: true)
         }
         
         func itemTitle(for csc: UICloudSharingController) -> String? {
-            return "Untitled...?"
+            "Hellloooooooooooo"
         }
         
         func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
-            let icon = NSDataAsset(name: "Old App Icon")!
+            let icon = NSDataAsset(name: "alien")!
             return icon.data
         }
     }
