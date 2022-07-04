@@ -31,6 +31,10 @@ struct SettingsView: View {
     @State var isShowingSharingFailure = false
     /// The error message from a failed share preperation, if there is one.
     @State var sharingErrorMessage: String?
+    /// A timer for timing-out the network operations on this view.
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    /// The amount of time the app has been trying to connect to CloudKit.
+    @State var connectTime = 0.0
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -130,75 +134,79 @@ struct SettingsView: View {
                         Text("Show Sharing in Today")
                     }
                     
-                    Button(action: {
-                        isShowingSharingProgress = true
-                        
-                        let zoneFetchOperation = CKFetchRecordZonesOperation(recordZoneIDs: [CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)])
-                        zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
-                            switch recordZoneResult {
-                            case .success(let result):
-                                if let shareReference = result.share {
-                                    CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.fetch(withRecordID: shareReference.recordID) { (record, error) in
-                                        guard let shareRecord = record as? CKShare else {
-                                            if let error = error {
+                    if isShowingSharingProgress {
+                        HStack {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .padding(.trailing, 1)
+                            
+                            Text("Preparing To Share...")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Button(action: {
+                            isShowingSharingProgress = true
+                            
+                            let zoneFetchOperation = CKFetchRecordZonesOperation(recordZoneIDs: [CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)])
+                            zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
+                                switch recordZoneResult {
+                                case .success(let result):
+                                    if let shareReference = result.share {
+                                        CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.fetch(withRecordID: shareReference.recordID) { (record, error) in
+                                            guard let shareRecord = record as? CKShare else {
+                                                if let error = error {
+                                                    print(error.localizedDescription)
+                                                    isShowingSharingProgress = false
+                                                    isShowingSharingFailure = true
+                                                }
+                                                return
+                                            }
+                                        
+                                            if let url = shareRecord.url {
+                                                print("URL (Old): \(url)")
+                                                
+                                            }
+                                            
+                                            cloudKitShare = shareRecord
+                                            cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
+                                            cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                            cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
+                                            isShowingSharingProgress = false
+                                            isShowingSharingView = true
+                                        }
+                                    } else {
+                                        cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName))
+                                        cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
+                                        cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                        cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
+                                        
+                                        let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
+                                        saveOperation.modifyRecordsResultBlock = { (_ result: Result<Void, Error>) -> Void in
+                                            switch result {
+                                            case .success():
+                                                print("URL (Old): \(cloudKitShare.url?.description ?? "No URL")")
+                                                isShowingSharingProgress = false
+                                                isShowingSharingView = true
+                                            case .failure(let error):
                                                 print(error.localizedDescription)
                                                 isShowingSharingProgress = false
                                                 isShowingSharingFailure = true
                                             }
-                                            return
                                         }
-                                    
-                                        if let url = shareRecord.url {
-                                            print("URL (Old): \(url)")
-                                            
-                                        }
-                                        
-                                        cloudKitShare = shareRecord
-                                        cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
-                                        cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
-                                        cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
-                                        isShowingSharingProgress = false
-                                        isShowingSharingView = true
+                                        CKContainer(
+                                            identifier: "iCloud.Metrics").privateCloudDatabase.add(saveOperation)
                                     }
-                                } else {
-                                    cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName))
-                                    cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
-                                    cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
-                                    cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
-                                    
-                                    let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
-                                    saveOperation.modifyRecordsResultBlock = { (_ result: Result<Void, Error>) -> Void in
-                                        switch result {
-                                        case .success():
-                                            print("URL (Old): \(cloudKitShare.url?.description ?? "No URL")")
-                                            isShowingSharingProgress = false
-                                            isShowingSharingView = true
-                                        case .failure(let error):
-                                            print(error.localizedDescription)
-                                            isShowingSharingProgress = false
-                                            isShowingSharingFailure = true
-                                        }
-                                    }
-                                    CKContainer(
-                                        identifier: "iCloud.Metrics").privateCloudDatabase.add(saveOperation)
+                                case .failure(let error):
+                                    print(error.localizedDescription)
+                                    isShowingSharingProgress = false
+                                    isShowingSharingFailure = true
                                 }
-                            case .failure(let error):
-                                print(error.localizedDescription)
-                                isShowingSharingProgress = false
-                                isShowingSharingFailure = true
                             }
+                            CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.add(zoneFetchOperation)
+                        }) {
+                            Text("Share My Metrics...")
                         }
-                        CKContainer(identifier: "iCloud.Metrics").privateCloudDatabase.add(zoneFetchOperation)
-                    }) {
-                        Text("Share My Metrics...")
                     }
-//                    .alert("Preparing to Share...", isPresented: $isShowingSharingProgress) {}
-                    .sheet(isPresented: $isShowingSharingView) {
-                        CloudKitSharingView(share: cloudKitShare, container: CKContainer(identifier: "iCloud.Metrics"))
-                    }
-//                    .alert(isPresented: $isShowingSharingFailure) {
-//                        Alert(title: Text("Sharing Preperation Failed"), message: Text(sharingErrorMessage ?? "No error message was found."), dismissButton: .default(Text("Close")))
-//                    }
                     
                     NavigationLink(destination: SharedWithYouView()) {
                         Text("Shared With You")
@@ -227,6 +235,24 @@ struct SettingsView: View {
                     HStack { Text("App Version"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String).foregroundColor(.secondary) }
                     
                     HStack { Text("Build Number"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String).foregroundColor(.secondary) }
+                }
+            }
+            .alert(isPresented: $isShowingSharingFailure) {
+                Alert(title: Text("Sharing Preperation Failure"), message: Text(sharingErrorMessage ?? ""), dismissButton: .default(Text("Close")))
+            }
+            .sheet(isPresented: $isShowingSharingView) {
+                CloudKitSharingView(share: cloudKitShare, container: CKContainer(identifier: "iCloud.Metrics"))
+            }
+            .onReceive(timer) { input in
+                if isShowingSharingProgress {
+                    connectTime += 1
+                    
+                    if connectTime >= 10 {
+                        sharingErrorMessage = "Timeout"
+                        isShowingSharingProgress = false
+                        isShowingSharingFailure = true
+                        connectTime = 0
+                    }
                 }
             }
             
