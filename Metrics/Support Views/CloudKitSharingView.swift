@@ -20,10 +20,11 @@ struct CloudKitSharingView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UICloudSharingController {
         // MARK: Sharing View Settings
         let cloudSharingController = UICloudSharingController(share: share, container: container)
-        cloudSharingController.title = "Transaction History"
+        
+        cloudSharingController.modalPresentationStyle = .pageSheet
+        cloudSharingController.availablePermissions = [.allowPublic, .allowPrivate, .allowReadOnly]
         
         cloudSharingController.delegate = context.coordinator
-        cloudSharingController.modalPresentationStyle = .formSheet
         return cloudSharingController
     }
     

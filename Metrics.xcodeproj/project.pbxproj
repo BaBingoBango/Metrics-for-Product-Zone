@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */; };
 		AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */; };
+		AA19AE872873D790004F3399 /* ergiwywfqe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA19AE862873D790004F3399 /* ergiwywfqe.swift */; };
 		AA22C70726C1EA7300CDE6B4 /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22C70626C1EA7300CDE6B4 /* DateServices.swift */; };
 		AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA34429626B4FED3004A2259 /* MetricsApp.swift */; };
 		AA34429B26B4FED5004A2259 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA34429A26B4FED5004A2259 /* Assets.xcassets */; };
@@ -135,6 +136,7 @@
 /* Begin PBXFileReference section */
 		AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
 		AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto Mono.ttf"; sourceTree = "<group>"; };
+		AA19AE862873D790004F3399 /* ergiwywfqe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ergiwywfqe.swift; sourceTree = "<group>"; };
 		AA22C70626C1EA7300CDE6B4 /* DateServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateServices.swift; sourceTree = "<group>"; };
 		AA34429326B4FED3004A2259 /* Metrics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metrics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA34429626B4FED3004A2259 /* MetricsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsApp.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 			isa = PBXGroup;
 			children = (
 				AA9140CA26BC820200C281C7 /* MainTabView.swift */,
+				AA19AE862873D790004F3399 /* ergiwywfqe.swift */,
 				AA35876026BA380700384DCF /* TodayView.swift */,
 				AAB43E50286108830084D66C /* TodayTabView.swift */,
 				AA3442C626B4FEEE004A2259 /* AdderView.swift */,
@@ -692,6 +695,7 @@
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,
 				AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */,
 				AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */,
+				AA19AE872873D790004F3399 /* ergiwywfqe.swift in Sources */,
 				AAB43E51286108830084D66C /* TodayTabView.swift in Sources */,
 				AA9C0CE326BE182100B7EA5C /* SettingsView.swift in Sources */,
 			);

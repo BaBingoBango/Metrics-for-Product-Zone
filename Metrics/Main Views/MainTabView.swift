@@ -10,6 +10,7 @@ import SwiftUI
 struct MainTabView: View {
     
     // MARK: - View Variables
+    @EnvironmentObject var sceneDelegate: MetricsSceneDelegate
     #if os(iOS)
     /// The horizontal size class of the current app environment.
     ///
@@ -20,51 +21,88 @@ struct MainTabView: View {
     @State var selection: Int? = 1
     
     var body: some View {
-        if horizontalSizeClass == .compact {
-            TabView {
-                NavigationView { TodayTabView() }
-                    .tabItem {
-                        Image(systemName: "sun.max.fill"); Text("Today")
-                    }
-                
-                NavigationView { ThisWeekView() }
-                    .tabItem {
-                        Image(systemName: "calendar"); Text("This Week")
-                    }
-                
-                NavigationView { LifetimeView() }
-                    .tabItem {
-                        Image(systemName: "crown.fill"); Text("Lifetime")
-                    }
-                
-                NavigationView { SettingsView() }
-                    .tabItem {
-                        Image(systemName: "gear"); Text("Settings")
-                    }
-            }
-        } else {
-            NavigationView {
-                List(selection: $selection) {
-                    NavigationLink(destination: TodayTabView(), tag: 1, selection: $selection) {
-                        Label("Today", systemImage: "sun.max.fill")
-                    }
+        ZStack {
+            if horizontalSizeClass == .compact {
+                TabView {
+                    NavigationView { TodayTabView() }
+                        .tabItem {
+                            Image(systemName: "sun.max.fill"); Text("Today")
+                        }
                     
-                    NavigationLink(destination: ThisWeekView(), tag: 2, selection: $selection) {
-                        Label("This Week", systemImage: "calendar")
-                    }
+                    NavigationView { ThisWeekView() }
+                        .tabItem {
+                            Image(systemName: "calendar"); Text("This Week")
+                        }
                     
-                    NavigationLink(destination: LifetimeView(), tag: 3, selection: $selection) {
-                        Label("Lifetime", systemImage: "crown.fill")
-                    }
+                    NavigationView { LifetimeView() }
+                        .tabItem {
+                            Image(systemName: "crown.fill"); Text("Lifetime")
+                        }
                     
-                    NavigationLink(destination: SettingsView(), tag: 4, selection: $selection) {
-                        Label("Settings", systemImage: "gear")
-                    }
+                    NavigationView { SettingsView() }
+                        .tabItem {
+                            Image(systemName: "gear"); Text("Settings")
+                        }
                 }
-                .listStyle(SidebarListStyle())
-                
-                .navigationTitle("Metrics")
+            } else {
+                NavigationView {
+                    List(selection: $selection) {
+                        NavigationLink(destination: TodayTabView(), tag: 1, selection: $selection) {
+                            Label("Today", systemImage: "sun.max.fill")
+                        }
+                        
+                        NavigationLink(destination: ThisWeekView(), tag: 2, selection: $selection) {
+                            Label("This Week", systemImage: "calendar")
+                        }
+                        
+                        NavigationLink(destination: LifetimeView(), tag: 3, selection: $selection) {
+                            Label("Lifetime", systemImage: "crown.fill")
+                        }
+                        
+                        NavigationLink(destination: SettingsView(), tag: 4, selection: $selection) {
+                            Label("Settings", systemImage: "gear")
+                        }
+                    }
+                    .listStyle(SidebarListStyle())
+                    
+                    .navigationTitle("Metrics")
+                }
             }
+        }
+        .sheet(isPresented: $sceneDelegate.isAcceptingShare) {
+            VStack {
+                HStack {
+                    Image("sharing image")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .hidden()
+                    
+                    Image("sharing image")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .scaleEffect(0.8)
+                    
+                    Image("sharing image")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .hidden()
+                }
+                
+                Text("Accepting Shared Data")
+                    .fontWeight(.bold)
+                    .font(.largeTitle)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
+                    .padding([.leading, .bottom, .trailing])
+                
+                ProgressView()
+                    .scaleEffect(1.5)
+                
+                Spacer()
+            }
+            .padding(.top)
+            .interactiveDismissDisabled(true)
         }
     }
 }

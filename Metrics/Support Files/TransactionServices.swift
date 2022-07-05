@@ -12,6 +12,9 @@ class TransactionServices {
     
     // MARK: Setup
     
+    // Unique ID
+    var id = UUID()
+    
     // List of transactions (parameter)
     var transactions: [Transaction]
     
