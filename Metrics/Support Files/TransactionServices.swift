@@ -15,6 +15,9 @@ class TransactionServices {
     // Unique ID
     var id = UUID()
     
+    // Owner name (optional)
+    var owner: String?
+    
     // List of transactions (parameter)
     var transactions: [Transaction]
     

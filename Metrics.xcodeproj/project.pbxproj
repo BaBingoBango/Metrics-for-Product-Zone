@@ -33,6 +33,9 @@
 		AA493A5426C7760400B79B92 /* WatchMetricsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA493A5326C7760400B79B92 /* WatchMetricsUITests.swift */; };
 		AA493A5826C7760400B79B92 /* WatchMetrics.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA493A2126C7760200B79B92 /* WatchMetrics.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4BC33026BC987200DEF225 /* GraphDetailView.swift */; };
+		AA5C40F32881E700004A0FBD /* CloudKitOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */; };
+		AA5C40F72881E761004A0FBD /* SharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */; };
+		AA5C40F92881EFBA004A0FBD /* HidingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F82881EFBA004A0FBD /* HidingServices.swift */; };
 		AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
 		AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA697F032867AB9A00F49A37 /* GoalEditorView.swift */; };
 		AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6D746B26C7678F00157734 /* DataViewer.swift */; };
@@ -173,6 +176,9 @@
 		AA493A5326C7760400B79B92 /* WatchMetricsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMetricsUITests.swift; sourceTree = "<group>"; };
 		AA493A5526C7760400B79B92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA4BC33026BC987200DEF225 /* GraphDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDetailView.swift; sourceTree = "<group>"; };
+		AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitOperationStatus.swift; sourceTree = "<group>"; };
+		AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingRectangleView.swift; sourceTree = "<group>"; };
+		AA5C40F82881EFBA004A0FBD /* HidingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidingServices.swift; sourceTree = "<group>"; };
 		AA6632E426C459D200CFBE38 /* MathServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathServices.swift; sourceTree = "<group>"; };
 		AA697F032867AB9A00F49A37 /* GoalEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEditorView.swift; sourceTree = "<group>"; };
 		AA6D746B26C7678F00157734 /* DataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewer.swift; sourceTree = "<group>"; };
@@ -406,6 +412,7 @@
 				AA9EEC5D26B50027003D719C /* Text Support Views.swift */,
 				AA35876226BA408900384DCF /* ProgressBar.swift */,
 				AAF39B012870DAAA001E2703 /* CloudKitSharingView.swift */,
+				AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */,
 			);
 			path = "Support Views";
 			sourceTree = "<group>";
@@ -418,6 +425,8 @@
 				AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */,
 				AA22C70626C1EA7300CDE6B4 /* DateServices.swift */,
 				AA6632E426C459D200CFBE38 /* MathServices.swift */,
+				AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */,
+				AA5C40F82881EFBA004A0FBD /* HidingServices.swift */,
 			);
 			path = "Support Files";
 			sourceTree = "<group>";
@@ -675,11 +684,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AABAAA9028696AFD007EC3A5 /* SharingView.swift in Sources */,
+				AA5C40F32881E700004A0FBD /* CloudKitOperationStatus.swift in Sources */,
 				AA3442A026B4FED5004A2259 /* Persistence.swift in Sources */,
 				AA9140C926BC81D800C281C7 /* ThisWeekView.swift in Sources */,
 				AACEB1BC26BE2733006AACA7 /* TransactionServices.swift in Sources */,
 				AA22C70726C1EA7300CDE6B4 /* DateServices.swift in Sources */,
 				AA9EEC5E26B50027003D719C /* Text Support Views.swift in Sources */,
+				AA5C40F72881E761004A0FBD /* SharingRectangleView.swift in Sources */,
 				AA9C0CE126BE17B800B7EA5C /* LifetimeView.swift in Sources */,
 				AA3442C726B4FEEE004A2259 /* AdderView.swift in Sources */,
 				AA3988E728729B91009C8697 /* SharedWithYouView.swift in Sources */,
@@ -694,6 +705,7 @@
 				AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */,
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,
 				AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */,
+				AA5C40F92881EFBA004A0FBD /* HidingServices.swift in Sources */,
 				AA4BC33126BC987200DEF225 /* GraphDetailView.swift in Sources */,
 				AA19AE872873D790004F3399 /* ergiwywfqe.swift in Sources */,
 				AAB43E51286108830084D66C /* TodayTabView.swift in Sources */,

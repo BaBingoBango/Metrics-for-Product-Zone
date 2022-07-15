@@ -9,6 +9,12 @@ import SwiftUI
 
 struct ThisWeekView: View {
     
+    /// The navigation title text for this view.
+    var navigationTitleText = "This Week"
+    
+    /// A custom list of transactions that overrides the standard request to Core Data.
+    var customTransactions: TransactionServices?
+    
     // View context & transaction fetch request
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
@@ -16,7 +22,11 @@ struct ThisWeekView: View {
     
     // TransactionServices objects
     var data: TransactionServices {
-        return TransactionServices(transactions.reversed().reversed())
+        if customTransactions != nil {
+            return customTransactions!
+        } else {
+            return TransactionServices(transactions.reversed().reversed())
+        }
     }
     
     // Variables
@@ -238,7 +248,7 @@ struct ThisWeekView: View {
                 }
                 
                 // MARK: Nav Bar Settings
-                .navigationBarTitle(Text("This Week"))
+                .navigationBarTitle(Text(navigationTitleText))
             }
             
 //        }

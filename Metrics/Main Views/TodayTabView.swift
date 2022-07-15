@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import CoreData
 
 struct TodayTabView: View {
     
@@ -38,6 +39,10 @@ struct TodayTabView: View {
     }
     /// The amount to horizontally pad the entire view by.
     var horizontalPadding = 0
+    /// Whether or not this view has performed an initial Sharing fetch operation.
+    @State var hasCheckedSharing = false
+    /// The status of a Sharing fetch operation taking place via this view.
+    @State var fetchStatus = CloudKitOperationStatus.notStarted
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -256,116 +261,49 @@ struct TodayTabView: View {
                             Text("Sharing")
                                 .font(.title)
                                 .fontWeight(.bold)
-                                .padding(.trailing, 10)
                             
-                            ProgressView()
-                                .scaleEffect(1.25)
+                            if fetchStatus == .success || fetchStatus == .failure {
+                                Button(action: {
+                                    getSharingData()
+                                }) {
+                                    Image(systemName: "arrow.clockwise")
+                                        .aspectRatio(contentMode: .fit)
+                                        .font(.system(size: 25))
+                                        .foregroundColor(.blue)
+                                }
+                            }
                             
                             Spacer()
                         }
                         .padding([.top, .leading])
                         
-                        ForEach(todaySharingServices, id: \.id) { eachTodayData in
-                            ZStack {
-                                Rectangle()
-                                    .foregroundColor(.gray)
-                                    .opacity(0.15)
-                                    .cornerRadius(20)
-                                
-                                VStack {
-                                    HStack {
-                                        Image(systemName: "person.crop.circle")
-                                            .font(.title)
-                                            .imageScale(.large)
-                                        
-                                        Text("Hello!")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                        
-                                        Spacer()
-                                    }
-                                    .padding([.top, .leading])
-                                    
-                                    HStack {
-                                        ProgressBar(progress: Double(eachTodayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "applelogo")
-                                            .aspectRatio(1, contentMode: .fit)
-                                            .onAppear {
-                                                print(eachTodayData.appleCarePercent())
-                                                print(Double(eachTodayData.appleCarePercent()) / 100.0)
-                                            }
-                                        
-                                        Spacer()
-                                        
-                                        ZStack {
-                                            ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
-                                                .aspectRatio(1, contentMode: .fit)
-                                            
-                                            Text("\(eachTodayData.numBusinessLeads())")
-                                                .font(.system(size: 30))
-                                                .fontWeight(.bold)
-                                                .foregroundColor(Color("brown"))
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        ProgressBar(progress: Double(eachTodayData.connectivityPercent()) / 100.0, color: .blue, lineWidth: 8.5, imageName: "antenna.radiowaves.left.and.right")
-                                            .aspectRatio(1, contentMode: .fit)
-                                    }
-                                    .padding([.leading, .bottom, .trailing])
+                        if fetchStatus == .inProgress {
+                            SharingRectangleView(isLoading: true)
+                                .padding(.horizontal)
+                        } else if sharingServices.isEmpty {
+                            SharingRectangleView(isPlaceholder: true)
+                                .padding(.horizontal)
+                        } else {
+                            ForEach(sharingServices, id: \.id) { eachData in
+                                NavigationLink(destination: ThisWeekView(navigationTitleText: "\(eachData.owner ?? "FIXME")'s Week", customTransactions: eachData)) {
+                                    SharingRectangleView(eachTodayData: {
+                                        let todayTransactions = TransactionServices(eachData.today())
+                                        todayTransactions.owner = eachData.owner
+                                        return todayTransactions
+                                    }())
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
                         }
                     }
                 }
                 .padding(.bottom)
             }
             .onAppear {
-                let zoneFetchOperation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
-                zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
-                    switch recordZoneResult {
-                        
-                    case .success(let fetchedZone):
-                        var newTransactionSet: [Transaction] = []
-                        
-                        let queryOperation = CKQueryOperation(query: CKQuery(recordType: "CD_Transaction", predicate: NSPredicate(value: true)))
-                        queryOperation.zoneID = fetchedZone.zoneID
-                        
-                        queryOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
-                            switch recordResult {
-                                
-                            case .success(let queriedRecord):
-                                let newTransaction = Transaction(context: viewContext)
-                                
-                                newTransaction.id = queriedRecord.object(forKey: "CD_id") as? UUID
-                                newTransaction.date = queriedRecord.object(forKey: "CD_date") as? Date
-                                newTransaction.deviceType = queriedRecord.object(forKey: "CD_deviceType") as? String
-                                newTransaction.boughtAppleCare = queriedRecord.object(forKey: "CD_boughtAppleCare") as! Int == 1 ? true : false
-                                newTransaction.connected = queriedRecord.object(forKey: "CD_connected") as! Int == 1 ? true : false
-                                newTransaction.gotLead = queriedRecord.object(forKey: "CD_gotLead") as! Int == 1 ? true : false
-                                newTransaction.isAppleCareStandalone = queriedRecord.object(forKey: "CD_isAppleCareStandalone") as! Int == 1 ? true : false
-                                
-                                newTransactionSet.append(newTransaction)
-                                
-                            case .failure(let error):
-                                print(error.localizedDescription)
-                            }
-                        }
-                        
-                        queryOperation.queryResultBlock = { (_ operationResult: Result<CKQueryOperation.Cursor?, Error>) -> Void in
-                            let newServices = TransactionServices(newTransactionSet)
-                            sharingServices.append(newServices)
-                            todaySharingServices.append(TransactionServices(newServices.today()))
-                            newTransactionSet = []
-                        }
-                        
-                        CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(queryOperation)
-                        
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                    }
+                if !hasCheckedSharing {
+                    getSharingData()
+                    hasCheckedSharing = true
                 }
-                CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(zoneFetchOperation)
             }
             
             // MARK: Navigation View Settings
@@ -387,6 +325,105 @@ struct TodayTabView: View {
     }
     
     // MARK: - View Functions
+    /// Connects to the Internet to download Sharing data from the server.
+    func getSharingData() {
+        fetchStatus = .inProgress
+        sharingServices = []
+        todaySharingServices = []
+        
+        let zoneFetchOperation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
+        zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
+            switch recordZoneResult {
+                
+            case .success(let fetchedZone):
+                var newTransactionSet: [Transaction] = []
+                
+                // Zone Operation 1: Transaction Query
+                let queryOperation = CKQueryOperation(query: CKQuery(recordType: "CD_Transaction", predicate: NSPredicate(value: true)))
+                queryOperation.zoneID = fetchedZone.zoneID
+                
+                queryOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
+                    switch recordResult {
+                        
+                    case .success(let queriedRecord):
+                        let transactionEntity = NSEntityDescription.entity(forEntityName: "Transaction", in: viewContext)!
+                        let newTransaction = Transaction(entity: transactionEntity, insertInto: nil)
+                        
+                        newTransaction.id = queriedRecord.object(forKey: "CD_id") as? UUID
+                        newTransaction.date = queriedRecord.object(forKey: "CD_date") as? Date
+                        newTransaction.deviceType = queriedRecord.object(forKey: "CD_deviceType") as? String
+                        newTransaction.boughtAppleCare = queriedRecord.object(forKey: "CD_boughtAppleCare") as! Int == 1 ? true : false
+                        newTransaction.connected = queriedRecord.object(forKey: "CD_connected") as! Int == 1 ? true : false
+                        newTransaction.gotLead = queriedRecord.object(forKey: "CD_gotLead") as! Int == 1 ? true : false
+                        newTransaction.isAppleCareStandalone = queriedRecord.object(forKey: "CD_isAppleCareStandalone") as! Int == 1 ? true : false
+                        
+                        newTransactionSet.append(newTransaction)
+                        
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                        fetchStatus = .failure
+                    }
+                }
+                
+                queryOperation.queryResultBlock = { (_ operationResult: Result<CKQueryOperation.Cursor?, Error>) -> Void in
+                    // Zone Operation 2: Name Query
+                    let nameOperation = CKQueryOperation(query: CKQuery(recordType: "cloudkit.share", predicate: NSPredicate(value: true)))
+                    nameOperation.zoneID = fetchedZone.zoneID
+                    nameOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
+                        switch recordResult {
+                        case .success(let result):
+                            if let shareRecord = result as? CKShare {
+                                let newServices = TransactionServices(newTransactionSet)
+                                newServices.owner = {
+                                    let ownerFirstName = shareRecord.owner.userIdentity.nameComponents?.givenName
+                                    let ownerLastName = shareRecord.owner.userIdentity.nameComponents?.familyName
+                                    
+                                    if ownerFirstName == nil {
+                                        return "Name Not Provided"
+                                    } else {
+                                        if ownerLastName == nil {
+                                            return ownerFirstName!
+                                        } else {
+                                            return ownerFirstName! + " " + ownerLastName!
+                                        }
+                                    }
+                                }()
+                                
+                                sharingServices.append(newServices)
+                                todaySharingServices.append(TransactionServices(newServices.today()))
+                                
+                                newTransactionSet = []
+                                fetchStatus = .success
+                            }
+                            
+                        case .failure(let error):
+                            print(error.localizedDescription)
+                            fetchStatus = .failure
+                        }
+                    }
+                    CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(nameOperation)
+                }
+                
+                CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(queryOperation)
+                
+            case .failure(let error):
+                print(error.localizedDescription)
+                fetchStatus = .failure
+            }
+        }
+        
+        zoneFetchOperation.fetchRecordZonesResultBlock = { (_ operationResult: Result<Void, Error>) -> Void in
+            switch operationResult {
+            case .success():
+                print("Zone fetch success!")
+            case .failure(let error):
+                print(error.localizedDescription)
+                fetchStatus = .failure
+            }
+        }
+        
+        CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(zoneFetchOperation)
+    }
     /// Uses the current time to generate a generic word that describes the current part of the day.
     func getGenericTimeDescription() -> String {
         let dateFormatter = DateFormatter()
