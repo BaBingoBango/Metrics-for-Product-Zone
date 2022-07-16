@@ -58,6 +58,15 @@ struct AdderView: View {
                     }
                     .padding(.horizontal)
                     
+                    HStack {
+                        Text("Tap the AppleCare+ button twice to record standalone AppleCare+!")
+                            .foregroundColor(.secondary)
+                            .fontWeight(.semibold)
+                        
+                        Spacer()
+                    }
+                        .padding(.horizontal)
+                    
                     Spacer()
                     
                 }

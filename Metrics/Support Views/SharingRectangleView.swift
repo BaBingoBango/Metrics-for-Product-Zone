@@ -61,10 +61,6 @@ struct SharingRectangleView: View {
                     ProgressBar(progress: Double(safeTodayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "applelogo")
                         .aspectRatio(1, contentMode: .fit)
                         .foregroundColor(.red)
-                        .onAppear {
-                            print(safeTodayData.appleCarePercent())
-                            print(Double(safeTodayData.appleCarePercent()) / 100.0)
-                        }
                     
                     Spacer()
                     
@@ -102,8 +98,8 @@ struct SharingRectangleView: View {
                             .font(.system(size: 25))
                             .padding(.top)
                         
-                        Text("No one is sharing their metrics with you right now. If this is a mistake, confirm you are signed in to iCloud and that you have tapped on any invitation links you received.")
-                            .fontWeight(.semibold)
+                        Text("No one is sharing their metrics with you right now. If this is a mistake, confirm you are signed in to iCloud and you have accepted any invitations.")
+                            .font(.callout)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.top, 10)

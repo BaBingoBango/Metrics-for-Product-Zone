@@ -168,16 +168,16 @@ struct SettingsView: View {
                                             }
                                             
                                             cloudKitShare = shareRecord
-                                            cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
-                                            cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                            cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction Access"
+                                            cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction Access"
                                             cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
                                             isShowingSharingProgress = false
                                             isShowingSharingView = true
                                         }
                                     } else {
                                         cloudKitShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName))
-                                        cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction History"
-                                        cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction History"
+                                        cloudKitShare[CKShare.SystemFieldKey.title] = "Transaction Access"
+                                        cloudKitShare[CKShare.SystemFieldKey.shareType] = "Transaction Access"
                                         cloudKitShare[CKShare.SystemFieldKey.thumbnailImageData] = NSDataAsset(name: "sharing thumbnail")!.data
                                         
                                         let saveOperation = CKModifyRecordsOperation(recordsToSave: [cloudKitShare])
@@ -238,7 +238,7 @@ struct SettingsView: View {
                 }
             }
             .alert(isPresented: $isShowingSharingFailure) {
-                Alert(title: Text("Sharing Preperation Failure"), message: Text(sharingErrorMessage ?? ""), dismissButton: .default(Text("Close")))
+                Alert(title: Text("Sharing Failed"), message: Text(sharingErrorMessage ?? ""), dismissButton: .default(Text("Close")))
             }
             .sheet(isPresented: $isShowingSharingView) {
                 CloudKitSharingView(share: cloudKitShare, container: CKContainer(identifier: "iCloud.Metrics"))
@@ -248,7 +248,7 @@ struct SettingsView: View {
                     connectTime += 1
                     
                     if connectTime >= 10 {
-                        sharingErrorMessage = "Timeout"
+                        sharingErrorMessage = "The request timed out. Check that you are signed in to iCloud and connected to the Internet."
                         isShowingSharingProgress = false
                         isShowingSharingFailure = true
                         connectTime = 0

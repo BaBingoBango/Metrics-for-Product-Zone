@@ -56,7 +56,7 @@ struct CloudKitSharingView: UIViewControllerRepresentable {
         }
         
         func itemTitle(for csc: UICloudSharingController) -> String? {
-            "Transaction History"
+            "Transaction Access"
         }
         
         func itemThumbnailData(for csc: UICloudSharingController) -> Data? {

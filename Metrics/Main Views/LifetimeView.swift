@@ -9,6 +9,12 @@ import SwiftUI
 
 struct LifetimeView: View {
     
+    /// The navigation title text for this view.
+    var navigationTitleText = "Lifetime"
+    
+    /// A custom list of transactions that overrides the standard request to Core Data.
+    var customTransactions: TransactionServices?
+    
     // View context & transaction fetch request
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
@@ -16,7 +22,11 @@ struct LifetimeView: View {
     
     // TransactionServices object
     var data: TransactionServices {
-        return TransactionServices(transactions.reversed().reversed())
+        if customTransactions != nil {
+            return customTransactions!
+        } else {
+            return TransactionServices(transactions.reversed().reversed())
+        }
     }
     
     var body: some View {
@@ -72,7 +82,7 @@ struct LifetimeView: View {
                 .padding(.bottom)
                 
                 // MARK: Nav Bar Settings
-                .navigationBarTitle(Text("Lifetime"))
+                .navigationBarTitle(Text(navigationTitleText))
             }
 //        }
     }

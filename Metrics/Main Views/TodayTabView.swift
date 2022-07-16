@@ -61,6 +61,8 @@ struct TodayTabView: View {
     @State var todaySharingServices: [TransactionServices] = []
     @Environment(\.managedObjectContext) private var viewContext
     
+    @State var isShowingSharingDetail = false
+    
     // MARK: View Body
     var body: some View {
 //        NavigationView {
@@ -269,7 +271,7 @@ struct TodayTabView: View {
                                     Image(systemName: "arrow.clockwise")
                                         .aspectRatio(contentMode: .fit)
                                         .font(.system(size: 25))
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(.accentColor)
                                 }
                             }
                             
@@ -285,7 +287,9 @@ struct TodayTabView: View {
                                 .padding(.horizontal)
                         } else {
                             ForEach(sharingServices, id: \.id) { eachData in
-                                NavigationLink(destination: ThisWeekView(navigationTitleText: "\(eachData.owner ?? "FIXME")'s Week", customTransactions: eachData)) {
+                                Button(action: {
+                                    isShowingSharingDetail = true
+                                }) {
                                     SharingRectangleView(eachTodayData: {
                                         let todayTransactions = TransactionServices(eachData.today())
                                         todayTransactions.owner = eachData.owner
@@ -293,6 +297,9 @@ struct TodayTabView: View {
                                     }())
                                 }
                                 .padding(.horizontal)
+                                .sheet(isPresented: $isShowingSharingDetail) {
+                                    SharingTabView(transactions: eachData)
+                                }
                             }
                         }
                     }
@@ -416,6 +423,8 @@ struct TodayTabView: View {
             switch operationResult {
             case .success():
                 print("Zone fetch success!")
+                sleep(1)
+                fetchStatus = .success
             case .failure(let error):
                 print(error.localizedDescription)
                 fetchStatus = .failure
@@ -453,43 +462,43 @@ struct TodayTabView: View {
             switch Date().dayOfWeek()! {
             case "Monday":
                 return [
-                    "Happy Monday!",
-                    "It's another week!",
+//                    "Happy Monday!",
+//                    "It's another week!",
                     "It's Monday..."
                 ].randomElement()!
             case "Tuesday":
                 return [
-                    "Happy Tuesday!",
-                    "Happy 2's day!",
-                    "Happy not Monday!"
+//                    "Happy Tuesday!",
+                    "Happy 2's day!"
+//                    "Happy not Monday!"
                 ].randomElement()!
             case "Wednesday":
                 return [
-                    "Happy Wednesday!",
-                    "Happy hump day!",
-                    "Happy mid-week!"
+//                    "Happy Wednesday!",
+                    "Happy hump day!"
+//                    "Happy mid-week!"
                 ].randomElement()!
             case "Thursday":
                 return [
-                    "Happy Thursday!",
-                    "It's Thursday almost Friday!"
+                    "Happy Thursday!"
+//                    "It's Thursday almost Friday!"
                 ].randomElement()!
             case "Friday":
                 return [
-                    "Happy Friday!",
-                    "TGIF!",
+//                    "Happy Friday!",
+//                    "TGIF!",
                     "It's Friday!!"
                 ].randomElement()!
             case "Saturday":
                 return [
-                    "Happy Saturday!",
-                    "Happy weekend!",
-                    "It's the weekend!"
+//                    "Happy Saturday!",
+                    "Happy weekend!"
+//                    "It's the weekend!"
                 ].randomElement()!
             case "Sunday":
                 return [
-                    "Happy Sunday!",
-                    "Sunday funday!"
+                    "Happy Sunday!"
+//                    "Sunday funday!"
                 ].randomElement()!
             default:
                 return "Hello!"
