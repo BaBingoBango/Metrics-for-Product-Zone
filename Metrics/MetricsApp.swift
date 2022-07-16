@@ -6,24 +6,60 @@
 //
 
 import SwiftUI
+import CloudKit
 #if os(iOS)
 import UIKit
 #endif
-import CloudKit
 
 @main
 struct MetricsApp: App {
+    /// The system-provided `ScenePhase` object  used for app launching.
+    @Environment(\.scenePhase) var scenePhase
     #if os(iOS)
     /// The custom app delegate for the app.
     @UIApplicationDelegateAdaptor var delegate: MetricsAppDelegate
     #endif
     /// The persistence controller for Core Data.
     let persistenceController = PersistenceController.shared
+    /// The names of the keys from UserDefaults that will sync across the user's devices via iCloud.
+    var userDefaultsKeysToSync = [
+        "showSharingInTodayView",
+        "showGoalsInTodayView",
+        "appleCareGoal",
+        "businessLeadsGoal",
+        "connectivityGoal"
+    ]
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            // MARK: Application Life Cycle Code
+            case .active:
+                print("[Application Life Cycle] The app is active!")
+                
+                #if !os(watchOS)
+                // Use Zephyr to sync data across the user's devices with iCloud
+                Zephyr.sync(keys: userDefaultsKeysToSync)
+                #endif
+                
+            case .background:
+                print("[Application Life Cycle] The app is in the background!")
+                
+            case .inactive:
+                print("[Application Life Cycle] The app is inactive!")
+                
+                #if !os(watchOS)
+                // Use Zephyr to sync data across the user's devices with iCloud
+                Zephyr.sync(keys: userDefaultsKeysToSync)
+                #endif
+            
+            default:
+                print("[Application Life Cycle] Unknown application life cycle value received.")
+            }
         }
     }
 }

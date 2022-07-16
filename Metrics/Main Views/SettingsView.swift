@@ -19,8 +19,6 @@ struct SettingsView: View {
     @State var showingConnectivityGoalViewer = false
     /// Whether or not the transaction data viewer is being presented.
     @State var showingTransactionData = false
-    /// The URL for the currently existing CloudKit share.
-    @AppStorage("cloudKitShareURL") var cloudKitShareURL: String?
     /// The CloudKit share object for the Sharing view.
     @State var cloudKitShare: CKShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "?", ownerName: "?"))
     /// Whether or not the Sharing progress indicator is being presented.
@@ -106,7 +104,7 @@ struct SettingsView: View {
                     }
                     
                     Button(action: {
-                        showingAppleCareGoalViewer = true
+                        showingConnectivityGoalViewer = true
                     }) {
                         HStack {
                             Text("Connectivity Goal")
@@ -124,7 +122,7 @@ struct SettingsView: View {
                                 .opacity(0.25)
                         }
                     }
-                    .sheet(isPresented: $showingAppleCareGoalViewer) {
+                    .sheet(isPresented: $showingConnectivityGoalViewer) {
                         GoalEditorView(goalName: "Connectivity", goal: $connectivityGoal)
                     }
                 }

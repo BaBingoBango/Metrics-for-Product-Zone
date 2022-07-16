@@ -10,6 +10,7 @@
 		AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */; };
 		AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */; };
 		AA1126BB28825A2A0037F5EF /* SharingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1126BA28825A2A0037F5EF /* SharingTabView.swift */; };
+		AA1126BD288281B10037F5EF /* Zephyr.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1126BC288281B10037F5EF /* Zephyr.swift */; };
 		AA19AE872873D790004F3399 /* ergiwywfqe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA19AE862873D790004F3399 /* ergiwywfqe.swift */; };
 		AA22C70726C1EA7300CDE6B4 /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22C70626C1EA7300CDE6B4 /* DateServices.swift */; };
 		AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA34429626B4FED3004A2259 /* MetricsApp.swift */; };
@@ -141,6 +142,7 @@
 		AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
 		AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto Mono.ttf"; sourceTree = "<group>"; };
 		AA1126BA28825A2A0037F5EF /* SharingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingTabView.swift; sourceTree = "<group>"; };
+		AA1126BC288281B10037F5EF /* Zephyr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zephyr.swift; sourceTree = "<group>"; };
 		AA19AE862873D790004F3399 /* ergiwywfqe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ergiwywfqe.swift; sourceTree = "<group>"; };
 		AA22C70626C1EA7300CDE6B4 /* DateServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateServices.swift; sourceTree = "<group>"; };
 		AA34429326B4FED3004A2259 /* Metrics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metrics.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -430,6 +432,7 @@
 				AA6632E426C459D200CFBE38 /* MathServices.swift */,
 				AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */,
 				AA5C40F82881EFBA004A0FBD /* HidingServices.swift */,
+				AA1126BC288281B10037F5EF /* Zephyr.swift */,
 			);
 			path = "Support Files";
 			sourceTree = "<group>";
@@ -686,6 +689,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1126BD288281B10037F5EF /* Zephyr.swift in Sources */,
 				AABAAA9028696AFD007EC3A5 /* SharingView.swift in Sources */,
 				AA5C40F32881E700004A0FBD /* CloudKitOperationStatus.swift in Sources */,
 				AA3442A026B4FED5004A2259 /* Persistence.swift in Sources */,
