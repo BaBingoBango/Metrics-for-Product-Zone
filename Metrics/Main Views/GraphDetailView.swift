@@ -31,7 +31,6 @@ struct GraphDetailView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    
                     Picker("", selection: $selectedDateChoice) {
                         ForEach(dateChoices, id: \.self) {
                             Text($0)
@@ -97,9 +96,9 @@ struct GraphDetailView: View {
                                 
                                 HStack {
                                     Spacer()
-                                    ColorTextWithCaption(color: .brown, number: String(Int(graphData[7])), caption: "Total Leads")
+                                    ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Total Leads")
                                     Spacer()
-                                    ColorTextWithCaption(color: .brown, number: String(Int(graphData[7])), caption: "Average Per Day")
+                                    ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Average Per Day")
                                     Spacer()
                                 }
                                 .padding(.top)
@@ -122,13 +121,14 @@ struct GraphDetailView: View {
                             Spacer()
                             
                         }
-                        .padding(.top)
+                        .edgesIgnoringSafeArea(.bottom)
+                        .padding(.vertical)
                         
                     }
-                    .frame(height: 500)
                     .padding(.top)
+                    .edgesIgnoringSafeArea(.bottom)
                     
-                    Spacer()
+//                    Spacer()
                     
                 }
                 .edgesIgnoringSafeArea(.bottom)
@@ -147,7 +147,7 @@ struct GraphDetailView: View {
         if stat == "AppleCare+" {
             return .red
         } else if stat == "Business Leads" {
-            return .brown
+            return Color("brown")
         } else {
             return .blue // (Connectivity)
         }
