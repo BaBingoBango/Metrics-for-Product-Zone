@@ -41,6 +41,12 @@
 		AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
 		AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA697F032867AB9A00F49A37 /* GoalEditorView.swift */; };
 		AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6D746B26C7678F00157734 /* DataViewer.swift */; };
+		AA75C42B28828A650037C1E7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA75C42A28828A650037C1E7 /* MainTabView.swift */; };
+		AA75C42F28828ADB0037C1E7 /* WatchSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA75C42E28828ADB0037C1E7 /* WatchSharingView.swift */; };
+		AA75C43028828C010037C1E7 /* CloudKitOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */; };
+		AA75C43128828C0F0037C1E7 /* SharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */; };
+		AA75C43228828C790037C1E7 /* HidingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F82881EFBA004A0FBD /* HidingServices.swift */; };
+		AA75C43428828F600037C1E7 /* WatchSharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA75C43328828F600037C1E7 /* WatchSharingRectangleView.swift */; };
 		AA9140C926BC81D800C281C7 /* ThisWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140C826BC81D800C281C7 /* ThisWeekView.swift */; };
 		AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140CA26BC820200C281C7 /* MainTabView.swift */; };
 		AA9767A126C8311300805514 /* TransactionServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */; };
@@ -51,7 +57,7 @@
 		AA9767A626C8311300805514 /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22C70626C1EA7300CDE6B4 /* DateServices.swift */; };
 		AA9767A726C8311300805514 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
 		AA9767A826C8316D00805514 /* Metrics.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AA3442A126B4FED5004A2259 /* Metrics.xcdatamodeld */; };
-		AA9767AA26C8327000805514 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9767A926C8327000805514 /* MainTabView.swift */; };
+		AA9767AA26C8327000805514 /* WatchTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9767A926C8327000805514 /* WatchTodayView.swift */; };
 		AA9767AB26C8359B00805514 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA35876226BA408900384DCF /* ProgressBar.swift */; };
 		AA9767AC26C8359B00805514 /* Text Support Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9EEC5D26B50027003D719C /* Text Support Views.swift */; };
 		AA9767AE26C8384600805514 /* AdderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9767AD26C8384600805514 /* AdderView.swift */; };
@@ -186,10 +192,13 @@
 		AA6632E426C459D200CFBE38 /* MathServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathServices.swift; sourceTree = "<group>"; };
 		AA697F032867AB9A00F49A37 /* GoalEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEditorView.swift; sourceTree = "<group>"; };
 		AA6D746B26C7678F00157734 /* DataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewer.swift; sourceTree = "<group>"; };
+		AA75C42A28828A650037C1E7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		AA75C42E28828ADB0037C1E7 /* WatchSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSharingView.swift; sourceTree = "<group>"; };
+		AA75C43328828F600037C1E7 /* WatchSharingRectangleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSharingRectangleView.swift; sourceTree = "<group>"; };
 		AA8D17FC27A5E13100889EF0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AA9140C826BC81D800C281C7 /* ThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThisWeekView.swift; sourceTree = "<group>"; };
 		AA9140CA26BC820200C281C7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		AA9767A926C8327000805514 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		AA9767A926C8327000805514 /* WatchTodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTodayView.swift; sourceTree = "<group>"; };
 		AA9767AD26C8384600805514 /* AdderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdderView.swift; sourceTree = "<group>"; };
 		AA9767AF26C84A1F00805514 /* WatchMetrics Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WatchMetrics Extension.entitlements"; sourceTree = "<group>"; };
 		AA9767B126C84A3200805514 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS7.4.sdk/System/Library/Frameworks/CloudKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -362,8 +371,11 @@
 			isa = PBXGroup;
 			children = (
 				AA9767AF26C84A1F00805514 /* WatchMetrics Extension.entitlements */,
-				AA9767A926C8327000805514 /* MainTabView.swift */,
+				AA75C42A28828A650037C1E7 /* MainTabView.swift */,
+				AA9767A926C8327000805514 /* WatchTodayView.swift */,
 				AA9767AD26C8384600805514 /* AdderView.swift */,
+				AA75C42E28828ADB0037C1E7 /* WatchSharingView.swift */,
+				AA75C43328828F600037C1E7 /* WatchSharingRectangleView.swift */,
 				AA493A3326C7760400B79B92 /* NotificationController.swift */,
 				AA493A3526C7760400B79B92 /* NotificationView.swift */,
 				AA493A3726C7760400B79B92 /* ComplicationController.swift */,
@@ -744,14 +756,20 @@
 				AA9767A626C8311300805514 /* DateServices.swift in Sources */,
 				AA9767A726C8311300805514 /* MathServices.swift in Sources */,
 				AA493A3426C7760400B79B92 /* NotificationController.swift in Sources */,
+				AA75C42B28828A650037C1E7 /* MainTabView.swift in Sources */,
 				AA9767AC26C8359B00805514 /* Text Support Views.swift in Sources */,
+				AA75C43428828F600037C1E7 /* WatchSharingRectangleView.swift in Sources */,
 				AA493A3826C7760400B79B92 /* ComplicationController.swift in Sources */,
+				AA75C43228828C790037C1E7 /* HidingServices.swift in Sources */,
 				AA9767A526C8311300805514 /* MetricsApp.swift in Sources */,
-				AA9767AA26C8327000805514 /* MainTabView.swift in Sources */,
+				AA9767AA26C8327000805514 /* WatchTodayView.swift in Sources */,
 				AA9767A226C8311300805514 /* Persistence.swift in Sources */,
 				AA9767A326C8311300805514 /* ColorServices.swift in Sources */,
+				AA75C43028828C010037C1E7 /* CloudKitOperationStatus.swift in Sources */,
 				AA9767AE26C8384600805514 /* AdderView.swift in Sources */,
 				AA9767A126C8311300805514 /* TransactionServices.swift in Sources */,
+				AA75C42F28828ADB0037C1E7 /* WatchSharingView.swift in Sources */,
+				AA75C43128828C0F0037C1E7 /* SharingRectangleView.swift in Sources */,
 				AA9767A826C8316D00805514 /* Metrics.xcdatamodeld in Sources */,
 				AA9767AB26C8359B00805514 /* ProgressBar.swift in Sources */,
 				AA493A3626C7760400B79B92 /* NotificationView.swift in Sources */,
