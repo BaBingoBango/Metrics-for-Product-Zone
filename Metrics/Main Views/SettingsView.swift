@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import MessageUI
 
 struct SettingsView: View {
     
@@ -19,6 +20,10 @@ struct SettingsView: View {
     @State var showingConnectivityGoalViewer = false
     /// Whether or not the transaction data viewer is being presented.
     @State var showingTransactionData = false
+    /// Whether or not the mail sender view is being presented.
+    @State var isShowingMailSender = false
+    /// Whether or not the feedback email has been copied yet.
+    @State var hasCopiedFeedbackEmail = false
     /// The CloudKit share object for the Sharing view.
     @State var cloudKitShare: CKShare = CKShare(recordZoneID: CKRecordZone.ID(zoneName: "?", ownerName: "?"))
     /// Whether or not the Sharing progress indicator is being presented.
@@ -228,7 +233,48 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section(header: Text("Feedback")) {
+                    if MFMailComposeViewController.canSendMail() {
+                        Button(action: {
+                            isShowingMailSender = true
+                        }) {
+                            HStack { Image(systemName: "exclamationmark.bubble.fill").imageScale(.large); Text("Send Feedback Mail") }
+                        }
+                        .sheet(isPresented: $isShowingMailSender) {
+                            MailSenderView(recipients: ["proper.griffon-0s@icloud.com"], subject: "One Step Ahead Feedback", body: "Please provide your feedback below. Feature suggestions, bug reports, and more are all appreciated! :)\n\n(If applicable, you may be contacted for more information or for follow-up questions.)\n\n\n")
+                        }
+                    } else {
+                        Button(action: {
+                            UIPasteboard.general.string = "proper.griffon-0s@icloud.com"
+                            hasCopiedFeedbackEmail = true
+                        }) {
+                            HStack { Image(systemName: "exclamationmark.bubble.fill").imageScale(.large); Text(!hasCopiedFeedbackEmail ? "Copy Feedback Email" : "Feedback Email Copied!") }
+                        }
+                    }
+                    
+                    Link(destination: URL(string: "https://apps.apple.com/us/app/metrics-for-product-zone/id1581284514?action=write-review")!) {
+                        HStack { Image(systemName: "star.bubble.fill").imageScale(.large); Text("Review on the App Store") }
+                    }
+                }
+                
+                Section(header: Text("Resources")) {
+                    Link(destination: URL(string: "https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Privacy-Policy")!) {
+                        HStack { Image(systemName: "hand.raised.fill").imageScale(.large); Text("Privacy Policy") }
+                    }
+                    
+                    Link(destination: URL(string: "https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Support-Center")!) {
+                        HStack { Image(systemName: "questionmark.circle.fill").imageScale(.large); Text("Support Center") }
+                    }
+                    
+                    Link(destination: URL(string: "https://github.com/BaBingoBango/Metrics-for-Product-Zone")!) {
+                        HStack { Image(systemName: "curlybraces").imageScale(.large); Text("Metrics on GitHub") }
+                    }
+                }
+                
                 Section(header: Text("About")) {
+                    NavigationLink(destination: EmptyView()) {
+                        Text("Licensing and Credit")
+                    }
                     
                     HStack { Text("App Version"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String).foregroundColor(.secondary) }
                     

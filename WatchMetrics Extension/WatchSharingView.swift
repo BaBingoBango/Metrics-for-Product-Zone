@@ -28,7 +28,6 @@ struct WatchSharingView: View {
                         getSharingData()
                     }) {
                         ZStack {
-                            
                             Rectangle()
                                 .frame(height: 40)
                                 .cornerRadius(10)
@@ -43,7 +42,7 @@ struct WatchSharingView: View {
                         }
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .isHidden(true, remove: true)
+                    .isHidden(fetchStatus == .inProgress, remove: fetchStatus == .inProgress)
                     
                     if fetchStatus == .inProgress {
                         WatchSharingRectangleView(isLoading: true)

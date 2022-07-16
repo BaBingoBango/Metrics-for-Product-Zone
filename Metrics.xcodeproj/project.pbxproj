@@ -47,6 +47,7 @@
 		AA75C43128828C0F0037C1E7 /* SharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */; };
 		AA75C43228828C790037C1E7 /* HidingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F82881EFBA004A0FBD /* HidingServices.swift */; };
 		AA75C43428828F600037C1E7 /* WatchSharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA75C43328828F600037C1E7 /* WatchSharingRectangleView.swift */; };
+		AA75C4372883371A0037C1E7 /* SendMailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA75C4362883371A0037C1E7 /* SendMailView.swift */; };
 		AA9140C926BC81D800C281C7 /* ThisWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140C826BC81D800C281C7 /* ThisWeekView.swift */; };
 		AA9140CB26BC820200C281C7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9140CA26BC820200C281C7 /* MainTabView.swift */; };
 		AA9767A126C8311300805514 /* TransactionServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACEB1BB26BE2732006AACA7 /* TransactionServices.swift */; };
@@ -195,6 +196,7 @@
 		AA75C42A28828A650037C1E7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		AA75C42E28828ADB0037C1E7 /* WatchSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSharingView.swift; sourceTree = "<group>"; };
 		AA75C43328828F600037C1E7 /* WatchSharingRectangleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSharingRectangleView.swift; sourceTree = "<group>"; };
+		AA75C4362883371A0037C1E7 /* SendMailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMailView.swift; sourceTree = "<group>"; };
 		AA8D17FC27A5E13100889EF0 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AA9140C826BC81D800C281C7 /* ThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThisWeekView.swift; sourceTree = "<group>"; };
 		AA9140CA26BC820200C281C7 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 				AA35876226BA408900384DCF /* ProgressBar.swift */,
 				AAF39B012870DAAA001E2703 /* CloudKitSharingView.swift */,
 				AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */,
+				AA75C4362883371A0037C1E7 /* SendMailView.swift */,
 			);
 			path = "Support Views";
 			sourceTree = "<group>";
@@ -718,6 +721,7 @@
 				AA1126BB28825A2A0037F5EF /* SharingTabView.swift in Sources */,
 				AAF39B022870DAAA001E2703 /* CloudKitSharingView.swift in Sources */,
 				AA34429726B4FED3004A2259 /* MetricsApp.swift in Sources */,
+				AA75C4372883371A0037C1E7 /* SendMailView.swift in Sources */,
 				AA3442A326B4FED5004A2259 /* Metrics.xcdatamodeld in Sources */,
 				AA35876326BA408900384DCF /* ProgressBar.swift in Sources */,
 				AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */,
