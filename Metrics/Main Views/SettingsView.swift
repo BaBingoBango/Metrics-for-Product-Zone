@@ -243,11 +243,11 @@ struct SettingsView: View {
                             HStack { Image(systemName: "exclamationmark.bubble.fill").imageScale(.large); Text("Send Feedback Mail") }
                         }
                         .sheet(isPresented: $isShowingMailSender) {
-                            MailSenderView(recipients: ["proper.griffon-0s@icloud.com"], subject: "One Step Ahead Feedback", body: "Please provide your feedback below. Feature suggestions, bug reports, and more are all appreciated! :)\n\n(If applicable, you may be contacted for more information or for follow-up questions.)\n\n\n")
+                            MailSenderView(recipients: ["fillips.stamens0i@icloud.com"], subject: "Metrics Feedback", body: "Please provide your feedback below. Feature suggestions, bug reports, and more are all appreciated! :)\n\n(If applicable, you may be contacted for more information or for follow-up questions.)\n\n\n")
                         }
                     } else {
                         Button(action: {
-                            UIPasteboard.general.string = "proper.griffon-0s@icloud.com"
+                            UIPasteboard.general.string = "fillips.stamens0i@icloud.com"
                             hasCopiedFeedbackEmail = true
                         }) {
                             HStack { Image(systemName: "exclamationmark.bubble.fill").imageScale(.large); Text(!hasCopiedFeedbackEmail ? "Copy Feedback Email" : "Feedback Email Copied!") }

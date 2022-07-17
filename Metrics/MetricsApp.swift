@@ -32,6 +32,7 @@ struct MetricsApp: App {
 
     var body: some Scene {
         WindowGroup {
+            // MARK: - App Entry Point
             MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
@@ -123,7 +124,23 @@ class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     
     /// The function called when a user opens a CloudKit share link on iOS when the app is not running.
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // 2
+        if connectionOptions.cloudKitShareMetadata != nil {
+            if connectionOptions.cloudKitShareMetadata!.participantStatus == .pending {
+                self.isAcceptingShare = true
+                let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [connectionOptions.cloudKitShareMetadata!])
+                acceptShareOperation.acceptSharesResultBlock = { (_ result: Result<Void, Error>) -> Void in
+                    switch result {
+                    case .success():
+                        print("Share accepted!")
+                        self.isAcceptingShare = false
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                        self.isAcceptingShare = false
+                    }
+                }
+                CKContainer(identifier: "iCloud.Metrics").add(acceptShareOperation)
+            }
+        }
     }
 }
 #endif

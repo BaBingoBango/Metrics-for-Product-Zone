@@ -35,17 +35,6 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<true/>
 	</dict>
-	<key>UIApplicationShortcutItems</key>
-	<array>
-		<dict>
-			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeAdd</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>Log Transaction</string>
-			<key>UIApplicationShortcutItemType</key>
-			<string>Log Transaction</string>
-		</dict>
-	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
