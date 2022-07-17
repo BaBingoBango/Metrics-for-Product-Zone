@@ -83,9 +83,9 @@ struct GraphDetailView: View {
                                 
                                 HStack {
                                     Spacer()
-                                    ColorTextWithCaption(color: .red, number: String(Int(graphData[7])), caption: "AppleCare+ Units")
+                                    ColorTextWithCaption(color: .red, number: String(Int(graphData[7])), caption: "AppleCare+ \(Int(graphData[7]) == 1 ? "Unit" : "Units")")
                                     Spacer()
-                                    ColorTextWithCaption(color: .red, number: String(Int(graphData[8])), caption: "Total Devices")
+                                    ColorTextWithCaption(color: .red, number: String(Int(graphData[8])), caption: "Total \(Int(graphData[8]) == 1 ? "Device" : "Devices")")
                                     Spacer()
                                 }
                                 .padding(.top)
@@ -96,7 +96,7 @@ struct GraphDetailView: View {
                                 
                                 HStack {
                                     Spacer()
-                                    ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Total Leads")
+                                    ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Total \(Int(graphData[7]) == 1 ? "Lead" : "Leads")")
                                     Spacer()
                                     ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Average Per Day")
                                     Spacer()
@@ -107,9 +107,9 @@ struct GraphDetailView: View {
                                 
                                 HStack {
                                     Spacer()
-                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[7])), caption: "Connected Devices")
+                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[7])), caption: "Connected \(Int(graphData[7]) == 1 ? "Device" : "Devices")")
                                     Spacer()
-                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[8])), caption: "Total Devices")
+                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[8])), caption: "Total \(Int(graphData[8]) == 1 ? "Device" : "Devices")")
                                     Spacer()
                                 }
                                 .padding(.top)

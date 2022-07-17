@@ -301,26 +301,47 @@ struct TodayTabView: View {
                         .padding([.top, .leading])
                         
                         if fetchStatus == .inProgress {
-                            SharingRectangleView(isLoading: true)
+                            HStack {
+                                SharingRectangleView(isLoading: true)
+                                
+                                if UIDevice.current.userInterfaceIdiom != .phone {
+                                    SharingRectangleView(isLoading: true)
+                                        .hidden()
+                                }
+                            }
                                 .padding(.horizontal)
                         } else if sharingServices.isEmpty {
-                            SharingRectangleView(isPlaceholder: true)
+                            HStack {
+                                SharingRectangleView(isPlaceholder: true)
+                                
+                                if UIDevice.current.userInterfaceIdiom != .phone {
+                                    SharingRectangleView(isPlaceholder: true)
+                                        .hidden()
+                                }
+                            }
                                 .padding(.horizontal)
                         } else {
                             ForEach(sharingServices, id: \.id) { eachData in
-                                Button(action: {
-                                    isShowingSharingDetail = true
-                                }) {
-                                    SharingRectangleView(eachTodayData: {
-                                        let todayTransactions = TransactionServices(eachData.today())
-                                        todayTransactions.owner = eachData.owner
-                                        return todayTransactions
-                                    }())
+                                HStack {
+                                    Button(action: {
+                                        isShowingSharingDetail = true
+                                    }) {
+                                        SharingRectangleView(eachTodayData: {
+                                            let todayTransactions = TransactionServices(eachData.today())
+                                            todayTransactions.owner = eachData.owner
+                                            return todayTransactions
+                                        }())
+                                    }
+                                    .sheet(isPresented: $isShowingSharingDetail) {
+                                        SharingTabView(transactions: eachData)
+                                    }
+                                    
+                                    if sharingServices.last!.id == eachData.id && sharingServices.count % 2 != 0 && UIDevice.current.userInterfaceIdiom != .phone {
+                                        SharingRectangleView(isPlaceholder: true)
+                                            .hidden()
+                                    }
                                 }
                                 .padding(.horizontal)
-                                .sheet(isPresented: $isShowingSharingDetail) {
-                                    SharingTabView(transactions: eachData)
-                                }
                             }
                         }
                     }
