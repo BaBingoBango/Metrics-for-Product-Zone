@@ -7,10 +7,14 @@
 
 import SwiftUI
 
+/// A view providing users information about using the app.
 struct UserGuideView: View {
     
+    // MARK: - View Variables
+    /// The system `PresentationMode` variable for this view.
     @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             Form {

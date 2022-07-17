@@ -7,14 +7,20 @@
 
 import SwiftUI
 
+/// A circular progress indicator that can have a color and an SF symbol.
 struct ProgressBar: View {
     
-    // Variables
+    // MARK: - View Variables
+    /// The amount of progress this view represents.
     var progress: Double
+    /// The color used in this view.
     var color: Color
+    /// The width of this view's circle.
     var lineWidth: Double
+    /// The name of an SF symbol to use in this view.
     var imageName: String
     
+    // MARK: - View Body
     var body: some View {
         GeometryReader { geometry in
             ZStack {

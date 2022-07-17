@@ -8,6 +8,7 @@
 import SwiftUI
 
 // MARK: Small Heading Text
+/// A text view given the `title3` font, the `bold` weight, and left-alignment with padding.
 struct SmallHeadingText: View {
     
     // Variables

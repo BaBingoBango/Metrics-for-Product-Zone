@@ -7,9 +7,10 @@
 
 import SwiftUI
 
+/// The entry point for the app. It provides a "launchpad" for the other main views of the app by way of a tab view.
 struct MainTabView: View {
-    
     // MARK: - View Variables
+    /// The custom scene delegate object for the app.
     @EnvironmentObject var sceneDelegate: MetricsSceneDelegate
     #if os(iOS)
     /// The horizontal size class of the current app environment.
@@ -20,6 +21,7 @@ struct MainTabView: View {
     /// The currently selected sidebar tab.
     @State var selection: Int? = 1
     
+    // MARK: - View Body
     var body: some View {
         ZStack {
             if horizontalSizeClass == .compact {

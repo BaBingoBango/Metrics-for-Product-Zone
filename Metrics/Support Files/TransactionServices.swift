@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+/// A wrapper for an array of `Transaction`s which provides extra calculation and data services.
 class TransactionServices {
     
     // MARK: Setup

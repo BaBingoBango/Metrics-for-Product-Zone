@@ -7,8 +7,9 @@
 
 import SwiftUI
 
+/// A view showing a detailed and customizable graph for a certain metric.
 struct GraphDetailView: View {
-    
+    // MARK: - View Variables
     // Modal variable
     @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -19,7 +20,7 @@ struct GraphDetailView: View {
     // TransactionServices objects
     var data: TransactionServices
     
-    // Variables
+    /// The name of the metric that this graph view displays the data for.
     var stat: String
     
     /// These represent how far back the user is looking. A value of 0 means that the user is viewing the current week, or the current month, or the current year. These values will be used in the jump functions.
@@ -27,6 +28,7 @@ struct GraphDetailView: View {
     @State var monthlyOffset: Int = 0
     @State var yearlyOffset: Int = 0
     
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             ScrollView {

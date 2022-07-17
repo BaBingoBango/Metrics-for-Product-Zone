@@ -7,20 +7,28 @@
 
 import SwiftUI
 
+/// A view exposing detail about a transaction.
 struct TransactionDetailView: View {
     
     // MARK: - View Variables
+    /// The system `PresentationMode` variable for this view.
     @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    /// The standard view context for Core Data.
     @Environment(\.managedObjectContext) private var viewContext
+    /// Whether or not the deletion alert is showing.
     @State var isShowingDeleteWarning = false
+    /// Whether or not a transaction deletion is occurring.
     @State var isDeletingTransaction = false
+    /// The transaction this view represents.
     var transaction: Transaction
+    /// A date formatter used in this view.
     var dateFormatter: DateFormatter {
         let answer = DateFormatter()
         answer.dateStyle = .short
         answer.timeStyle = .short
         return answer
     }
+    /// Whether or not the Delete button should be shown.
     var allowDelete = true
     
     // MARK: - View Body
@@ -254,6 +262,7 @@ struct TransactionDetailView: View {
     }
     
     // MARK: - View Functions
+    /// Returns an SF symbol name for this view's transaction's device type.
     func imageDelegator() -> String {
         switch transaction.deviceType! {
         case "iPhone": return "iphone"

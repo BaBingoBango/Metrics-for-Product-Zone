@@ -7,8 +7,9 @@
 
 import SwiftUI
 
+/// The view showing bar graphs for the current week's transactions and access points
 struct ThisWeekView: View {
-    
+    // MARK: - View Variables
     /// The navigation title text for this view.
     var navigationTitleText = "This Week"
     
@@ -29,7 +30,7 @@ struct ThisWeekView: View {
         }
     }
     
-    // Variables
+    /// A date formatter that is used in this view.
     var dateFormatter: DateFormatter {
         let answer = DateFormatter()
         answer.dateStyle = .medium
@@ -42,6 +43,7 @@ struct ThisWeekView: View {
     @State var showingBL = false
     @State var showingC = false
     
+    // MARK: - View Body
     var body: some View {
 //        NavigationView {
             ScrollView {

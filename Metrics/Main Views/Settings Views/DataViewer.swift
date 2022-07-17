@@ -7,8 +7,10 @@
 
 import SwiftUI
 
+/// A view listing all of the user's logged transactions.
 struct DataViewer: View {
     
+    // MARK: - View Variables
     // Modal variable
     @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -16,9 +18,13 @@ struct DataViewer: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
     var transactions: FetchedResults<Transaction>
+    
+    /// The navigation title text for this view.
     var titleText = "Transaction Data"
+    /// A transaction list for this view that will override the one from Core Data.
     var customTransactions: [Transaction]?
     
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             ScrollView {

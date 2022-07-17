@@ -7,8 +7,9 @@
 
 import SwiftUI
 
+/// A view displaying statistics about the user's lifetime transactions.
 struct LifetimeView: View {
-    
+    // MARK: - View Variables
     /// The navigation title text for this view.
     var navigationTitleText = "Lifetime"
     
@@ -29,6 +30,7 @@ struct LifetimeView: View {
         }
     }
     
+    // MARK: - View Body
     var body: some View {
 //        NavigationView {
             ScrollView {

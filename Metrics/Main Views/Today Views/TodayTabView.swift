@@ -9,8 +9,8 @@ import SwiftUI
 import CloudKit
 import CoreData
 
+/// The Today view, which contains a summary of the day's transactions along with Daily Goals and the Sharing section.
 struct TodayTabView: View {
-    
     // MARK: View Variables
     #if os(iOS)
     /// The horizontal size class of the current app environment.
@@ -61,6 +61,7 @@ struct TodayTabView: View {
     @State var todaySharingServices: [TransactionServices] = []
     @Environment(\.managedObjectContext) private var viewContext
     
+    /// Whether or not a Sharing detail view is being presented.
     @State var isShowingSharingDetail = false
     
     // MARK: View Body

@@ -8,7 +8,8 @@
 import Foundation
 
 extension Double {
-    func truncate(places : Int)-> Double {
+    /// Truncates a given `Double` to the given amount of decimal places.
+    func truncate(places : Int) -> Double {
         return Double(floor(pow(10.0, Double(places)) * self)/pow(10.0, Double(places)))
     }
 }

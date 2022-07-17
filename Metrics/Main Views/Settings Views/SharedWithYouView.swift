@@ -8,13 +8,19 @@
 import SwiftUI
 import CloudKit
 
+/// The view listing all users sharing their data with the current user.
 struct SharedWithYouView: View {
-    
+    // MARK: - View Variables
+    /// The list of users sharing with the current user.
     @State var sharedWithYouList: [SharingUser] = []
+    /// Whether or not the network operations of this view are in progress.
     @State var isLoading = true
+    /// Whether or not a system Sharing view is being presented.
     @State var showingSharingView = false
+    /// A timer object that periodically triggers a sharing list refresh.
     let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
     
+    // MARK: - View Body
     var body: some View {
         VStack {
             if isLoading {
@@ -93,6 +99,7 @@ struct SharedWithYouView: View {
         }
     }
     
+    /// Connects to the Sharing server to update the list of users sharing their data with the current user.
     func updateSharedWithYouList() {
         var nameList: [SharingUser] = []
         var startedQueryOperation = false
@@ -170,11 +177,23 @@ struct SharedWithYouView_Previews: PreviewProvider {
     }
 }
 
+/// A user participating in the Sharing service.
 struct SharingUser {
+    /// A unique ID for this user.
     var id = UUID()
+    
+    /// The `CKShare` object this user shares their data with.
     var cloudKitShare: CKShare
+    
+    /// The first name of this user.
     var firstName: String?
+    
+    /// The last name of this user.
     var lastName: String?
+    
+    /// The email address of this user.
     var email: String?
+    
+    /// The phone number of this user.
     var phoneNumber: String?
 }

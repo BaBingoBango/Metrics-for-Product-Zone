@@ -9,6 +9,7 @@ import SwiftUI
 import CloudKit
 import MessageUI
 
+/// The settings view for the app, which surfaces controls for app preferences.
 struct SettingsView: View {
     
     // MARK: - View Variables
@@ -55,7 +56,7 @@ struct SettingsView: View {
     /// Whether or not the the Sharing section should show in the Today view.
     @AppStorage("showSharingInTodayView") var showSharingInTodayView = true
     
-    // MARK: - View Variables
+    // MARK: - View Body
     var body: some View {
 //        NavigationView {
             Form {

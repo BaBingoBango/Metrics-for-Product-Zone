@@ -7,21 +7,23 @@
 
 import SwiftUI
 
+/// The view which surfaces controls for adding a new transaction to the Core Data database.
 struct AdderView: View {
-    
+    // MARK: - View Variables
     // Modal variable
     @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     // Core Data variable
     @Environment(\.managedObjectContext) private var viewContext
     
-    // MARK: Transaction Variables
+    // Transaction Variables
     @State var deviceType = "No Device"
     @State var boughtAppleCare = false
     @State var isAppleCareStandalone = false
     @State var gotLead = false
     @State var connected = false
     
+    // MARK: - View Body
     var body: some View {
         NavigationView {
             
@@ -106,6 +108,7 @@ struct AdderView_Previews: PreviewProvider {
     }
 }
 
+/// A button representing a type of device that can be involved in a transaction.
 struct DevicePurchasedOption: View {
     
     // State Pass-In
@@ -151,6 +154,7 @@ struct DevicePurchasedOption: View {
     }
 }
 
+/// A button representing an option for a transaction addition.
 struct AdditionsOption: View {
     
     // State Pass-In
