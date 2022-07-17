@@ -106,7 +106,14 @@ struct TodayTabView: View {
                                 .hidden()
 
                             if todayData.appleCarePercent() < appleCareGoal {
-                                ProgressBar(progress: Double(todayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "")
+                                ZStack {
+                                    ProgressBar(progress: Double(todayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "")
+                                    
+                                    Image(systemName: "applelogo")
+                                        .aspectRatio(contentMode: .fit)
+                                        .font(.system(size: 32.5))
+                                        .foregroundColor(.red)
+                                }
                             } else {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
@@ -116,7 +123,14 @@ struct TodayTabView: View {
                             }
                             
                             if todayData.numBusinessLeads() < businessLeadsGoal {
-                                ProgressBar(progress: Double(todayData.numBusinessLeads()) / Double(businessLeadsGoal), color: Color("brown"), lineWidth: 8.5, imageName: "")
+                                ZStack {
+                                    ProgressBar(progress: Double(todayData.numBusinessLeads()) / Double(businessLeadsGoal), color: Color("brown"), lineWidth: 8.5, imageName: "")
+                                    
+                                    Image(systemName: "briefcase.fill")
+                                        .aspectRatio(contentMode: .fit)
+                                        .font(.system(size: 27.5))
+                                        .foregroundColor(Color("brown"))
+                                }
                             } else {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
@@ -126,7 +140,14 @@ struct TodayTabView: View {
                             }
                             
                             if todayData.connectivityPercent() < connectivityGoal {
-                                ProgressBar(progress: Double(todayData.connectivityPercent()) / 100.0, color: .blue, lineWidth: 8.5, imageName: "")
+                                ZStack {
+                                    ProgressBar(progress: Double(todayData.connectivityPercent()) / 100.0, color: .blue, lineWidth: 8.5, imageName: "")
+                                    
+                                    Image(systemName: "antenna.radiowaves.left.and.right")
+                                        .aspectRatio(contentMode: .fit)
+                                        .font(.system(size: 30))
+                                        .foregroundColor(.blue)
+                                }
                             } else {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
