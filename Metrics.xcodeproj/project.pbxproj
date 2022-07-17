@@ -38,6 +38,7 @@
 		AA5C40F32881E700004A0FBD /* CloudKitOperationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */; };
 		AA5C40F72881E761004A0FBD /* SharingRectangleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */; };
 		AA5C40F92881EFBA004A0FBD /* HidingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5C40F82881EFBA004A0FBD /* HidingServices.swift */; };
+		AA5D5C4A28833D5600CA3585 /* UserGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5D5C4928833D5600CA3585 /* UserGuideView.swift */; };
 		AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6632E426C459D200CFBE38 /* MathServices.swift */; };
 		AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA697F032867AB9A00F49A37 /* GoalEditorView.swift */; };
 		AA6D746C26C7678F00157734 /* DataViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6D746B26C7678F00157734 /* DataViewer.swift */; };
@@ -190,6 +191,7 @@
 		AA5C40F22881E700004A0FBD /* CloudKitOperationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitOperationStatus.swift; sourceTree = "<group>"; };
 		AA5C40F62881E761004A0FBD /* SharingRectangleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingRectangleView.swift; sourceTree = "<group>"; };
 		AA5C40F82881EFBA004A0FBD /* HidingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidingServices.swift; sourceTree = "<group>"; };
+		AA5D5C4928833D5600CA3585 /* UserGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideView.swift; sourceTree = "<group>"; };
 		AA6632E426C459D200CFBE38 /* MathServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathServices.swift; sourceTree = "<group>"; };
 		AA697F032867AB9A00F49A37 /* GoalEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalEditorView.swift; sourceTree = "<group>"; };
 		AA6D746B26C7678F00157734 /* DataViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewer.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 				AA4BC33026BC987200DEF225 /* GraphDetailView.swift */,
 				AA9C0CE026BE17B800B7EA5C /* LifetimeView.swift */,
 				AA9C0CE226BE182100B7EA5C /* SettingsView.swift */,
+				AA5D5C4928833D5600CA3585 /* UserGuideView.swift */,
 				AA697F032867AB9A00F49A37 /* GoalEditorView.swift */,
 				AABAAA8F28696AFD007EC3A5 /* SharingView.swift */,
 				AA3988E628729B91009C8697 /* SharedWithYouView.swift */,
@@ -725,6 +728,7 @@
 				AA3442A326B4FED5004A2259 /* Metrics.xcdatamodeld in Sources */,
 				AA35876326BA408900384DCF /* ProgressBar.swift in Sources */,
 				AA697F042867AB9A00F49A37 /* GoalEditorView.swift in Sources */,
+				AA5D5C4A28833D5600CA3585 /* UserGuideView.swift in Sources */,
 				AA6632E526C459D200CFBE38 /* MathServices.swift in Sources */,
 				AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */,
 				AAEA99EA26B5123D00179B19 /* ColorServices.swift in Sources */,

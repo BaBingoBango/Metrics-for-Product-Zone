@@ -356,7 +356,7 @@ struct TodayTabView: View {
                         let transactionEntity = NSEntityDescription.entity(forEntityName: "Transaction", in: viewContext)!
                         let newTransaction = Transaction(entity: transactionEntity, insertInto: nil)
                         
-                        newTransaction.id = queriedRecord.object(forKey: "CD_id") as? UUID
+                        newTransaction.id = UUID(uuidString: (queriedRecord.object(forKey: "CD_id") as? String)!)
                         newTransaction.date = queriedRecord.object(forKey: "CD_date") as? Date
                         newTransaction.deviceType = queriedRecord.object(forKey: "CD_deviceType") as? String
                         newTransaction.boughtAppleCare = queriedRecord.object(forKey: "CD_boughtAppleCare") as! Int == 1 ? true : false

@@ -38,6 +38,8 @@ struct SettingsView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     /// The amount of time the app has been trying to connect to CloudKit.
     @State var connectTime = 0.0
+    /// Whether or not the User Guide is being presented.
+    @State var isShowingUserGuide = false
     
     // Daily Goals variables
     /// Whether or not the user's daily goals should show in the Today view.
@@ -258,6 +260,15 @@ struct SettingsView: View {
                 }
                 
                 Section(header: Text("Resources")) {
+                    Button(action: {
+                        isShowingUserGuide = true
+                    }) {
+                        HStack { Image(systemName: "book.fill").imageScale(.large); Text("User Guide") }
+                    }
+                    .sheet(isPresented: $isShowingUserGuide) {
+                        UserGuideView()
+                    }
+                    
                     Link(destination: URL(string: "https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Privacy-Policy")!) {
                         HStack { Image(systemName: "hand.raised.fill").imageScale(.large); Text("Privacy Policy") }
                     }

@@ -53,6 +53,22 @@ struct SharingTabView: View {
             .tabItem {
                 Image(systemName: "crown.fill"); Text("Lifetime")
             }
+            
+            DataViewer(titleText: transactions.owner != nil ? "\(transactions.owner!)'s Transactions" : "Transaction Data", customTransactions: transactions.transactions)
+                .toolbar(content: {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            self.presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Text("Done")
+                                .fontWeight(.bold)
+                                .foregroundColor(.accentColor)
+                        }
+                    }
+                })
+            .tabItem {
+                Image(systemName: "doc.on.doc.fill"); Text("Transactions")
+            }
         }
     }
 }

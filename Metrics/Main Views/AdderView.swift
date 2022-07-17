@@ -29,7 +29,7 @@ struct AdderView: View {
                 VStack {
                     
                     // MARK: Device Sold Selection
-                    SmallHeadingText(text: "Device Purchased")
+                    SmallHeadingText(text: "Device Type")
                         .padding(.top, 20)
                     HStack {
                         DevicePurchasedOption(deviceType: $deviceType, imageName: "iphone", deviceTypeName: "iPhone")
@@ -74,7 +74,7 @@ struct AdderView: View {
             }
             
             // MARK: Nav Bar Settings
-            .navigationBarTitle("Add Transaction", displayMode: .inline)
+            .navigationBarTitle("Log Transaction", displayMode: .inline)
             .navigationBarItems(leading: Button(action: { self.presentationMode.wrappedValue.dismiss() }) { Text("Cancel").fontWeight(.regular) }, trailing: Button(action: {
                 
                 // Add the new transaction and dismiss the modal
@@ -94,7 +94,7 @@ struct AdderView: View {
                 }
                 self.presentationMode.wrappedValue.dismiss()
                 
-            }) { Text("Done").fontWeight(.bold) })
+            }) { Text("Save").fontWeight(.bold) })
             
         }
     }

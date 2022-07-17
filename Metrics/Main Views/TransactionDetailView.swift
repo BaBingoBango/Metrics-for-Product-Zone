@@ -21,6 +21,7 @@ struct TransactionDetailView: View {
         answer.timeStyle = .short
         return answer
     }
+    var allowDelete = true
     
     // MARK: - View Body
     var body: some View {
@@ -224,6 +225,7 @@ struct TransactionDetailView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(.red)
                         }
+                        .isHidden(!allowDelete, remove: !allowDelete)
                         .alert("Delete this transaction?", isPresented: $isShowingDeleteWarning) {
                             Button(role: .cancel, action: {
                                 isShowingDeleteWarning = false

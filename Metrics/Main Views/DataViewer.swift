@@ -16,6 +16,8 @@ struct DataViewer: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
     var transactions: FetchedResults<Transaction>
+    var titleText = "Transaction Data"
+    var customTransactions: [Transaction]?
     
     var body: some View {
         NavigationView {
@@ -28,12 +30,14 @@ struct DataViewer: View {
                         .frame(width: 63, height: 75)
                         .padding(.top, 30)
 
-                    Text("Transaction Data")
+                    Text(titleText)
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .padding(.top)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.1)
+                        .padding([.top, .horizontal])
                     
-                    if transactions.isEmpty {
+                    if customTransactions != nil ? customTransactions!.isEmpty : transactions.isEmpty {
                         ZStack {
                             Rectangle()
                                 .foregroundColor(.gray)
@@ -60,8 +64,14 @@ struct DataViewer: View {
                         .padding(.horizontal)
                     }
                     
-                    ForEach(transactions.reversed()) { transaction in
-                        TransactionDataOption(transaction: transaction)
+                    if customTransactions != nil {
+                        ForEach(customTransactions!.reversed()) { transaction in
+                            TransactionDataOption(transaction: transaction, allowDelete: customTransactions == nil)
+                        }
+                    } else {
+                        ForEach(transactions.reversed()) { transaction in
+                            TransactionDataOption(transaction: transaction)
+                        }
                     }
                     
                 }
@@ -96,6 +106,7 @@ struct TransactionDataOption: View {
         return answer
     }
     @State var showingDetail = false
+    var allowDelete = true
     
     var body: some View {
         Button(action: {
@@ -134,7 +145,7 @@ struct TransactionDataOption: View {
             }
         }
         .sheet(isPresented: $showingDetail) {
-            TransactionDetailView(transaction: transaction)
+            TransactionDetailView(transaction: transaction, allowDelete: allowDelete)
         }
     }
     
