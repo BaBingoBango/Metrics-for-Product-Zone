@@ -284,10 +284,6 @@ struct SettingsView: View {
                 }
                 
                 Section(header: Text("About")) {
-                    NavigationLink(destination: EmptyView()) {
-                        Text("Licensing and Credit")
-                    }
-                    
                     HStack { Text("App Version"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String).foregroundColor(.secondary) }
                     
                     HStack { Text("Build Number"); Spacer(); Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String).foregroundColor(.secondary) }
