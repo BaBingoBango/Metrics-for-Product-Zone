@@ -115,7 +115,7 @@ struct GraphDetailView: View {
                                     Spacer()
                                 }
                                 .padding(.top)
-                                ColorTextWithCaption(color: .blue, number: String(graphData[9].truncate(places: 3)) + "%", caption: "Total Connectivity Rate")
+                                ColorTextWithCaption(color: .blue, number: String(Int(graphData[9])) + "%", caption: "Total Connectivity Rate")
                                 .padding(.top)
                                 
                             }

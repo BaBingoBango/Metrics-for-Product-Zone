@@ -49,7 +49,7 @@ struct GoalEditorView: View {
         case "AppleCare+":
             return "Attachment Rate"
         case "Business Leads":
-            return "Leads"
+            return goal != 1 ? "Leads" : "Lead"
         case "Connectivity":
             return "Connection Rate"
         default:

@@ -246,7 +246,7 @@ struct TodayTabView: View {
                                                 .fontWeight(.bold)
                                                 .foregroundColor(Color("brown"))
                                             
-                                            Text("Leads")
+                                            Text(todayData.numBusinessLeads() != 1 ? "Leads" : "Lead")
                                                 .font(.caption)
                                                 .fontWeight(.bold)
                                                 .foregroundColor(Color("brown"))
