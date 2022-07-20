@@ -100,7 +100,7 @@ struct GraphDetailView: View {
                                     Spacer()
                                     ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Total \(Int(graphData[7]) == 1 ? "Lead" : "Leads")")
                                     Spacer()
-                                    ColorTextWithCaption(color: Color("brown"), number: String(Int(graphData[7])), caption: "Average Per Day")
+                                    ColorTextWithCaption(color: Color("brown"), number: String(graphData[8].isNaN ? 0 : graphData[8].truncate(places: 2)), caption: "Average Per Day")
                                     Spacer()
                                 }
                                 .padding(.top)
@@ -109,9 +109,9 @@ struct GraphDetailView: View {
                                 
                                 HStack {
                                     Spacer()
-                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[7])), caption: "Connected \(Int(graphData[7]) == 1 ? "Device" : "Devices")")
+                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[7])), caption: "Connected \(Int(graphData[7]) == 1 ? "iPhone" : "iPhones")")
                                     Spacer()
-                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[8])), caption: "Total \(Int(graphData[8]) == 1 ? "Device" : "Devices")")
+                                    ColorTextWithCaption(color: .blue, number: String(Int(graphData[8])), caption: "Total \(Int(graphData[8]) == 1 ? "iPhone" : "iPhones")")
                                     Spacer()
                                 }
                                 .padding(.top)
@@ -461,7 +461,7 @@ struct GraphDetailView: View {
                 
                 // Add the extra stats for connectivity
                 answer.append(Double(TransactionServices(weekInQuestion).connectedUnits()))
-                answer.append(Double(TransactionServices(weekInQuestion).withDevice().count))
+                answer.append(Double(TransactionServices(weekInQuestion).transactions.filter({ $0.deviceType == "iPhone" }).count))
                 answer.append(Double(TransactionServices(weekInQuestion).connectivityPercent()))
                 
             } else if selectedDateChoice == "Monthly" {
@@ -490,7 +490,7 @@ struct GraphDetailView: View {
                 // Add the extra stats
                 let sevenWeeks = week1 + week2 + week3 + week4 + week5 + week6 + week7
                 answer.append(Double(TransactionServices(sevenWeeks).connectedUnits()))
-                answer.append(Double(TransactionServices(sevenWeeks).withDevice().count))
+                answer.append(Double(TransactionServices(sevenWeeks).transactions.filter({ $0.deviceType == "iPhone" }).count))
                 answer.append(Double(TransactionServices(sevenWeeks).connectivityPercent()))
                 
             } else {
@@ -519,7 +519,7 @@ struct GraphDetailView: View {
                 // Add the extra stats
                 let sevenMonths = month1 + month2 + month3 + month4 + month5 + month6 + month7
                 answer.append(Double(TransactionServices(sevenMonths).connectedUnits()))
-                answer.append(Double(TransactionServices(sevenMonths).withDevice().count))
+                answer.append(Double(TransactionServices(sevenMonths).transactions.filter({ $0.deviceType == "iPhone" }).count))
                 answer.append(Double(TransactionServices(sevenMonths).connectivityPercent()))
                 
             }

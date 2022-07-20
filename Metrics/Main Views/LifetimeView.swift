@@ -71,7 +71,7 @@ struct LifetimeView: View {
                     LifetimeStatView(description: "\(totalLeads != 1 ? "Business Leads" : "Lead")", stat: Double(totalLeads), color: .brown, SFsymbol: "briefcase.fill", secondDescription: "Average Per Day", secondStat: averageLeads.isNaN ? 0 : averageLeads, secondIsPercent: false)
                     
                     HStack {
-                        Text("Connected")
+                        Text("Connectivity")
                             .font(.title)
                             .fontWeight(.bold)
                         
@@ -79,7 +79,7 @@ struct LifetimeView: View {
                     }
                     .padding([.top, .leading])
                     
-                    LifetimeStatView(description: "\(totalConnected != 1 ? "Devices" : "Device") Connected", stat: Double(totalConnected), color: .blue, SFsymbol: "antenna.radiowaves.left.and.right", secondDescription: "Connectivity Rate", secondStat: Double(connectionRate), secondIsPercent: true)
+                    LifetimeStatView(description: "\(totalConnected != 1 ? "iPhones" : "iPhone") Connected", stat: Double(totalConnected), color: .blue, SFsymbol: "antenna.radiowaves.left.and.right", secondDescription: "Connectivity Rate", secondStat: Double(connectionRate), secondIsPercent: true)
                 }
                 .padding(.bottom)
                 
