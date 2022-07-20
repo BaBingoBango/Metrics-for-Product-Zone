@@ -39,7 +39,7 @@ class TransactionServices {
     // Return transactions on the specified weekday of the current week
     func thisWeek(_ day: Date.Weekday) -> [Transaction] {
         return transactions.filter({
-            Calendar.current.isDate($0.date!, inSameDayAs: Date.today().previous(day))
+            Calendar.current.isDate($0.date!, inSameDayAs: Date.today().previous(day)) && Calendar.current.isDayInCurrentWeek(date: $0.date!)!
         })
     }
     

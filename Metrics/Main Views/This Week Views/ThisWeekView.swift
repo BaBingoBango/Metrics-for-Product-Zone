@@ -107,7 +107,6 @@ struct ThisWeekView: View {
                                 ], color: .red)
                                 
                                 Spacer()
-                                
                             }
                             
                         }
