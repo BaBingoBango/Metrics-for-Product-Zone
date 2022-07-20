@@ -81,6 +81,7 @@ struct WatchSharingView: View {
         todaySharingServices = []
         
         let zoneFetchOperation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
+        zoneFetchOperation.qualityOfService = .userInteractive
         zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
             switch recordZoneResult {
                 
@@ -89,6 +90,7 @@ struct WatchSharingView: View {
                 
                 // Zone Operation 1: Transaction Query
                 let queryOperation = CKQueryOperation(query: CKQuery(recordType: "CD_Transaction", predicate: NSPredicate(value: true)))
+                queryOperation.qualityOfService = .userInteractive
                 queryOperation.zoneID = fetchedZone.zoneID
                 
                 queryOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in

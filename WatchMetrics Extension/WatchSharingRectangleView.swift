@@ -108,11 +108,6 @@ struct WatchSharingRectangleView: View {
                             .foregroundColor(.secondary)
                             .fontWeight(.bold)
                             .font(.system(size: 20))
-                        
-                        Text("Note: It make take significantly longer to connect to the Sharing server on Apple Watch.")
-                            .font(.system(size: 12))
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
                     }
                 }
             }
