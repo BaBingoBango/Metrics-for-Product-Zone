@@ -61,12 +61,12 @@ struct SharedWithYouView: View {
                                             
                                             if sharingUser.email != nil {
                                                 Text(sharingUser.email!)
-                                                    .foregroundColor(.primary)
+                                                    .foregroundColor(.secondary)
                                             }
                                             
                                             if sharingUser.phoneNumber != nil {
                                                 Text(sharingUser.phoneNumber!)
-                                                    .foregroundColor(.primary)
+                                                    .foregroundColor(.secondary)
                                             }
                                         }
                                         

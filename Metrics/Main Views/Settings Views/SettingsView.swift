@@ -135,7 +135,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Sharing")) {
+                Section(header: Text("Sharing"), footer: Text("Note: Metrics will never allow other users to edit or delete your transactions, even if this permission is enabled on the Sharing invitation screen.")) {
                     Toggle(isOn: $showSharingInTodayView) {
                         Text("Show Sharing in Today")
                     }

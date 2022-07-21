@@ -119,6 +119,7 @@ struct WatchSharingView: View {
                 queryOperation.queryResultBlock = { (_ operationResult: Result<CKQueryOperation.Cursor?, Error>) -> Void in
                     // Zone Operation 2: Name Query
                     let nameOperation = CKQueryOperation(query: CKQuery(recordType: "cloudkit.share", predicate: NSPredicate(value: true)))
+                    nameOperation.qualityOfService = .userInteractive
                     nameOperation.zoneID = fetchedZone.zoneID
                     nameOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
                         switch recordResult {
