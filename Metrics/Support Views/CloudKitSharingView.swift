@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 import CloudKit
 
-/// A SwiftUI view for displaying the Game Center dashboard via a modal.
+/// A SwiftUI view for displaying the CloudKit sharing view via a modal.
 struct CloudKitSharingView: UIViewControllerRepresentable {
     // MARK: View Variables
     var share: CKShare
