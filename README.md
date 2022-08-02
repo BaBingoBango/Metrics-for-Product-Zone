@@ -5,7 +5,7 @@
 By Ethan Marshall :)
 
 # Quick Start
-The app is designed for iPhone and iPad! To start up the app, you can either download and run the Xcode project or get it right from the [App Store](https://apps.apple.com/us/app/metrics-for-product-zone/id1581284514?action=write-review)!
+The app is designed for iPhone and iPad! To start up the app, you can either download and run the Xcode project or get it right from the [App Store](https://apps.apple.com/us/app/metrics-for-product-zone/id1581284514)!
 
 # Support & Feedback
 
