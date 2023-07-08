@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/40375449/182772693-77dd1386-8bf5-48d9-a877-7ab4a8fb8639.png" alt="gameLogo" width="100"/>
+<img src="https://user-images.githubusercontent.com/40375449/182772693-77dd1386-8bf5-48d9-a877-7ab4a8fb8639.png" alt="Metrics icon" width="100"/>
 
 ### Metrics for Product Zone
 
