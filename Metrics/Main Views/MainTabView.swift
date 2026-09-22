@@ -10,6 +10,7 @@ import SwiftUI
 /// The entry point for the app on iPhone and iPad: a tab bar that becomes a sidebar on larger displays.
 struct MainTabView: View {
     @Environment(ShareAcceptance.self) private var shareAcceptance
+    @Environment(SharingStore.self) private var sharingStore
 
     var body: some View {
         @Bindable var shareAcceptance = shareAcceptance
@@ -34,6 +35,12 @@ struct MainTabView: View {
         .tabViewStyle(.sidebarAdaptable)
         .sheet(isPresented: $shareAcceptance.isAccepting) {
             AcceptingShareView()
+        }
+        .onChange(of: shareAcceptance.isAccepting) { wasAccepting, isAccepting in
+            // A newly accepted share should appear in Today without a manual refresh.
+            if wasAccepting, !isAccepting {
+                Task { await sharingStore.refresh() }
+            }
         }
     }
 }

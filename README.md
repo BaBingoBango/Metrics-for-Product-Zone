@@ -18,6 +18,7 @@ Metrics 2.0 is built with SwiftUI, Swift Charts, Core Data with CloudKit, and Wi
 - Open `Metrics.xcodeproj` and run the **Metrics** scheme for iPhone and iPad, or the **WatchMetrics** scheme for Apple Watch.
 - The **MetricsTests** target covers the metric calculations, CloudKit record decoding, and Core Data round trips. Run it with ⌘U.
 - To fill an empty store with three weeks of sample transactions in a Debug build, add `-seedSampleData` to the scheme's launch arguments.
+- To test accepting a share in the simulator, which never hands share links to apps, launch a Debug build with `-acceptShareURL <link>` on a simulator signed into a different Apple Account than the owner.
 - After changing the Core Data model, run a Debug build once with the `-initializeCloudKitSchema` launch argument to update the CloudKit development schema, then deploy the schema to Production in CloudKit Console before shipping.
 
 ## Support & Feedback

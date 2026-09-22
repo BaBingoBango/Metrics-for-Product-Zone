@@ -33,6 +33,11 @@ struct MetricsApp: App {
             #else
             MainTabView()
                 .environment(ShareAcceptance.shared)
+                .task {
+                    #if DEBUG
+                    await ShareAcceptance.shared.acceptShareFromLaunchArguments()
+                    #endif
+                }
             #endif
         }
         .environment(\.managedObjectContext, persistenceController.container.viewContext)
@@ -62,17 +67,41 @@ final class ShareAcceptance {
     /// Accepts a pending invitation.
     func accept(_ metadata: CKShare.Metadata) {
         guard metadata.participantStatus == .pending else { return }
+        Task { await acceptAndWait(metadata) }
+    }
+
+    private func acceptAndWait(_ metadata: CKShare.Metadata) async {
         isAccepting = true
-        Task {
-            defer { isAccepting = false }
-            do {
-                _ = try await SharingStore.container.accept(metadata)
-                Self.logger.notice("Share accepted.")
-            } catch {
-                Self.logger.error("Failed to accept share: \(error.localizedDescription)")
-            }
+        defer { isAccepting = false }
+        do {
+            _ = try await SharingStore.container.accept(metadata)
+            Self.logger.notice("Share accepted.")
+        } catch {
+            Self.logger.error("Failed to accept share: \(error.localizedDescription)")
         }
     }
+
+    #if DEBUG
+    /// Accepts the share whose link follows the `-acceptShareURL` launch argument.
+    ///
+    /// The simulator never hands share links to apps, so this is the way to exercise the participant side of
+    /// Sharing there. It does nothing without the argument.
+    func acceptShareFromLaunchArguments() async {
+        let arguments = CommandLine.arguments
+        guard let index = arguments.firstIndex(of: "-acceptShareURL"), arguments.indices.contains(index + 1),
+              let url = URL(string: arguments[index + 1]) else { return }
+        do {
+            let metadata = try await SharingStore.container.shareMetadata(for: url)
+            guard metadata.participantStatus == .pending else {
+                Self.logger.notice("Share from launch argument was already accepted.")
+                return
+            }
+            await acceptAndWait(metadata)
+        } catch {
+            Self.logger.error("Failed to fetch share metadata from launch argument: \(error.localizedDescription)")
+        }
+    }
+    #endif
 }
 
 /// Routes application-level CloudKit share invitations and installs the app's scene delegate.
