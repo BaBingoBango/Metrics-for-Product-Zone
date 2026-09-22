@@ -19,6 +19,7 @@ Metrics 2.0 is built with SwiftUI, Swift Charts, Core Data with CloudKit, and Wi
 - The **MetricsTests** target covers the metric calculations, CloudKit record decoding, and Core Data round trips. Run it with ⌘U.
 - To fill an empty store with three weeks of sample transactions in a Debug build, add `-seedSampleData` to the scheme's launch arguments.
 - To test accepting a share in the simulator, which never hands share links to apps, launch a Debug build with `-acceptShareURL <link>` on a simulator signed into a different Apple Account than the owner.
+- App Store screenshots come from the `ScreenshotTests` UI tests. Run them on the simulators App Store Connect wants (for example `xcodebuild test -scheme Metrics -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' -only-testing:MetricsUITests/ScreenshotTests -resultBundlePath Shots.xcresult`, with `TEST_RUNNER_HIDE_SHARING=1` in the environment to hide the Sharing section), export the captures with `xcrun xcresulttool export attachments --path Shots.xcresult --output-path Shots`, then frame each one with `Scripts/compose_screenshot.py <capture> <output> <width> <height> <headline>`.
 - After changing the Core Data model, run a Debug build once with the `-initializeCloudKitSchema` launch argument to update the CloudKit development schema, then deploy the schema to Production in CloudKit Console before shipping.
 
 ## Support & Feedback

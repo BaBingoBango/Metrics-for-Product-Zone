@@ -56,10 +56,11 @@ final class ScreenshotTests: XCTestCase {
     /// Captures the Sharing section on a simulator signed into an account that someone shares with.
     func testCaptureSharing() throws {
         try XCTSkipIf(ProcessInfo.processInfo.environment["CAPTURE_SHARING"] == nil, "Set CAPTURE_SHARING to run.")
+        // The Sharing cards sit in a lazy grid below the fold, so scroll before waiting for one to load.
+        app.swipeUp()
+        app.swipeUp()
         let person = app.buttons.matching(NSPredicate(format: "label CONTAINS 'AppleCare+'")).element(boundBy: 0)
         XCTAssertTrue(person.waitForExistence(timeout: 30))
-        app.swipeUp()
-        app.swipeUp()
         snapshot("sharing")
     }
 
