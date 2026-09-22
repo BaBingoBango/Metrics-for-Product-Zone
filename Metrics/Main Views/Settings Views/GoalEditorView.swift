@@ -7,128 +7,74 @@
 
 import SwiftUI
 
-/// A view which surfaces controls for editing one of the user's Daily Goals.
+/// Controls for editing one of the user's daily goals.
 struct GoalEditorView: View {
-    
-    // MARK: - View Variables
-    /// Whether or not this view is being presented.
-    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    /// The name of the goal this view should edit.
-    var goalName: String
-    /// The goal this view should edit.
+    let metric: Metric
     @Binding var goal: Int
-    /// Whether or not a % sign should be displayed after the goal.
-    var shouldShowPercent: Bool {
-        switch goalName {
-        case "AppleCare+":
-            return true
-        case "Business Leads":
-            return false
-        case "Connectivity":
-            return true
-        default:
-            return false
-        }
+
+    private var range: ClosedRange<Int> { metric.isRate ? 0...100 : 0...999 }
+
+    private var description: String {
+        metric.isRate ? metric.rateDescription : metric.unitName(for: goal)
     }
-    /// The accent color for the goal this view displays.
-    var accentColor: Color {
-        switch goalName {
-        case "AppleCare+":
-            return Color.red
-        case "Business Leads":
-            return Color("brown")
-        case "Connectivity":
-            return Color.blue
-        default:
-            return Color.primary
-        }
-    }
-    /// The description text for the goal this view displays.
-    var description: String {
-        switch goalName {
-        case "AppleCare+":
-            return "Attachment Rate"
-        case "Business Leads":
-            return goal != 1 ? "Leads" : "Lead"
-        case "Connectivity":
-            return "Connection Rate"
-        default:
-            return ""
-        }
-    }
-    
-    // MARK: - View Body
+
     var body: some View {
-        let isLeftButtonDisabled = goal == 0
-        let isRightButtonDisabled = goal == 100 && shouldShowPercent
-        
-        NavigationView {
-            GeometryReader { geometry in
-                VStack {
-                    HStack {
-                        Spacer()
-                        
-                        Button(action: {
-                            goal -= 1
-                        }) {
-                            Image(systemName: "minus.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(!isLeftButtonDisabled ? accentColor : .gray)
-                        }
-                        .disabled(isLeftButtonDisabled)
-                        
-                        Spacer()
-                        
-                        Text("\(goal)\(shouldShowPercent ? "%" : "")")
-                            .font(.system(size: 50))
-                            .fontWeight(.heavy)
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                            .frame(width: geometry.size.width / 2.5, height: 75)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            goal += 1
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(!isRightButtonDisabled ? accentColor : .gray)
-                        }
-                        .disabled(isRightButtonDisabled)
-                        
-                        Spacer()
-                    }
-                    
-                    Text(description)
-                        .fontWeight(.bold)
-                        .foregroundColor(accentColor)
-                    
-                    Spacer()
+        VStack(spacing: 24) {
+            HStack(spacing: 32) {
+                Button("Decrease", systemImage: "minus.circle.fill") {
+                    goal = max(range.lowerBound, goal - 1)
                 }
+                .disabled(goal <= range.lowerBound)
+
+                Text(metric.isRate ? "\(goal)%" : "\(goal)")
+                    .font(.system(size: 56, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .frame(minWidth: 150)
+                    .numericContentTransition()
+
+                Button("Increase", systemImage: "plus.circle.fill") {
+                    goal = min(range.upperBound, goal + 1)
+                }
+                .disabled(goal >= range.upperBound)
             }
-            
-            // MARK: - Navigation View Settings
-            .navigationTitle(Text("Daily \(goalName) Goal"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(content: {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Text("Done")
-                            .fontWeight(.bold)
-                            .foregroundColor(accentColor)
-                    }
+            .labelStyle(.iconOnly)
+            .font(.system(size: 34))
+            .tint(metric.color)
+
+            Text(description)
+                .font(.headline)
+                .foregroundStyle(metric.color)
+
+            if metric.isRate {
+                Slider(
+                    value: Binding(get: { Double(goal) }, set: { goal = Int($0.rounded()) }),
+                    in: Double(range.lowerBound)...Double(range.upperBound),
+                    step: 1
+                ) {
+                    Text("\(metric.title) goal")
                 }
-            })
+                .tint(metric.color)
+                .frame(maxWidth: 520)
+                .padding(.horizontal)
+            }
+
+            Spacer()
         }
+        .padding(.top, 32)
+        .padding()
+        .navigationTitle("Daily \(metric.title) Goal")
+        .navigationBarTitleDisplayMode(.inline)
+        .animateUnlessReduced(goal)
+        .sensoryFeedback(.increase, trigger: goal) { old, new in new > old }
+        .sensoryFeedback(.decrease, trigger: goal) { old, new in new < old }
     }
 }
 
-struct GoalEditorView_Previews: PreviewProvider {
-    static var previews: some View {
-        GoalEditorView(goalName: "AppleCare+", goal: .constant(99))
+#Preview {
+    @Previewable @State var goal = 60
+    NavigationStack {
+        GoalEditorView(metric: .appleCare, goal: $goal)
     }
 }

@@ -5,62 +5,47 @@
 //  Created by Ethan Marshall on 7/2/22.
 //
 
-import Foundation
+import CloudKit
 import SwiftUI
 import UIKit
-import CloudKit
+import os
 
-/// A SwiftUI view for displaying the CloudKit sharing view via a modal.
+/// The system CloudKit sharing UI, for inviting people, managing participants or leaving a share.
 struct CloudKitSharingView: UIViewControllerRepresentable {
-    // MARK: View Variables
-    var share: CKShare
-    var container: CKContainer
-    
-    // MARK: View Controller Generator
+    let share: CKShare
+    let container: CKContainer
+
+    private static let logger = Logger(subsystem: "Ethan.Metrics", category: "Sharing")
+
     func makeUIViewController(context: Context) -> UICloudSharingController {
-        // MARK: Sharing View Settings
-        let cloudSharingController = UICloudSharingController(share: share, container: container)
-        
-        cloudSharingController.modalPresentationStyle = .pageSheet
-        cloudSharingController.availablePermissions = [.allowPublic, .allowPrivate, .allowReadOnly]
-        
-        cloudSharingController.delegate = context.coordinator
-        return cloudSharingController
+        let controller = UICloudSharingController(share: share, container: container)
+        controller.modalPresentationStyle = .pageSheet
+        controller.availablePermissions = [.allowPublic, .allowPrivate, .allowReadOnly]
+        controller.delegate = context.coordinator
+        return controller
     }
-    
-    // MARK: View Controller Updater
+
     func updateUIViewController(_ uiViewController: UICloudSharingController, context: Context) {}
-    
-    // MARK: Coordinator Generator
+
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator()
     }
-    
-    // MARK: Coordinator Class
-    class Coordinator: NSObject, UICloudSharingControllerDelegate {
-        var parent: CloudKitSharingView
-        
-        init(_ sharingController: CloudKitSharingView) {
-            self.parent = sharingController
-        }
-        
-        // MARK: Sharing View Delegate Functions
+
+    final class Coordinator: NSObject, UICloudSharingControllerDelegate {
         func cloudSharingControllerDidSaveShare(_ csc: UICloudSharingController) {
-            print("Share save complete!")
-            csc.dismiss(animated: true)
+            CloudKitSharingView.logger.notice("Share saved.")
         }
-        
+
         func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
-            print("Share save error!")
-            csc.dismiss(animated: true)
+            CloudKitSharingView.logger.error("Failed to save share: \(error.localizedDescription)")
         }
-        
+
         func itemTitle(for csc: UICloudSharingController) -> String? {
             "Transaction Access"
         }
-        
+
         func itemThumbnailData(for csc: UICloudSharingController) -> Data? {
-            return NSDataAsset(name: "sharing thumbnail")!.data
+            NSDataAsset(name: "sharing thumbnail")?.data
         }
     }
 }

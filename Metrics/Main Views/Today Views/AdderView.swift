@@ -5,229 +5,154 @@
 //  Created by Ethan Marshall on 7/30/21.
 //
 
+import CoreData
 import SwiftUI
+import os
 
-/// The view which surfaces controls for adding a new transaction to the Core Data database.
+/// The sheet for logging a new transaction.
 struct AdderView: View {
-    // MARK: - View Variables
-    // Modal variable
-    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    // Core Data variable
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
-    
-    // Transaction Variables
-    @State var deviceType = "No Device"
-    @State var boughtAppleCare = false
-    @State var isAppleCareStandalone = false
-    @State var gotLead = false
-    @State var connected = false
-    
-    // MARK: - View Body
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var draft = TransactionDraft()
+
+    private static let logger = Logger(subsystem: "Ethan.Metrics", category: "Transactions")
+
+    private let deviceColumns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 3)
+
+    /// Additions sit in a flowing grid, or one per row at accessibility text sizes so their names stay legible.
+    private var additionColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] : [GridItem(.adaptive(minimum: 104), spacing: 12)]
+    }
+
     var body: some View {
-        NavigationView {
-            
+        NavigationStack {
             ScrollView {
-                VStack {
-                    
-                    // MARK: Device Sold Selection
-                    SmallHeadingText(text: "Device Type")
-                        .padding(.top, 20)
-                    HStack {
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "iphone", deviceTypeName: "iPhone")
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "ipad.landscape", deviceTypeName: "iPad")
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "desktopcomputer", deviceTypeName: "Mac")
-                    }
-                    .padding(.horizontal)
-                    HStack {
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "applewatch", deviceTypeName: "Apple Watch")
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "appletv", deviceTypeName: "Apple TV")
-                        DevicePurchasedOption(deviceType: $deviceType, imageName: "headphones", deviceTypeName: "Headphones")
-                    }
-                    .padding(.horizontal)
-                    
-                    // MARK: Additions Selection
-                    SmallHeadingText(text: "Additions")
-                        .padding(.top)
-                    HStack {
-                        if deviceType != "No Device" {
-                            AdditionsOption(buttonState: $boughtAppleCare, standaloneState: $isAppleCareStandalone, text: "AppleCare+", imageName: "applelogo", color: .red)
-                        }
-                        AdditionsOption(buttonState: $gotLead, standaloneState: $isAppleCareStandalone, text: "Business Lead", imageName: "briefcase.fill", color: .brown)
-                        if deviceType == "iPhone" {
-                            AdditionsOption(buttonState: $connected, standaloneState: $isAppleCareStandalone, text: "Connected", imageName: "antenna.radiowaves.left.and.right", color: .blue)
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Device Type")
+                            .font(.title3.bold())
+
+                        LazyVGrid(columns: deviceColumns, spacing: 12) {
+                            ForEach(DeviceType.sellable) { device in
+                                OptionButton(symbolName: device.symbolName, tint: .green, isSelected: draft.record.deviceType == device, height: 96) {
+                                    draft.select(device)
+                                }
+                                .accessibilityLabel(device.name)
+                            }
                         }
                     }
-                    .padding(.horizontal)
-                    
-                    HStack {
-                        Text("Tap the AppleCare+ button twice to record standalone AppleCare+!")
-                            .foregroundColor(.secondary)
-                            .fontWeight(.semibold)
-                        
-                        Spacer()
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Additions")
+                            .font(.title3.bold())
+
+                        LazyVGrid(columns: additionColumns, spacing: 12) {
+                            ForEach(draft.availableAdditions) { metric in
+                                OptionButton(title: title(for: metric), symbolName: metric.symbolName, tint: tint(for: metric), isSelected: draft.includes(metric), height: 120) {
+                                    draft.toggle(metric)
+                                }
+                            }
+                        }
+                        .animateUnlessReduced(draft.availableAdditions)
+
+                        Text("Tap AppleCare+ twice to record standalone AppleCare+, which means no new device was purchased.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
-                        .padding(.horizontal)
-                    
-                    Spacer()
-                    
                 }
-                .padding(.bottom)
+                .padding()
             }
-            
-            // MARK: Nav Bar Settings
-            .navigationBarTitle("Log Transaction", displayMode: .inline)
-            .navigationBarItems(leading: Button(action: { self.presentationMode.wrappedValue.dismiss() }) { Text("Cancel").fontWeight(.regular) }, trailing: Button(action: {
-                
-                // Add the new transaction and dismiss the modal
-                let newTransaction = Transaction(context: viewContext)
-                newTransaction.id = UUID()
-                newTransaction.date = Date()
-                newTransaction.deviceType = deviceType
-                newTransaction.boughtAppleCare = boughtAppleCare
-                newTransaction.connected = connected
-                newTransaction.gotLead = gotLead
-                newTransaction.isAppleCareStandalone = isAppleCareStandalone
-                do {
-                    try viewContext.save()
-                    print("Transaction saved!")
-                } catch {
-                    print(error.localizedDescription)
+            .navigationTitle("Log Transaction")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", role: .cancel) { dismiss() }
                 }
-                self.presentationMode.wrappedValue.dismiss()
-                
-            }) { Text("Save").fontWeight(.bold) })
-            
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", role: .confirm) { save() }
+                }
+            }
+            .sensoryFeedback(.selection, trigger: draft)
         }
     }
-}
 
-struct AdderView_Previews: PreviewProvider {
-    static var previews: some View {
-        AdderView()
+    private func tint(for metric: Metric) -> Color {
+        metric == .appleCare && draft.record.isAppleCareStandalone ? .standaloneGold : metric.color
+    }
+
+    /// Names the standalone AppleCare+ state in words so it is not conveyed by the gold color alone.
+    private func title(for metric: Metric) -> String {
+        metric == .appleCare && draft.record.isAppleCareStandalone ? "Standalone AppleCare+" : metric.additionTitle
+    }
+
+    private func save() {
+        Transaction(context: viewContext).apply(draft.finalized())
+        do {
+            try viewContext.save()
+        } catch {
+            Self.logger.error("Failed to save transaction: \(error.localizedDescription)")
+        }
+        dismiss()
     }
 }
 
-/// A button representing a type of device that can be involved in a transaction.
-struct DevicePurchasedOption: View {
-    
-    // State Pass-In
-    @Binding var deviceType: String
-    
-    // Variables
-    var imageName: String
-    var deviceTypeName: String
-    
-    // Computed Properties
-    var buttonSelected: Bool {
-        return deviceType == deviceTypeName
-    }
-    
+/// A large tappable tile for a device or an addition, filled with its color when selected.
+///
+/// At accessibility text sizes a titled tile lays its icon and title out side by side so the title has room.
+struct OptionButton: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var title: String? = nil
+    var symbolName: String
+    var tint: Color
+    var isSelected: Bool
+    var height: CGFloat
+    var action: () -> Void
+
+    private var usesRowLayout: Bool { title != nil && dynamicTypeSize.isAccessibilitySize }
+
     var body: some View {
-        
-        Button(action: {
-            
-            if !buttonSelected {
-                deviceType = deviceTypeName
-            } else {
-                deviceType = "No Device"
+        Button(action: action) {
+            let layout = usesRowLayout ? AnyLayout(HStackLayout(spacing: 12)) : AnyLayout(VStackLayout(spacing: 8))
+            layout {
+                Image(systemName: symbolName)
+                    .font(.system(size: 36, weight: .medium))
+                    .frame(width: usesRowLayout ? 44 : nil, height: 44)
+
+                if let title {
+                    Text(title)
+                        .font(.subheadline.weight(.bold))
+                        .multilineTextAlignment(usesRowLayout ? .leading : .center)
+                        .lineLimit(usesRowLayout ? nil : 2)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: usesRowLayout ? .infinity : nil, alignment: .leading)
+                }
             }
-            
-        }) {
-            ZStack {
-                
-                Rectangle()
-                    .foregroundColor(buttonSelected ? .green : .gray)
-                    .opacity(buttonSelected ? 1.0 : 0.5)
-                    .cornerRadius(10)
-                    .frame(height: 100)
-                
-                Image(systemName: imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(buttonSelected ? .white : .black)
-                    .frame(height: 45)
-                
+            .padding(.horizontal, usesRowLayout ? 16 : 6)
+            .padding(.vertical, usesRowLayout ? 16 : 0)
+            .frame(maxWidth: .infinity, minHeight: usesRowLayout ? 64 : height)
+            .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+            .background(isSelected ? AnyShapeStyle(tint) : AnyShapeStyle(.fill.tertiary), in: .rect(cornerRadius: 12, style: .continuous))
+            .overlay(alignment: .topTrailing) {
+                // A check mark marks selection so it is not conveyed by color alone.
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(8)
+                        .accessibilityHidden(true)
+                }
             }
+            .contentShape(.rect(cornerRadius: 12, style: .continuous))
         }
-        
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .animateUnlessReduced(isSelected)
     }
 }
 
-/// A button representing an option for a transaction addition.
-struct AdditionsOption: View {
-    
-    // State Pass-In
-    @Binding var buttonState: Bool
-    @Binding var standaloneState: Bool
-    
-    // Variables
-    var text: String
-    var imageName: String
-    var color: Color
-    
-    // Computed Properties
-    var isAppleCareButton: Bool {
-        return text == "AppleCare+"
-    }
-    
-    var body: some View {
-        
-        Button(action: {
-            
-            if !isAppleCareButton {
-                
-                buttonState.toggle()
-                
-            } else {
-                
-                if buttonState == false {
-                    
-                    buttonState = true
-                    
-                } else if buttonState == true && standaloneState == true {
-                    
-                    buttonState = false
-                    standaloneState = false
-                    
-                } else if buttonState == true && standaloneState == false {
-                    
-                    standaloneState = true
-                    
-                }
-                
-            }
-            
-        }) {
-            ZStack {
-                
-                Rectangle()
-                    .foregroundColor(buttonState ? (standaloneState && isAppleCareButton ? .gold : color) : .gray)
-                    .opacity(buttonState ? 1.0 : 0.5)
-                    .cornerRadius(10)
-                    .frame(height: 175)
-                
-                VStack {
-                    
-                    Image(systemName: imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 50)
-                        .foregroundColor(buttonState ? .white : .black)
-                    
-                    Text(text)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 7.5)
-                        .foregroundColor(buttonState ? .white : .black)
-                        .padding(.horizontal, 5)
-                        .lineLimit(text != "Business Lead" ? 1 : 2)
-                        .minimumScaleFactor(0.1)
-                    
-                }
-                
-            }
-        }
-        
-    }
+#Preview {
+    AdderView()
+        .previewEnvironment()
 }

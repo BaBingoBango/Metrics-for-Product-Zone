@@ -5,731 +5,401 @@
 //  Created by Ethan Marshall on 6/20/22.
 //
 
-import SwiftUI
-import CloudKit
 import CoreData
+import SwiftUI
 
-/// The Today view, which contains a summary of the day's transactions along with Daily Goals and the Sharing section.
+/// The Today view: daily goals, a summary of today's transactions and the Sharing section.
 struct TodayTabView: View {
-    // MARK: View Variables
-    #if os(iOS)
-    /// The horizontal size class of the current app environment.
-    ///
-    /// It is only relevant in iOS and iPadOS, since macOS and tvOS feature a consistent layout experience.
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    #endif
-    /// Whether or not the transaction adder view is being presented.
-    @State var showingAdderView = false
-    /// The complete list of the user's transactions, fetched from Core Data.
-    @FetchRequest(entity: Transaction.entity(), sortDescriptors: []) var transactions: FetchedResults<Transaction>
-    /// A `TransactionServices` object used to interact with all of the user's transactions.
-    var data: TransactionServices {
-        return TransactionServices(transactions.reversed().reversed())
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(SharingStore.self) private var sharingStore
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)], animation: .default)
+    private var transactions: FetchedResults<Transaction>
+
+    @AppStorage("showGoalsInTodayView") private var showsGoals = true
+    @AppStorage("showSharingInTodayView") private var showsSharing = true
+    @AppStorage("appleCareGoal") private var appleCareGoal = Metric.appleCare.defaultGoal
+    @AppStorage("businessLeadsGoal") private var businessLeadsGoal = Metric.businessLeads.defaultGoal
+    @AppStorage("connectivityGoal") private var connectivityGoal = Metric.connectivity.defaultGoal
+    @AppStorage("tradeInGoal") private var tradeInGoal = Metric.tradeIn.defaultGoal
+    @AppStorage("accessoryGoal") private var accessoryGoal = Metric.accessory.defaultGoal
+
+    @State private var isShowingAdder = false
+    @State private var selectedPerson: TransactionServices?
+
+    private var isCompact: Bool { horizontalSizeClass == .compact }
+
+    /// Today's transactions.
+    private var todayData: TransactionServices {
+        TransactionServices(transactions.map(\.record)).today
     }
-    /// A `TransactionServices` object used to interact with all of the user's transactions from the current day.
-    var todayData: TransactionServices {
-        return TransactionServices(data.today())
+
+    private var goals: [Metric: Int] {
+        [
+            .appleCare: appleCareGoal,
+            .businessLeads: businessLeadsGoal,
+            .connectivity: connectivityGoal,
+            .tradeIn: tradeInGoal,
+            .accessory: accessoryGoal,
+        ]
     }
-    /// A date formatter which provides date strings suitable for the Today view UI's heading.
-    var todayViewDateFormatter: DateFormatter {
-        let answer = DateFormatter()
-        answer.dateStyle = .full
-        answer.timeStyle = .none
-        return answer
-    }
-    /// The amount to horizontally pad the entire view by.
-    var horizontalPadding = 0
-    /// Whether or not this view has performed an initial Sharing fetch operation.
-    @State var hasCheckedSharing = false
-    /// The status of a Sharing fetch operation taking place via this view.
-    @State var fetchStatus = CloudKitOperationStatus.notStarted
-    
-    // Daily Goals variables
-    /// Whether or not the user's daily goals should show in the Today view.
-    @AppStorage("showGoalsInTodayView") var showGoalsInTodayView = true
-    /// In percent, the user's daily AppleCare+ goal.
-    @AppStorage("appleCareGoal") var appleCareGoal = 60
-    /// The users daily business lead goal.
-    @AppStorage("businessLeadsGoal") var businessLeadsGoal = 2
-    /// In percent, the user's daily connectivity goal.
-    @AppStorage("connectivityGoal") var connectivityGoal = 75
-    
-    /// Whether or not the the Sharing section should show in the Today view.
-    @AppStorage("showSharingInTodayView") var showSharingInTodayView = true
-    @State var isLoadingSharing = true
-    @State var sharingServices: [TransactionServices] = []
-    @State var todaySharingServices: [TransactionServices] = []
-    @Environment(\.managedObjectContext) private var viewContext
-    
-    /// Whether or not a Sharing detail view is being presented.
-    @State var isShowingSharingDetail = false
-    
-    // MARK: View Body
+
     var body: some View {
-//        NavigationView {
-            ScrollView {
-                VStack {
-                    HStack {
-                        Text(todayViewDateFormatter.string(from: Date()).uppercased())
-                            .fontWeight(.bold)
-                            .foregroundColor(.secondary)
-                            .padding(.leading)
-                        Spacer()
-                    }
-                    
-                    Text("Good \(getGenericTimeDescription())!")
-                        .font(.title)
-                        .fontWeight(.bold)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Date.now.formatted(date: .complete, time: .omitted).uppercased())
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.secondary)
+
+                    Text("Good \(TodayGreeting.timeOfDay())!")
+                        .font(.title.bold())
                         .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                        .truncationMode(.middle)
-                        .padding(.horizontal)
-                        .padding(.top, 10)
-                        .padding(.bottom, showGoalsInTodayView ? 0 : 15)
+                        .minimumScaleFactor(0.5)
+                }
 
-                    if showGoalsInTodayView {
-                        HStack {
-                            if horizontalSizeClass != .compact {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .hidden()
-                                
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .hidden()
-                            }
-                            
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .hidden()
+                if showsGoals {
+                    DailyGoalsSection(todayData: todayData, goals: goals)
+                }
 
-                            if todayData.appleCarePercent() < appleCareGoal {
-                                ZStack {
-                                    ProgressBar(progress: Double(todayData.appleCarePercent()) / 100.0, color: .red, lineWidth: 8.5, imageName: "")
-                                    
-                                    Image(systemName: "applelogo")
-                                        .aspectRatio(contentMode: .fit)
-                                        .font(.system(size: 32.5))
-                                        .foregroundColor(.red)
-                                }
-                            } else {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .foregroundColor(.green)
-                                    .padding(2.5)
-                            }
-                            
-                            if todayData.numBusinessLeads() < businessLeadsGoal {
-                                ZStack {
-                                    ProgressBar(progress: Double(todayData.numBusinessLeads()) / Double(businessLeadsGoal), color: Color("brown"), lineWidth: 8.5, imageName: "")
-                                    
-                                    Image(systemName: "briefcase.fill")
-                                        .aspectRatio(contentMode: .fit)
-                                        .font(.system(size: 27.5))
-                                        .foregroundColor(Color("brown"))
-                                }
-                            } else {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .foregroundColor(.green)
-                                    .padding(2.5)
-                            }
-                            
-                            if todayData.connectivityPercent() < connectivityGoal {
-                                ZStack {
-                                    ProgressBar(progress: Double(todayData.connectivityPercent()) / 100.0, color: .blue, lineWidth: 8.5, imageName: "")
-                                    
-                                    Image(systemName: "antenna.radiowaves.left.and.right")
-                                        .aspectRatio(contentMode: .fit)
-                                        .font(.system(size: 30))
-                                        .foregroundColor(.blue)
-                                }
-                            } else {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .foregroundColor(.green)
-                                    .padding(2.5)
-                            }
+                AppleCareSummaryCard(todayData: todayData, columns: isCompact ? 3 : 6)
 
-                            Image(systemName: "checkmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(1, contentMode: .fit)
-                                .hidden()
-                            
-                            if horizontalSizeClass != .compact {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .hidden()
-                                
-                                Image(systemName: "checkmark.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .hidden()
-                            }
-                        }
-                        .padding(.bottom, 10)
-
-                        Text("\(getDayOfWeekDescription()) \(getGoalProgressDescription())")
-                            .fontWeight(.semibold)
-                            .multilineTextAlignment(.center)
-                            .padding([.leading, .bottom, .trailing])
-                        
-                    }
-                    
-                    if horizontalSizeClass == .compact {
-                        AppleCareSummaryView(todayData: todayData)
-                        
-                        HStack {
-                            BusinessLeadsSummaryView(todayData: todayData)
-                            
-                            ConnectivitySummaryView(todayData: todayData)
-                        }
-                        .padding(.horizontal)
-                    } else {
-                        ZStack {
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.15)
-                                .cornerRadius(20)
-                            
-                            VStack {
-                                HStack {
-                                    Image(systemName: "applelogo")
-                                        .imageScale(.large)
-                                        .foregroundColor(.red)
-                                    
-                                    Text("AppleCare+   | ")
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.red)
-                                    
-                                    Text("\(todayData.appleCarePercent())%")
-                                        .font(.title3)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.red)
-                                    
-                                    Spacer()
-                                }
-                                
-                                HStack {
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPhone")) / 100, color: .red, lineWidth: 8.5, imageName: "iphone")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPad")) / 100, color: .red, lineWidth: 8.5, imageName: "ipad.landscape")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Mac")) / 100, color: .red, lineWidth: 8.5, imageName: "desktopcomputer")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple Watch")) / 100, color: .red, lineWidth: 8.5, imageName: "applewatch")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple TV")) / 100, color: .red, lineWidth: 8.5, imageName: "appletv")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Headphones")) / 100, color: .red, lineWidth: 8.5, imageName: "headphones")
-                                        .aspectRatio(1, contentMode: .fit)
-                                    
-                                    ZStack {
-                                        ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
-                                            .aspectRatio(1, contentMode: .fit)
-                                        
-                                        VStack {
-                                            Text("\(todayData.numBusinessLeads())")
-                                                .font(.system(size: 30))
-                                                .fontWeight(.bold)
-                                                .foregroundColor(Color("brown"))
-                                            
-                                            Text(todayData.numBusinessLeads() != 1 ? "Leads" : "Lead")
-                                                .font(.caption)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(Color("brown"))
-                                                .lineLimit(1)
-                                                .minimumScaleFactor(0.1)
-                                        }
-                                    }
-                                    
-                                    ZStack {
-                                        ProgressBar(progress: Double(todayData.connectivityPercent()) / 100, color: .blue, lineWidth: 8.5, imageName: "")
-                                            .aspectRatio(1, contentMode: .fit)
-                                        
-                                        VStack {
-                                            Text("\(todayData.connectivityPercent())%")
-                                                .font(.body)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.blue)
-                                            
-                                            Text("Connect")
-                                                .font(.caption)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.blue)
-                                                .lineLimit(1)
-                                                .minimumScaleFactor(0.1)
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.all)
-                        }
-                        .padding(.horizontal)
-                    }
-                    
-                    if showSharingInTodayView {
-                        HStack {
-                            Text("Sharing")
-                                .font(.title)
-                                .fontWeight(.bold)
-                            
-                            if fetchStatus == .success || fetchStatus == .failure {
-                                Button(action: {
-                                    getSharingData()
-                                }) {
-                                    Image(systemName: "arrow.clockwise")
-                                        .aspectRatio(contentMode: .fit)
-                                        .font(.system(size: 25))
-                                        .foregroundColor(.accentColor)
-                                }
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding([.top, .leading])
-                        
-                        if fetchStatus == .inProgress {
-                            HStack {
-                                SharingRectangleView(isLoading: true)
-                                
-                                if UIDevice.current.userInterfaceIdiom != .phone {
-                                    SharingRectangleView(isLoading: true)
-                                        .hidden()
-                                }
-                            }
-                                .padding(.horizontal)
-                        } else if sharingServices.isEmpty {
-                            HStack {
-                                SharingRectangleView(isPlaceholder: true)
-                                
-                                if UIDevice.current.userInterfaceIdiom != .phone {
-                                    SharingRectangleView(isPlaceholder: true)
-                                        .hidden()
-                                }
-                            }
-                                .padding(.horizontal)
-                        } else {
-                            ForEach(sharingServices, id: \.id) { eachData in
-                                HStack {
-                                    Button(action: {
-                                        isShowingSharingDetail = true
-                                    }) {
-                                        SharingRectangleView(eachTodayData: {
-                                            let todayTransactions = TransactionServices(eachData.today())
-                                            todayTransactions.owner = eachData.owner
-                                            return todayTransactions
-                                        }())
-                                    }
-                                    .sheet(isPresented: $isShowingSharingDetail) {
-                                        SharingTabView(transactions: eachData)
-                                    }
-                                    
-                                    if sharingServices.last!.id == eachData.id && sharingServices.count % 2 != 0 && UIDevice.current.userInterfaceIdiom != .phone {
-                                        SharingRectangleView(isPlaceholder: true)
-                                            .hidden()
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                        }
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: isCompact ? 2 : 4), spacing: 16) {
+                    ForEach(Metric.allCases.filter { $0 != .appleCare }) { metric in
+                        MetricSummaryCard(metric: metric, todayData: todayData)
                     }
                 }
-                .padding(.bottom)
-            }
-            .onAppear {
-                if !hasCheckedSharing {
-                    getSharingData()
-                    hasCheckedSharing = true
+
+                if showsSharing {
+                    SharingSection(isCompact: isCompact) { selectedPerson = $0 }
                 }
             }
-            
-            // MARK: Navigation View Settings
-            .navigationTitle(Text("Today"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingAdderView.toggle()
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                    }
-                    .sheet(isPresented: $showingAdderView) {
-                        AdderView()
-                    }
+            .padding()
+        }
+        .navigationTitle("Today")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Log Transaction", systemImage: "plus") {
+                    isShowingAdder = true
                 }
-            }
-//        }
-    }
-    
-    // MARK: - View Functions
-    /// Connects to the Internet to download Sharing data from the server.
-    func getSharingData() {
-        fetchStatus = .inProgress
-        sharingServices = []
-        todaySharingServices = []
-        
-        let zoneFetchOperation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
-        zoneFetchOperation.perRecordZoneResultBlock = { (recordZoneID: CKRecordZone.ID, recordZoneResult: Result<CKRecordZone, Error>) -> Void in
-            switch recordZoneResult {
-                
-            case .success(let fetchedZone):
-                var newTransactionSet: [Transaction] = []
-                
-                // Zone Operation 1: Transaction Query
-                let queryOperation = CKQueryOperation(query: CKQuery(recordType: "CD_Transaction", predicate: NSPredicate(value: true)))
-                queryOperation.zoneID = fetchedZone.zoneID
-                
-                queryOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
-                    switch recordResult {
-                        
-                    case .success(let queriedRecord):
-                        let transactionEntity = NSEntityDescription.entity(forEntityName: "Transaction", in: viewContext)!
-                        let newTransaction = Transaction(entity: transactionEntity, insertInto: nil)
-                        
-                        newTransaction.id = UUID(uuidString: (queriedRecord.object(forKey: "CD_id") as? String)!)
-                        newTransaction.date = queriedRecord.object(forKey: "CD_date") as? Date
-                        newTransaction.deviceType = queriedRecord.object(forKey: "CD_deviceType") as? String
-                        newTransaction.boughtAppleCare = queriedRecord.object(forKey: "CD_boughtAppleCare") as! Int == 1 ? true : false
-                        newTransaction.connected = queriedRecord.object(forKey: "CD_connected") as! Int == 1 ? true : false
-                        newTransaction.gotLead = queriedRecord.object(forKey: "CD_gotLead") as! Int == 1 ? true : false
-                        newTransaction.isAppleCareStandalone = queriedRecord.object(forKey: "CD_isAppleCareStandalone") as! Int == 1 ? true : false
-                        
-                        newTransactionSet.append(newTransaction)
-                        
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                        fetchStatus = .failure
-                    }
-                }
-                
-                queryOperation.queryResultBlock = { (_ operationResult: Result<CKQueryOperation.Cursor?, Error>) -> Void in
-                    // Zone Operation 2: Name Query
-                    let nameOperation = CKQueryOperation(query: CKQuery(recordType: "cloudkit.share", predicate: NSPredicate(value: true)))
-                    nameOperation.zoneID = fetchedZone.zoneID
-                    nameOperation.recordMatchedBlock = { (_ recordID: CKRecord.ID, _ recordResult: Result<CKRecord, Error>) -> Void in
-                        switch recordResult {
-                        case .success(let result):
-                            if let shareRecord = result as? CKShare {
-                                let newServices = TransactionServices(newTransactionSet)
-                                newServices.owner = {
-                                    let ownerFirstName = shareRecord.owner.userIdentity.nameComponents?.givenName
-                                    let ownerLastName = shareRecord.owner.userIdentity.nameComponents?.familyName
-                                    
-                                    if ownerFirstName == nil {
-                                        return "Name Not Provided"
-                                    } else {
-                                        if ownerLastName == nil {
-                                            return ownerFirstName!
-                                        } else {
-                                            return ownerFirstName! + " " + ownerLastName!
-                                        }
-                                    }
-                                }()
-                                
-                                sharingServices.append(newServices)
-                                todaySharingServices.append(TransactionServices(newServices.today()))
-                                
-                                newTransactionSet = []
-                                fetchStatus = .success
-                            }
-                            
-                        case .failure(let error):
-                            print(error.localizedDescription)
-                            fetchStatus = .failure
-                        }
-                    }
-                    CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(nameOperation)
-                }
-                
-                CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(queryOperation)
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-                fetchStatus = .failure
             }
         }
-        
-        zoneFetchOperation.fetchRecordZonesResultBlock = { (_ operationResult: Result<Void, Error>) -> Void in
-            switch operationResult {
-            case .success():
-                print("Zone fetch success!")
-                sleep(1)
-                fetchStatus = .success
-            case .failure(let error):
-                print(error.localizedDescription)
-                fetchStatus = .failure
+        .sheet(isPresented: $isShowingAdder) {
+            AdderView()
+        }
+        .sheet(item: $selectedPerson) { person in
+            SharingTabView(transactions: person)
+        }
+        .task(id: showsSharing) {
+            if showsSharing, !sharingStore.hasLoaded {
+                await sharingStore.refresh()
             }
         }
-        
-        CKContainer(identifier: "iCloud.Metrics").sharedCloudDatabase.add(zoneFetchOperation)
-    }
-    /// Uses the current time to generate a generic word that describes the current part of the day.
-    func getGenericTimeDescription() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm"
-        let militaryTime = dateFormatter.string(from: Date())
-        let hour = Int(militaryTime.components(separatedBy: ":")[0])!
-        
-        if hour >= 22 {
-            // 9 PM - 11:59 PM
-            return "evening"
-        } else if hour >= 12 {
-            // Noon - 9 PM
-            return "afternoon"
-        } else if hour >= 6 {
-            // 6 AM - 11:59 AM
-            return "morning"
-        } else {
-            // Midnight - 5:59 AM
-            return "evening"
-        }
-    }
-    /// Returns a short exclamatory string about the current day of the week.
-    func getDayOfWeekDescription() -> String {
-        if Date().dayOfWeek() == nil {
-            return "Hello!"
-        } else {
-            switch Date().dayOfWeek()! {
-            case "Monday":
-                return [
-//                    "Happy Monday!",
-//                    "It's another week!",
-                    "It's Monday..."
-                ].randomElement()!
-            case "Tuesday":
-                return [
-//                    "Happy Tuesday!",
-                    "Happy 2's day!"
-//                    "Happy not Monday!"
-                ].randomElement()!
-            case "Wednesday":
-                return [
-//                    "Happy Wednesday!",
-                    "Happy hump day!"
-//                    "Happy mid-week!"
-                ].randomElement()!
-            case "Thursday":
-                return [
-                    "Happy Thursday!"
-//                    "It's Thursday almost Friday!"
-                ].randomElement()!
-            case "Friday":
-                return [
-//                    "Happy Friday!",
-//                    "TGIF!",
-                    "It's Friday!!"
-                ].randomElement()!
-            case "Saturday":
-                return [
-//                    "Happy Saturday!",
-                    "Happy weekend!"
-//                    "It's the weekend!"
-                ].randomElement()!
-            case "Sunday":
-                return [
-                    "Happy Sunday!"
-//                    "Sunday funday!"
-                ].randomElement()!
-            default:
-                return "Hello!"
+        .refreshable {
+            if showsSharing {
+                await sharingStore.refresh()
             }
-        }
-    }
-    /// Returns a string describing the user's progress on their Daily Goals.
-    func getGoalProgressDescription() -> String {
-        var goalsClear = 0
-        if todayData.appleCarePercent() >= appleCareGoal { goalsClear += 1 }
-        if todayData.numBusinessLeads() >= businessLeadsGoal { goalsClear += 1 }
-        if todayData.connectivityPercent() >= connectivityGoal { goalsClear += 1 }
-        
-        switch goalsClear {
-        case 0:
-            return "It's a great time to get started on your goals! You can do it!"
-        case 1:
-            return "One down, two to go! Keep going, you got this!"
-        case 2:
-            return "You only have one goal to go! You're almost there!"
-        case 3:
-            return "All your goals are green right now! Great job, you did it!"
-        default:
-            return ""
         }
     }
 }
 
-// MARK: View Preview
-struct TodayTabView_Previews: PreviewProvider {
-    static var previews: some View {
+// MARK: - Greeting
+
+/// The friendly copy at the top of the Today view.
+enum TodayGreeting {
+    /// A word for the current part of the day, as in "Good morning".
+    static func timeOfDay(at date: Date = .now, calendar: Calendar = .current) -> String {
+        switch calendar.component(.hour, from: date) {
+        case 22...: "evening"
+        case 12..<22: "afternoon"
+        case 6..<12: "morning"
+        default: "evening"
+        }
+    }
+
+    /// A short exclamation about the day of the week.
+    static func dayOfWeekPhrase(for date: Date = .now, calendar: Calendar = .current) -> String {
+        switch calendar.component(.weekday, from: date) {
+        case 1: "Happy Sunday!"
+        case 2: "It's Monday..."
+        case 3: "Happy 2's day!"
+        case 4: "Happy hump day!"
+        case 5: "Happy Thursday!"
+        case 6: "It's Friday!!"
+        case 7: "Happy weekend!"
+        default: "Hello!"
+        }
+    }
+
+    /// Encouragement based on how many daily goals are met.
+    static func goalProgress(met: Int, of total: Int) -> String {
+        let remaining = total - met
+        if met == 0 { return "It's a great time to get started on your goals! You can do it!" }
+        if remaining == 0 { return "All your goals are green right now! Great job, you did it!" }
+        if remaining == 1 { return "You only have one goal to go! You're almost there!" }
+        return "\(spelledOut(met).capitalized) down, \(spelledOut(remaining)) to go! Keep going, you got this!"
+    }
+
+    private static func spelledOut(_ number: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .spellOut
+        return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
+    }
+}
+
+// MARK: - Daily goals
+
+/// The row of goal rings and the encouragement line beneath it.
+struct DailyGoalsSection: View {
+    let todayData: TransactionServices
+    let goals: [Metric: Int]
+
+    private func goal(for metric: Metric) -> Int {
+        goals[metric] ?? metric.defaultGoal
+    }
+
+    private func progress(for metric: Metric) -> Double {
+        if metric.isRate {
+            return Double(todayData.percent(for: metric)) / 100
+        }
+        let goal = goal(for: metric)
+        return goal == 0 ? 1 : Double(todayData.count(for: metric)) / Double(goal)
+    }
+
+    private func isMet(_ metric: Metric) -> Bool {
+        todayData.value(for: metric) >= goal(for: metric)
+    }
+
+    private var metCount: Int {
+        Metric.allCases.count(where: isMet)
+    }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                ForEach(Metric.allCases) { metric in
+                    GoalRing(metric: metric, progress: progress(for: metric), isMet: isMet(metric))
+                }
+            }
+            .frame(maxWidth: 520)
+
+            Text("\(TodayGreeting.dayOfWeekPhrase()) \(TodayGreeting.goalProgress(met: metCount, of: Metric.allCases.count))")
+                .font(.subheadline.weight(.semibold))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+/// One daily goal: a progress ring, or a green check once the goal is met.
+struct GoalRing: View {
+    let metric: Metric
+    let progress: Double
+    let isMet: Bool
+
+    var body: some View {
+        Group {
+            if isMet {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(.green)
+                    .padding(2.5)
+            } else {
+                ProgressRing(progress: progress, color: metric.color, symbolName: metric.symbolName)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isMet ? "\(metric.title) goal met" : "\(metric.title) goal, \(Int((progress * 100).rounded())) percent of the way there")
+    }
+}
+
+// MARK: - Summary cards
+
+/// AppleCare+ attach for the day, broken down by device type.
+struct AppleCareSummaryCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let todayData: TransactionServices
+    let columns: Int
+
+    var body: some View {
+        VStack(spacing: 12) {
+            let header = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) : AnyLayout(HStackLayout())
+            header {
+                Label("AppleCare+", systemImage: "applelogo")
+                    .font(.headline)
+                    .foregroundStyle(.red)
+
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Spacer()
+                }
+
+                Text("\(todayData.appleCarePercent)%")
+                    .font(.title3.bold())
+                    .foregroundStyle(.red)
+                    .numericContentTransition()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: columns), spacing: 12) {
+                ForEach(DeviceType.sellable) { device in
+                    ProgressRing(progress: Double(todayData.appleCarePercent(for: device)) / 100, color: .red, symbolName: device.symbolName)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("\(device.name) AppleCare+ attach rate \(todayData.appleCarePercent(for: device)) percent")
+                }
+            }
+        }
+        .padding()
+        .cardBackground()
+    }
+}
+
+/// A square card with a metric's headline number for the day inside its ring.
+struct MetricSummaryCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let metric: Metric
+    let todayData: TransactionServices
+
+    private var value: String { todayData.formattedValue(for: metric) }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Label(metric.shortTitle, systemImage: metric.symbolName)
+                .font(.headline)
+                .foregroundStyle(metric.color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+
+            ProgressRing(progress: metric.isRate ? Double(todayData.percent(for: metric)) / 100 : 0, color: metric.color) {
+                Text(value)
+                    .font(metric.isRate ? .body.bold() : .largeTitle.bold())
+                    .foregroundStyle(metric.color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .numericContentTransition()
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        // Cards are square unless large text needs the room to grow.
+        .aspectRatio(dynamicTypeSize.isAccessibilitySize ? nil : 1, contentMode: .fit)
+        .cardBackground()
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(metric.title) today: \(value)")
+    }
+}
+
+// MARK: - Sharing
+
+/// The list of people sharing their metrics, with today's numbers for each.
+struct SharingSection: View {
+    @Environment(SharingStore.self) private var sharingStore
+    let isCompact: Bool
+    let onSelect: (TransactionServices) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Text("Sharing")
+                    .font(.title.bold())
+
+                if sharingStore.hasLoaded {
+                    Button("Refresh Sharing", systemImage: "arrow.clockwise") {
+                        Task { await sharingStore.refresh() }
+                    }
+                    .labelStyle(.iconOnly)
+                    .font(.title3.weight(.semibold))
+                }
+
+                Spacer()
+            }
+
+            switch sharingStore.status {
+            case .notStarted, .inProgress:
+                SharingMessageCard {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("Connecting…")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                }
+
+            case .failure:
+                SharingMessageCard(
+                    systemImage: "exclamationmark.icloud.fill",
+                    title: "Sharing Unavailable",
+                    message: "Check that you're signed in to iCloud and connected to the Internet, then refresh."
+                )
+
+            case .success where sharingStore.people.isEmpty:
+                SharingMessageCard(
+                    systemImage: "person.3.fill",
+                    title: "No People Found",
+                    message: "No one is sharing their metrics with you right now."
+                )
+
+            case .success:
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: isCompact ? 1 : 2), spacing: 16) {
+                    ForEach(sharingStore.people) { person in
+                        Button {
+                            onSelect(person)
+                        } label: {
+                            SharingRectangleView(person: person.today)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Shows this person's week, lifetime and transactions")
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// A card carrying a status message in place of Sharing data.
+struct SharingMessageCard<Content: View>: View {
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        VStack(spacing: 10) {
+            content()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(24)
+        .cardBackground()
+    }
+}
+
+extension SharingMessageCard where Content == SharingMessage {
+    init(systemImage: String, title: String, message: String) {
+        self.init { SharingMessage(systemImage: systemImage, title: title, message: message) }
+    }
+}
+
+/// An icon, headline and explanation for a `SharingMessageCard`.
+struct SharingMessage: View {
+    let systemImage: String
+    let title: String
+    let message: String
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 40))
+            .foregroundStyle(.secondary)
+
+        Text(title)
+            .font(.title2.bold())
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+
+        Text(message)
+            .font(.callout)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+    }
+}
+
+#Preview {
+    NavigationStack {
         TodayTabView()
-            .previewInterfaceOrientation(.landscapeLeft)
     }
-}
-
-struct AppleCareSummaryView: View {
-    
-    var todayData: TransactionServices
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.gray)
-                .opacity(0.15)
-                .cornerRadius(20)
-            
-            VStack {
-                HStack {
-                    Image(systemName: "applelogo")
-                        .imageScale(.large)
-                        .foregroundColor(.red)
-                    
-                    Text("AppleCare+")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                    Spacer()
-                    
-                    Text("\(todayData.appleCarePercent())%")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                .padding([.top, .leading, .trailing])
-                
-                HStack(spacing: 0) {
-                    
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPhone")) / 100, color: .red, lineWidth: 8.5, imageName: "iphone")
-                        .aspectRatio(1, contentMode: .fit)
-                    
-                    Spacer()
-                    
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("iPad")) / 100, color: .red, lineWidth: 8.5, imageName: "ipad.landscape")
-                        .aspectRatio(1, contentMode: .fit)
-                    
-                    Spacer()
-                    
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Mac")) / 100, color: .red, lineWidth: 8.5, imageName: "desktopcomputer")
-                        .aspectRatio(1, contentMode: .fit)
-                }
-                .padding(.horizontal)
-                
-                HStack(spacing: 0) {
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple Watch")) / 100, color: .red, lineWidth: 8.5, imageName: "applewatch")
-                        .aspectRatio(1, contentMode: .fit)
-                    
-                    Spacer()
-                    
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Apple TV")) / 100, color: .red, lineWidth: 8.5, imageName: "appletv")
-                        .aspectRatio(1, contentMode: .fit)
-                    
-                    Spacer()
-                    
-                    ProgressBar(progress: Double(todayData.customAppleCarePercent("Headphones")) / 100, color: .red, lineWidth: 8.5, imageName: "headphones")
-                        .aspectRatio(1, contentMode: .fit)
-                }
-                .padding(.horizontal)
-            }
-            .padding(.bottom)
-        }
-        .padding(.horizontal)
-    }
-}
-
-struct BusinessLeadsSummaryView: View {
-    
-    var todayData: TransactionServices
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.gray)
-                .opacity(0.15)
-                .cornerRadius(20)
-            
-            HStack {
-                VStack {
-                    HStack(alignment: .center) {
-                        Image(systemName: "briefcase.fill")
-                            .imageScale(.large)
-                            .foregroundColor(Color("brown"))
-                        
-                        Text("Leads")
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("brown"))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                    }
-                    .padding(.top)
-                    .padding(.horizontal, 5)
-                    
-                    ZStack {
-                        ProgressBar(progress: 0.0, color: Color("brown"), lineWidth: 8.5, imageName: "")
-                            .aspectRatio(1, contentMode: .fit)
-                        
-                        Text("\(todayData.numBusinessLeads())")
-                            .font(.system(size: 30))
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("brown"))
-                    }
-                    .padding(.bottom)
-                }
-            }
-        }
-        .aspectRatio(1, contentMode: .fit)
-    }
-}
-
-struct ConnectivitySummaryView: View {
-    
-    var todayData: TransactionServices
-    
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.gray)
-                .opacity(0.15)
-                .cornerRadius(20)
-            
-            HStack {
-                VStack {
-                    HStack(alignment: .center) {
-                        Image(systemName: "antenna.radiowaves.left.and.right")
-                            .imageScale(.large)
-                            .foregroundColor(.blue)
-                        
-                        Text("Connected")
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                    }
-                    .padding(.top)
-                    .padding(.horizontal, 5)
-                    
-                    ZStack {
-                        ProgressBar(progress: Double(todayData.connectivityPercent()) / 100, color: .blue, lineWidth: 8.5, imageName: "")
-                            .aspectRatio(1, contentMode: .fit)
-                        
-                        Text("\(todayData.connectivityPercent())%")
-                            .font(.body)
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                    }
-                    .padding(.bottom)
-                }
-            }
-        }
-        .aspectRatio(1, contentMode: .fit)
-    }
+    .previewEnvironment()
 }

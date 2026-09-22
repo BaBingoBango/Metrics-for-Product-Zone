@@ -5,354 +5,119 @@
 //  Created by Ethan Marshall on 8/5/21.
 //
 
+import CoreData
 import SwiftUI
 
-/// The view showing bar graphs for the current week's transactions and access points
+/// Bar charts for the current week's transactions, one per metric, each opening a detailed graph.
 struct ThisWeekView: View {
-    // MARK: - View Variables
-    /// The navigation title text for this view.
+    /// The navigation title, which names the person when viewing shared data.
     var navigationTitleText = "This Week"
-    
-    /// A custom list of transactions that overrides the standard request to Core Data.
+    /// Transactions that replace the user's own, when viewing someone who shares with them.
     var customTransactions: TransactionServices?
-    
-    // View context & transaction fetch request
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
-    var transactions: FetchedResults<Transaction>
-    
-    // TransactionServices objects
-    var data: TransactionServices {
-        if customTransactions != nil {
-            return customTransactions!
-        } else {
-            return TransactionServices(transactions.reversed().reversed())
-        }
+
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)], animation: .default)
+    private var transactions: FetchedResults<Transaction>
+    @State private var selectedMetric: Metric?
+
+    private var data: TransactionServices {
+        customTransactions ?? TransactionServices(transactions.map(\.record))
     }
-    
-    /// A date formatter that is used in this view.
-    var dateFormatter: DateFormatter {
-        let answer = DateFormatter()
-        answer.dateStyle = .medium
-        answer.timeStyle = .none
-        return answer
+
+    /// The first and last day of the current week, as in "SEP 20, 2026 – SEP 26, 2026".
+    private var weekRange: String {
+        guard let week = data.calendar.weekInterval(containing: data.now),
+              let lastDay = data.calendar.date(byAdding: .day, value: -1, to: week.end) else { return "" }
+        let start = week.start.formatted(date: .abbreviated, time: .omitted)
+        let end = lastDay.formatted(date: .abbreviated, time: .omitted)
+        return "\(start) – \(end)".uppercased()
     }
-    
-    // State variables
-    @State var showingAC = false
-    @State var showingBL = false
-    @State var showingC = false
-    
-    // MARK: - View Body
+
     var body: some View {
-//        NavigationView {
-            ScrollView {
-                VStack {
-                    HStack {
-                        Text("\(dateFormatter.string(from: Date().previous(.sunday))) - \(dateFormatter.string(from: Date().next(.saturday)))".uppercased())
-                            .fontWeight(.bold)
-                            .foregroundColor(.secondary)
-                            .padding(.leading)
-                        Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(weekRange)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                ForEach(Metric.allCases) { metric in
+                    Button {
+                        selectedMetric = metric
+                    } label: {
+                        WeekMetricCard(metric: metric, data: data)
                     }
-                    
-                    // MARK: AppleCare+
-                    
-                    Button(action: {
-                        showingAC.toggle()
-                    }) {
-                        ZStack {
-                            
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.2)
-                                .cornerRadius(20)
-                                .padding(.horizontal)
-                            
-                            VStack {
-                                
-                                HStack {
-                                    Image(systemName: "applelogo")
-                                        .imageScale(.large)
-                                        .foregroundColor(.red)
-                                    Text("AppleCare+")
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.red)
-                                    Spacer()
-                                    HStack(spacing: 6) {
-                                        Text("TOTAL")
-                                            .font(.headline)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.secondary)
-                                        Text("\(TransactionServices(data.allWeek()).appleCarePercent())%")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.red)
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.1)
-                                            .padding(.trailing, 30)
-                                    }
-                                }
-                                .padding(.top, 15)
-                                .padding(.leading, 35)
-                                
-                                BarGraphRow(percents: [
-                                            Double(TransactionServices(data.thisWeek(.sunday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.monday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.tuesday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.wednesday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.thursday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.friday)).appleCarePercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.saturday)).appleCarePercent()) / 100.0
-                                ], color: .red)
-                                
-                                Spacer()
-                            }
-                            
-                        }
-                        .frame(height: 280)
-                    }
-                    .sheet(isPresented: $showingAC) {
-                        GraphDetailView(data: data, stat: "AppleCare+")
-                    }
-                    
-                    // MARK: Business Leads
-                    
-                    Button(action: {
-                        showingBL.toggle()
-                    }) {
-                        ZStack {
-                            
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.2)
-                                .cornerRadius(20)
-                                .padding(.horizontal)
-                            
-                            VStack {
-                                
-                                HStack {
-                                    Image(systemName: "briefcase.fill")
-                                        .imageScale(.large)
-                                        .foregroundColor(.brown)
-                                    Text("Business Leads")
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.brown)
-                                    Spacer()
-                                    HStack(spacing: 6) {
-                                        Text("AVG")
-                                            .font(.headline)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.secondary)
-                                        
-                                        let bizServices = TransactionServices(data.allWeek())
-                                        let bizAverage = ((Double(bizServices.numBusinessLeads()) / Double(bizServices.numUniqueDays())).truncate(places: 3))
-                                        
-                                        Text(bizAverage.isNaN ? "0" : String(bizAverage))
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.brown)
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.1)
-                                            .padding(.trailing, 30)
-                                    }
-                                }
-                                .padding(.top, 15)
-                                .padding(.leading, 35)
-                                
-                                BarGraphRow(percents: [
-                                            Double(TransactionServices(data.thisWeek(.sunday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.monday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.tuesday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.wednesday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.thursday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.friday)).numBusinessLeads()) / 5.0,
-                                            Double(TransactionServices(data.thisWeek(.saturday)).numBusinessLeads()) / 5.0
-                                ], color: .brown)
-                                
-                                Spacer()
-                                
-                            }
-                            
-                        }
-                        .frame(height: 280)
-                        .padding(.top)
-                    }
-                    .sheet(isPresented: $showingBL) {
-                        GraphDetailView(data: data, stat: "Business Leads")
-                    }
-                    
-                    // MARK: Connectivity
-                    
-                    Button(action: {
-                        showingC.toggle()
-                    }) {
-                        ZStack {
-                            
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.2)
-                                .cornerRadius(20)
-                                .padding(.horizontal)
-                            
-                            VStack {
-                                
-                                HStack {
-                                    Image(systemName: "antenna.radiowaves.left.and.right")
-                                        .imageScale(.large)
-                                        .foregroundColor(.blue)
-                                    Text("Connectivity")
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.blue)
-                                    Spacer()
-                                    HStack(spacing: 6) {
-                                        Text("TOTAL")
-                                            .font(.headline)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.secondary)
-                                        Text("\(TransactionServices(data.allWeek()).connectivityPercent())%")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.blue)
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.1)
-                                            .padding(.trailing, 30)
-                                    }
-                                }
-                                .padding(.top, 15)
-                                .padding(.leading, 35)
-                                
-                                BarGraphRow(percents: [
-                                            Double(TransactionServices(data.thisWeek(.sunday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.monday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.tuesday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.wednesday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.thursday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.friday)).connectivityPercent()) / 100.0,
-                                            Double(TransactionServices(data.thisWeek(.saturday)).connectivityPercent()) / 100.0
-                                ], color: .blue)
-                                
-                                Spacer()
-                                
-                            }
-                            
-                        }
-                        .frame(height: 280)
-                        .padding([.top, .bottom])
-                    }
-                    .sheet(isPresented: $showingC) {
-                        GraphDetailView(data: data, stat: "Connectivity")
-                    }
-                    
-                    Spacer()
-                    
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Opens the detailed graph")
                 }
-                
-                // MARK: Nav Bar Settings
-                .navigationBarTitle(Text(navigationTitleText))
             }
-            
-//        }
+            .padding()
+        }
+        .navigationTitle(navigationTitleText)
+        .sheet(item: $selectedMetric) { metric in
+            GraphDetailView(data: data, metric: metric)
+        }
     }
 }
 
-struct ThisWeekView_Previews: PreviewProvider {
-    static var previews: some View {
+/// A card with a metric's bar chart for the week and its total or average.
+struct WeekMetricCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let metric: Metric
+    let data: TransactionServices
+
+    private var week: TransactionServices { data.week() }
+
+    private var headline: (label: String, value: String) {
+        if metric.isRate {
+            return ("TOTAL", "\(week.percent(for: metric))%")
+        }
+        return ("AVG", week.averageLeadsPerDay.formatted(.number.precision(.fractionLength(0...2))))
+    }
+
+    private var bars: [MetricBar] { MetricBarChart.weekdayBars(for: metric, in: data) }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // The title and total share a row, or stack at accessibility text sizes.
+            let header = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) : AnyLayout(HStackLayout())
+            header {
+                Label(metric.title, systemImage: metric.symbolName)
+                    .font(.headline)
+                    .foregroundStyle(metric.color)
+
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Spacer()
+                }
+
+                HStack(spacing: 6) {
+                    Text(headline.label)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize()
+
+                    Text(headline.value)
+                        .font(.title3.bold())
+                        .foregroundStyle(metric.color)
+                        .numericContentTransition()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            MetricBarChart(
+                bars: bars,
+                color: metric.color,
+                maxValue: MetricBarChart.maxValue(for: metric, bars: bars, baseline: 5),
+                isRate: metric.isRate
+            )
+            .frame(height: 200)
+        }
+        .padding()
+        .cardBackground()
+    }
+}
+
+#Preview {
+    NavigationStack {
         ThisWeekView()
     }
-}
-
-struct BarGraphRow: View {
-    
-    // Parameter for the labels
-    var labels: [String] = ["S", "M", "T", "W", "T", "F", "S"]
-    
-    // Pass-In Variable
-    var percents: [Double]
-    var color: Color
-    
-    // Functions
-    func reduce(_ num: Double) -> Double {
-        if num > 1.0 {
-            return 1.0
-        } else {
-            return num
-        }
-    }
-    
-    var body: some View {
-        HStack {
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[0])))
-                Text(labels[0])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[1])))
-                Text(labels[1])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[2])))
-                Text(labels[2])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[3])))
-                Text(labels[3])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[4])))
-                Text(labels[4])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[5])))
-                Text(labels[5])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-            VStack {
-                Spacer()
-                Rectangle()
-                    .foregroundColor(color)
-                    .cornerRadius(10)
-                    .frame(height: 191 * CGFloat(reduce(percents[6])))
-                Text(labels[6])
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(.horizontal, 30)
-    }
+    .previewEnvironment()
 }

@@ -5,29 +5,28 @@
 //  Created by Ethan Marshall on 7/30/21.
 //
 
-import XCTest
+import CoreData
+import Testing
 @testable import Metrics
 
-class MetricsTests: XCTestCase {
+/// Tests for the Core Data stack.
+@MainActor
+struct PersistenceTests {
+    @Test func transactionsRoundTripThroughCoreData() throws {
+        let controller = PersistenceController(inMemory: true)
+        let context = controller.container.viewContext
+        let record = TransactionRecord(deviceType: .mac, boughtAppleCare: true, tradedIn: true, boughtAccessory: true)
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        Transaction(context: context).apply(record)
+        try context.save()
+
+        let fetched = try context.fetch(Transaction.fetchRequest())
+        #expect(fetched.count == 1)
+        #expect(fetched.first?.record == record)
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    @Test func sampleDataIsStable() {
+        #expect(TransactionRecord.sampleData.map(\.deviceType) == TransactionRecord.sampleData.map(\.deviceType))
+        #expect(!TransactionRecord.sampleData.isEmpty)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

@@ -5,52 +5,33 @@
 //  Created by Ethan Marshall on 6/8/22.
 //
 
-import Foundation
-import SwiftUI
 import MessageUI
+import SwiftUI
 
-/// A SwiftUI view for sending an email via the system Mail interface.
+/// The system Mail compose sheet, pre-filled for sending feedback.
 struct MailSenderView: UIViewControllerRepresentable {
-    
-    // MARK: View Controller Variables
-    var recipients: [String]
-    var subject: String
-    var body: String
-    
-    
-    // MARK: View Controller Generator
+    let recipients: [String]
+    let subject: String
+    let body: String
+
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
-        // MARK: Mail Sender Settings
-        let mailSenderViewController = MFMailComposeViewController()
-        mailSenderViewController.mailComposeDelegate = context.coordinator
-        
-        mailSenderViewController.setToRecipients(recipients)
-        mailSenderViewController.setSubject(subject)
-        mailSenderViewController.setMessageBody(body, isHTML: false)
-        
-        return mailSenderViewController
+        let controller = MFMailComposeViewController()
+        controller.mailComposeDelegate = context.coordinator
+        controller.setToRecipients(recipients)
+        controller.setSubject(subject)
+        controller.setMessageBody(body, isHTML: false)
+        return controller
     }
-    
-    // MARK: View Controller Updater
+
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
-    
-    // MARK: Coordinator Generator
+
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator()
     }
-    
-    // MARK: Coordinator Class
-    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
-        var parent: MailSenderView
-        
-        init(_ mailSenderViewController: MailSenderView) {
-            self.parent = mailSenderViewController
-        }
-        
-        // MARK: Mail Sender Delegate Functions
-        func mailComposeController(_ mailSenderViewController: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-            mailSenderViewController.dismiss(animated: true)
+
+    final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            controller.dismiss(animated: true)
         }
     }
-    
 }

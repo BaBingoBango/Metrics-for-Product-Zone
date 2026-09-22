@@ -5,142 +5,128 @@
 //  Created by Ethan Marshall on 7/30/21.
 //
 
-import SwiftUI
+import CoreData
 import CloudKit
+import SwiftUI
+import os
 #if os(iOS)
 import UIKit
 #endif
 
 @main
 struct MetricsApp: App {
-    /// The system-provided `ScenePhase` object  used for app launching.
-    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.scenePhase) private var scenePhase
     #if os(iOS)
-    /// The custom app delegate for the app.
-    @UIApplicationDelegateAdaptor var delegate: MetricsAppDelegate
+    @UIApplicationDelegateAdaptor private var delegate: MetricsAppDelegate
     #endif
-    /// The persistence controller for Core Data.
-    let persistenceController = PersistenceController.shared
-    /// The names of the keys from UserDefaults that will sync across the user's devices via iCloud.
-    var userDefaultsKeysToSync = [
-        "showSharingInTodayView",
-        "showGoalsInTodayView",
-        "appleCareGoal",
-        "businessLeadsGoal",
-        "connectivityGoal"
-    ]
+
+    private let persistenceController = PersistenceController.shared
+    @State private var sharingStore = SharingStore()
+
+    /// The UserDefaults keys that sync across the user's devices through iCloud.
+    static let syncedDefaultsKeys = ["showSharingInTodayView", "showGoalsInTodayView"] + Metric.allCases.map(\.goalKey)
 
     var body: some Scene {
         WindowGroup {
-            // MARK: - App Entry Point
+            #if os(watchOS)
+            WatchMainTabView()
+            #else
             MainTabView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(ShareAcceptance.shared)
+                .task {
+                    #if DEBUG
+                    await ShareAcceptance.shared.acceptShareFromLaunchArguments()
+                    #endif
+                }
+            #endif
         }
-        .onChange(of: scenePhase) { phase in
-            switch phase {
-            // MARK: Application Life Cycle Code
-            case .active:
-                print("[Application Life Cycle] The app is active!")
-                
-                #if !os(watchOS)
-                // Use Zephyr to sync data across the user's devices with iCloud
-                Zephyr.sync(keys: userDefaultsKeysToSync)
-                #endif
-                
-            case .background:
-                print("[Application Life Cycle] The app is in the background!")
-                
-            case .inactive:
-                print("[Application Life Cycle] The app is inactive!")
-                
-                #if !os(watchOS)
-                // Use Zephyr to sync data across the user's devices with iCloud
-                Zephyr.sync(keys: userDefaultsKeysToSync)
-                #endif
-            
-            default:
-                print("[Application Life Cycle] Unknown application life cycle value received.")
+        .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        .environment(sharingStore)
+        .onChange(of: scenePhase) { _, phase in
+            #if !os(watchOS)
+            // Zephyr mirrors the synced preferences to and from iCloud's key-value store.
+            if phase == .active || phase == .inactive {
+                Zephyr.sync(keys: Self.syncedDefaultsKeys)
             }
+            #endif
         }
     }
 }
 
 #if os(iOS)
-/// The custom app delegate class for the app.
-class MetricsAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
-    @Published var isAcceptingShare = false
-    
-    /// The function called to configure the app's custom scene delegate.
+/// Accepts CloudKit share invitations the user opens and tracks the acceptance for the UI.
+@MainActor @Observable
+final class ShareAcceptance {
+    static let shared = ShareAcceptance()
+
+    private static let logger = Logger(subsystem: "Ethan.Metrics", category: "ShareAcceptance")
+
+    /// Whether an invitation is being accepted, during which the app shows a progress sheet.
+    var isAccepting = false
+
+    /// Accepts a pending invitation.
+    func accept(_ metadata: CKShare.Metadata) {
+        guard metadata.participantStatus == .pending else { return }
+        Task { await acceptAndWait(metadata) }
+    }
+
+    private func acceptAndWait(_ metadata: CKShare.Metadata) async {
+        isAccepting = true
+        defer { isAccepting = false }
+        do {
+            _ = try await SharingStore.container.accept(metadata)
+            Self.logger.notice("Share accepted.")
+        } catch {
+            Self.logger.error("Failed to accept share: \(error.localizedDescription)")
+        }
+    }
+
+    #if DEBUG
+    /// Accepts the share whose link follows the `-acceptShareURL` launch argument.
+    ///
+    /// The simulator never hands share links to apps, so this is the way to exercise the participant side of
+    /// Sharing there. It does nothing without the argument.
+    func acceptShareFromLaunchArguments() async {
+        let arguments = CommandLine.arguments
+        guard let index = arguments.firstIndex(of: "-acceptShareURL"), arguments.indices.contains(index + 1),
+              let url = URL(string: arguments[index + 1]) else { return }
+        do {
+            let metadata = try await SharingStore.container.shareMetadata(for: url)
+            guard metadata.participantStatus == .pending else {
+                Self.logger.notice("Share from launch argument was already accepted.")
+                return
+            }
+            await acceptAndWait(metadata)
+        } catch {
+            Self.logger.error("Failed to fetch share metadata from launch argument: \(error.localizedDescription)")
+        }
+    }
+    #endif
+}
+
+/// Routes application-level CloudKit share invitations and installs the app's scene delegate.
+final class MetricsAppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let sceneConfig = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
-        sceneConfig.delegateClass = MetricsSceneDelegate.self
-        return sceneConfig
+        let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = MetricsSceneDelegate.self
+        return configuration
     }
-    
-    /// The function called when a user opens a CloudKit share link on macOS or an iOS app that does not use scenes.
+
     func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        if cloudKitShareMetadata.participantStatus == .pending {
-            self.isAcceptingShare = true
-            let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [cloudKitShareMetadata])
-            acceptShareOperation.acceptSharesResultBlock = { (_ result: Result<Void, Error>) -> Void in
-                switch result {
-                case .success():
-                    print("Share accepted!")
-                    self.isAcceptingShare = false
-                case .failure(let error):
-                    print(error.localizedDescription)
-                    self.isAcceptingShare = false
-                }
-            }
-            CKContainer(identifier: "iCloud.Metrics").add(acceptShareOperation)
-        }
+        ShareAcceptance.shared.accept(cloudKitShareMetadata)
     }
 }
-#endif
 
-#if os(iOS)
-/// The custom scene delegate class for the app.
-class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
-    @Published var isAcceptingShare = false
-    
-    /// The function called when a user opens a CloudKit share link on iOS when the app is running.
-    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        if cloudKitShareMetadata.participantStatus == .pending {
-            self.isAcceptingShare = true
-            let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [cloudKitShareMetadata])
-            acceptShareOperation.acceptSharesResultBlock = { (_ result: Result<Void, Error>) -> Void in
-                switch result {
-                case .success():
-                    print("Share accepted!")
-                    self.isAcceptingShare = false
-                case .failure(let error):
-                    print(error.localizedDescription)
-                    self.isAcceptingShare = false
-                }
-            }
-            CKContainer(identifier: "iCloud.Metrics").add(acceptShareOperation)
+/// Handles CloudKit share invitations that arrive while the app is running or that launch it.
+final class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate {
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        if let metadata = connectionOptions.cloudKitShareMetadata {
+            ShareAcceptance.shared.accept(metadata)
         }
     }
-    
-    /// The function called when a user opens a CloudKit share link on iOS when the app is not running.
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        if connectionOptions.cloudKitShareMetadata != nil {
-            if connectionOptions.cloudKitShareMetadata!.participantStatus == .pending {
-                self.isAcceptingShare = true
-                let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [connectionOptions.cloudKitShareMetadata!])
-                acceptShareOperation.acceptSharesResultBlock = { (_ result: Result<Void, Error>) -> Void in
-                    switch result {
-                    case .success():
-                        print("Share accepted!")
-                        self.isAcceptingShare = false
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                        self.isAcceptingShare = false
-                    }
-                }
-                CKContainer(identifier: "iCloud.Metrics").add(acceptShareOperation)
-            }
-        }
+
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        ShareAcceptance.shared.accept(cloudKitShareMetadata)
     }
 }
 #endif

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Xcode user state and build output
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.xcscmblueprint
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Local tool configuration (contains credentials)
+.mcp.json
