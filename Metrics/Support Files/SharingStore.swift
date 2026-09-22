@@ -97,7 +97,8 @@ final class SharingStore {
             do {
                 let records = try await allRecords(ofType: transactionRecordType, in: zone.zoneID, database: database)
                 let share = try await share(for: zone, in: database)
-                let owner = share.flatMap(ownerName(of:)) ?? "Name Not Provided"
+                // Public-link shares hide the owner's identity; views fall back to a placeholder when this is nil.
+                let owner = share.flatMap(ownerName(of:))
                 people.append(TransactionServices(records.compactMap(TransactionRecord.init(cloudKitRecord:)), owner: owner))
             } catch {
                 logger.error("Skipping shared zone \(zone.zoneID.zoneName): \(error.localizedDescription)")

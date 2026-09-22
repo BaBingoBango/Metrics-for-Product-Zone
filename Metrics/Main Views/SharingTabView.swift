@@ -22,6 +22,7 @@ struct SharingTabView: View {
             Tab("This Week", systemImage: "calendar") {
                 NavigationStack {
                     ThisWeekView(navigationTitleText: "\(possessive) Week", customTransactions: transactions)
+                        .navigationBarTitleDisplayMode(.inline)
                         .toolbar { doneButton }
                 }
             }
@@ -29,6 +30,7 @@ struct SharingTabView: View {
             Tab("Lifetime", systemImage: "crown.fill") {
                 NavigationStack {
                     LifetimeView(navigationTitleText: "\(possessive) Lifetime", customTransactions: transactions)
+                        .navigationBarTitleDisplayMode(.inline)
                         .toolbar { doneButton }
                 }
             }
@@ -36,6 +38,7 @@ struct SharingTabView: View {
             Tab("Transactions", systemImage: "doc.on.doc.fill") {
                 NavigationStack {
                     DataViewer(titleText: "\(possessive) Transactions", customTransactions: transactions.transactions)
+                        .navigationBarTitleDisplayMode(.inline)
                         .toolbar { doneButton }
                 }
             }
