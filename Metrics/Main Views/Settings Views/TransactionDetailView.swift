@@ -5,281 +5,118 @@
 //  Created by Ethan Marshall on 6/21/22.
 //
 
+import CoreData
 import SwiftUI
+import os
 
-/// A view exposing detail about a transaction.
+/// Everything recorded about one transaction, with the option to delete it when it is the user's own.
 struct TransactionDetailView: View {
-    
-    // MARK: - View Variables
-    /// The system `PresentationMode` variable for this view.
-    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    /// The standard view context for Core Data.
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
-    /// Whether or not the deletion alert is showing.
-    @State var isShowingDeleteWarning = false
-    /// Whether or not a transaction deletion is occurring.
-    @State var isDeletingTransaction = false
-    /// The transaction this view represents.
-    var transaction: Transaction
-    /// A date formatter used in this view.
-    var dateFormatter: DateFormatter {
-        let answer = DateFormatter()
-        answer.dateStyle = .short
-        answer.timeStyle = .short
-        return answer
-    }
-    /// Whether or not the Delete button should be shown.
-    var allowDelete = true
-    
-    // MARK: - View Body
+
+    /// The transaction to show.
+    let record: TransactionRecord
+    /// The managed object behind `record` when the transaction belongs to the user, which allows deletion.
+    var transaction: Transaction?
+
+    @State private var isConfirmingDelete = false
+
+    private static let logger = Logger(subsystem: "Ethan.Metrics", category: "Transactions")
+
     var body: some View {
-        if !isDeletingTransaction {
-            NavigationView {
-                ScrollView {
-                    VStack {
-                        ZStack {
-                            Circle()
-                                .frame(width: 150, height: 150)
-                                .foregroundColor(.gray)
-                                .opacity(0.15)
-                            
-                            Image(systemName: imageDelegator())
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundColor(.blue)
-                                .shadow(radius: 10)
-                                .frame(width: 90, height: 90)
-                        }
-                        .padding(.top)
-                        
-                        Text("\(transaction.deviceType ?? "") Transaction")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                            .padding([.top, .leading, .trailing])
-                        
-                        Text(dateFormatter.string(from: transaction.date!))
-                            .fontWeight(.semibold)
-                            .font(.title2)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                            .foregroundColor(.secondary)
-                        
-                        HStack {
-                            Text("Details")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                            
-                            Spacer()
-                        }
-                        .padding([.top, .leading, .trailing])
-                        
-                        HStack {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 35, height: 35)
-                                    .foregroundColor(transaction.boughtAppleCare ? .green : .red)
-                                
-                                Image(systemName: "applelogo")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Text("\(transaction.boughtAppleCare ? "Purchased" : "Did Not Purchase") AppleCare+")
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        
-                        HStack {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 35, height: 35)
-                                    .foregroundColor(transaction.isAppleCareStandalone ? .green : .red)
-                                
-                                Image(systemName: "sparkle")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Text("AppleCare+ Is \(transaction.isAppleCareStandalone ? "" : "Not ")Standalone")
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        
-                        HStack {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 35, height: 35)
-                                    .foregroundColor(transaction.connected ? .green : .red)
-                                
-                                Image(systemName: "antenna.radiowaves.left.and.right")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Text(transaction.connected ? "Connected" : "Did Not Connect")
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        
-                        HStack {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 35, height: 35)
-                                    .foregroundColor(transaction.gotLead ? .green : .red)
-                                
-                                Image(systemName: "briefcase.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Text("\(transaction.gotLead ? "Recorded" : "Did Not Record") Business Lead")
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.1)
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        
-                        HStack {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 35, height: 35)
-                                    .foregroundColor(.gray)
-                                
-                                Image(systemName: "barcode")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            VStack(alignment: .leading) {
-                                Text("ID")
-                                    .fontWeight(.semibold)
-                                    .font(.title3)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.1)
-                                
-                                Text(transaction.id!.uuidString)
-                                    .font(.custom("Roboto Mono", size: 20))
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.1)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom)
+        List {
+            Section {
+                VStack(spacing: 12) {
+                    Image(systemName: record.deviceType.symbolName)
+                        .font(.system(size: 64))
+                        .foregroundStyle(.blue)
+                        .frame(width: 150, height: 150)
+                        .background(.fill.tertiary, in: .circle)
+
+                    Text("\(record.deviceType.name) Transaction")
+                        .font(.title.bold())
+                        .multilineTextAlignment(.center)
+
+                    Text(record.date.formatted(date: .numeric, time: .shortened))
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
-                
-                // MARK: - Navigation View Settings
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Done")
-                                .fontWeight(.bold)
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            isShowingDeleteWarning = true
-                        }) {
-                            Text("Delete")
-                                .fontWeight(.bold)
-                                .foregroundColor(.red)
-                        }
-                        .isHidden(!allowDelete, remove: !allowDelete)
-                        .alert("Delete this transaction?", isPresented: $isShowingDeleteWarning) {
-                            Button(role: .cancel, action: {
-                                isShowingDeleteWarning = false
-                            }) {
-                                Text("Cancel")
-                            }
-                            
-                            Button(role: .destructive, action: {
-                                isDeletingTransaction = true
-                                viewContext.delete(transaction)
-                                do {
-                                    try viewContext.save()
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                                self.presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Text("Delete")
-                            }
-                        }
-                    }
+                .frame(maxWidth: .infinity)
+                .listRowBackground(Color.clear)
+            }
+
+            Section("Details") {
+                DetailRow(isOn: record.boughtAppleCare, symbolName: Metric.appleCare.symbolName, text: record.boughtAppleCare ? "Purchased AppleCare+" : "Did Not Purchase AppleCare+")
+                DetailRow(isOn: record.isAppleCareStandalone, symbolName: "sparkle", text: record.isAppleCareStandalone ? "AppleCare+ Is Standalone" : "AppleCare+ Is Not Standalone")
+                DetailRow(isOn: record.connected, symbolName: Metric.connectivity.symbolName, text: record.connected ? "Connected" : "Did Not Connect")
+                DetailRow(isOn: record.gotLead, symbolName: Metric.businessLeads.symbolName, text: record.gotLead ? "Recorded Business Lead" : "Did Not Record Business Lead")
+                DetailRow(isOn: record.tradedIn, symbolName: Metric.tradeIn.symbolName, text: record.tradedIn ? "Traded In a Device" : "No Trade-In")
+                DetailRow(isOn: record.boughtAccessory, symbolName: Metric.accessory.symbolName, text: record.boughtAccessory ? "Attached an Accessory" : "No Accessory Attached")
+
+                LabeledContent("ID") {
+                    Text(record.id.uuidString)
+                        .font(.custom("Roboto Mono", size: 15, relativeTo: .subheadline))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .textSelection(.enabled)
                 }
             }
-            .navigationViewStyle(StackNavigationViewStyle())
+
+            if transaction != nil {
+                Section {
+                    Button("Delete Transaction", role: .destructive) {
+                        isConfirmingDelete = true
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .navigationTitle("Transaction")
+        .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog("Delete this transaction?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) { delete() }
+        } message: {
+            Text("This removes it from all of your devices and from iCloud.")
         }
     }
-    
-    // MARK: - View Functions
-    /// Returns an SF symbol name for this view's transaction's device type.
-    func imageDelegator() -> String {
-        switch transaction.deviceType! {
-        case "iPhone": return "iphone"
-        case "iPad": return "ipad.landscape"
-        case "Mac": return "desktopcomputer"
-        case "Apple Watch": return "applewatch"
-        case "Apple TV": return "appletv"
-        case "Headphones": return "headphones"
-        case "No Device": return "briefcase.fill"
-        default: return ""
+
+    private func delete() {
+        guard let transaction else { return }
+        viewContext.delete(transaction)
+        do {
+            try viewContext.save()
+        } catch {
+            Self.logger.error("Failed to delete transaction: \(error.localizedDescription)")
         }
+        dismiss()
     }
 }
 
-// MARK: - View Preview
-//struct TransactionDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TransactionDetailView()
-//    }
-//}
+/// A detail line with a green or red badge showing whether the addition was part of the transaction.
+struct DetailRow: View {
+    let isOn: Bool
+    let symbolName: String
+    let text: String
+
+    var body: some View {
+        Label {
+            Text(text)
+                .fontWeight(.semibold)
+        } icon: {
+            Image(systemName: symbolName)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(isOn ? Color.green : Color.red, in: .circle)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        TransactionDetailView(record: TransactionRecord(deviceType: .iPhone, boughtAppleCare: true, gotLead: true, connected: true, tradedIn: true))
+    }
+    .previewEnvironment()
+}

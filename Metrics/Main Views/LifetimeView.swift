@@ -5,204 +5,121 @@
 //  Created by Ethan Marshall on 8/6/21.
 //
 
+import CoreData
 import SwiftUI
 
-/// A view displaying statistics about the user's lifetime transactions.
+/// Statistics about the user's entire transaction history.
 struct LifetimeView: View {
-    // MARK: - View Variables
-    /// The navigation title text for this view.
+    /// The navigation title, which names the person when viewing shared data.
     var navigationTitleText = "Lifetime"
-    
-    /// A custom list of transactions that overrides the standard request to Core Data.
+    /// Transactions that replace the user's own, when viewing someone who shares with them.
     var customTransactions: TransactionServices?
-    
-    // View context & transaction fetch request
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
-    var transactions: FetchedResults<Transaction>
-    
-    // TransactionServices object
-    var data: TransactionServices {
-        if customTransactions != nil {
-            return customTransactions!
-        } else {
-            return TransactionServices(transactions.reversed().reversed())
-        }
+
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)], animation: .default)
+    private var transactions: FetchedResults<Transaction>
+
+    private var data: TransactionServices {
+        customTransactions ?? TransactionServices(transactions.map(\.record))
     }
-    
-    // MARK: - View Body
+
     var body: some View {
-//        NavigationView {
-            ScrollView {
-                VStack {
-                    /// The lifetime number of transacted devices for the user.
-                    let totalDevices = data.withDevice().count
-                    /// The lifetime number of business leads for the user.
-                    let totalLeads = data.numBusinessLeads()
-                    /// The user's average business leads per day.
-                    let averageLeads = Double(totalLeads) / Double(data.numUniqueDays())
-                    /// The lifetime number of connected devices for the user.
-                    let totalConnected = data.connectedUnits()
-                    /// The user's lifetime device connection rate.
-                    let connectionRate = data.connectivityPercent()
-                    
-                    LifetimeStatView(description: "\(totalDevices != 1 ? "Devices" : "Device") Transacted", stat: Double(totalDevices), color: .gray, SFsymbol: "iphone")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                LifetimeStatCard(
+                    color: .gray,
+                    symbolName: "iphone",
+                    primary: LifetimeStat(value: data.devicesTransacted.formatted(), description: data.devicesTransacted == 1 ? "Device Transacted" : "Devices Transacted")
+                )
 
-                    HStack {
-                        Text("AppleCare+")
-                            .font(.title)
-                            .fontWeight(.bold)
+                ForEach(Metric.allCases) { metric in
+                    Text(metric.title)
+                        .font(.title.bold())
+                        .padding(.top, 8)
 
-                        Spacer()
-                    }
-                    .padding([.top, .leading])
-
-                    LifetimeStatView(description: "\(data.appleCareNumerator() != 1 ? "Units" : "Unit") Sold", stat: Double(data.appleCareNumerator()), color: .red, SFsymbol: "applelogo", secondDescription: "Attach Rate", secondStat: Double(data.appleCarePercent()), secondIsPercent: true)
-                    
-                    HStack {
-                        Text("Business Leads")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        
-                        Spacer()
-                    }
-                    .padding([.top, .leading])
-                    
-                    LifetimeStatView(description: "\(totalLeads != 1 ? "Business Leads" : "Lead")", stat: Double(totalLeads), color: .brown, SFsymbol: "briefcase.fill", secondDescription: "Average Per Day", secondStat: averageLeads.isNaN ? 0 : averageLeads, secondIsPercent: false)
-                    
-                    HStack {
-                        Text("Connectivity")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        
-                        Spacer()
-                    }
-                    .padding([.top, .leading])
-                    
-                    LifetimeStatView(description: "\(totalConnected != 1 ? "iPhones" : "iPhone") Connected", stat: Double(totalConnected), color: .blue, SFsymbol: "antenna.radiowaves.left.and.right", secondDescription: "Connectivity Rate", secondStat: Double(connectionRate), secondIsPercent: true)
+                    LifetimeStatCard(color: metric.color, symbolName: metric.symbolName, primary: primaryStat(for: metric), secondary: secondaryStat(for: metric))
                 }
-                .padding(.bottom)
-                
-                // MARK: Nav Bar Settings
-                .navigationBarTitle(Text(navigationTitleText))
             }
-//        }
+            .padding()
+        }
+        .navigationTitle(navigationTitleText)
+    }
+
+    private func primaryStat(for metric: Metric) -> LifetimeStat {
+        let count = data.count(for: metric)
+        let description: String = switch metric {
+        case .appleCare: count == 1 ? "Unit Sold" : "Units Sold"
+        case .businessLeads: count == 1 ? "Business Lead" : "Business Leads"
+        case .connectivity: count == 1 ? "iPhone Connected" : "iPhones Connected"
+        case .tradeIn: count == 1 ? "Trade-In" : "Trade-Ins"
+        case .accessory: count == 1 ? "Accessory Attached" : "Accessories Attached"
+        }
+        return LifetimeStat(value: count.formatted(), description: description)
+    }
+
+    private func secondaryStat(for metric: Metric) -> LifetimeStat {
+        if metric.isRate {
+            return LifetimeStat(value: "\(data.percent(for: metric))%", description: metric.rateDescription)
+        }
+        return LifetimeStat(value: data.averageLeadsPerDay.formatted(.number.precision(.fractionLength(0...2))), description: "Average Per Day")
     }
 }
 
-struct LifetimeView_Previews: PreviewProvider {
-    static var previews: some View {
+/// A number and its description for a `LifetimeStatCard`.
+struct LifetimeStat {
+    let value: String
+    let description: String
+}
+
+/// A tinted card showing one or two lifetime numbers over a faded symbol.
+struct LifetimeStatCard: View {
+    let color: Color
+    let symbolName: String
+    let primary: LifetimeStat
+    var secondary: LifetimeStat? = nil
+
+    var body: some View {
+        HStack(spacing: 16) {
+            stat(primary)
+
+            if let secondary {
+                stat(secondary)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, minHeight: 125)
+        .background(alignment: .leading) {
+            Image(systemName: symbolName)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(color.opacity(0.3))
+                .padding(16)
+        }
+        .background(color.opacity(0.15), in: .rect(cornerRadius: 20, style: .continuous))
+        .clipShape(.rect(cornerRadius: 20, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func stat(_ stat: LifetimeStat) -> some View {
+        VStack(spacing: 5) {
+            Text(stat.value)
+                .font(.largeTitle.weight(.heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .contentTransition(.numericText())
+
+            Text(stat.description)
+                .font(.subheadline.weight(.semibold))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+#Preview {
+    NavigationStack {
         LifetimeView()
     }
-}
-
-struct ColorTextWithCaption: View {
-    
-    // Variables
-    var color: Color
-    var number: String
-    var caption: String
-    
-    var body: some View {
-        VStack(spacing: 4) {
-            Text("\(number)")
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-                .foregroundColor(color)
-            Text("\(caption)")
-                .fontWeight(.semibold)
-                .multilineTextAlignment(.center)
-        }
-    }
-}
-
-/// A view with a color, SF symbol, integer stat, and name which is used to display a user's lifetime accomplishments in the Lifetime view.
-struct LifetimeStatView: View {
-    
-    // MARK: - View Variables
-    /// The description or name of the first stat.
-    var description = "Total Devices Transacted"
-    /// The numerical stat to display first.
-    var stat: Double = 5_000
-    /// Whether or not the first stat is a percent.
-    var isPercent = false
-    /// The color of the view's background, as well as the SF symbol's color.
-    var color = Color.gray
-    /// The opacity of the background.
-    var backgroundOpacity = 0.15
-    /// The opacity of the SF symbol.
-    var SFsymbolOpacity = 0.3
-    /// The name of the first SF symbol.
-    var SFsymbol = "iphone"
-    /// The height the view should be.
-    var height: CGFloat = 125
-    
-    /// The description or name of the second stat.
-    var secondDescription: String? = nil
-    /// The numerical stat to display second.
-    var secondStat: Double? = nil
-    /// Whether or not the second stat is a percent.
-    var secondIsPercent = false
-    
-    /// A decimal-style number formatter for use on the stat(s).
-    var numberFormatter : NumberFormatter {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }
-    
-    // MARK: View Body
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(color)
-                .opacity(0.15)
-            
-            HStack {
-                Image(systemName: SFsymbol)
-                    .resizable()
-                    .foregroundColor(color)
-                    .aspectRatio(contentMode: .fit)
-                    .opacity(SFsymbolOpacity)
-                    .padding([.top, .leading, .bottom])
-                
-                Spacer()
-            }
-            
-            HStack {
-                if secondDescription != nil && secondStat != nil {
-                    Spacer()
-                }
-                
-                VStack(spacing: 5) {
-                    Text(numberFormatter.string(from: NSNumber(value: stat))! + "\(isPercent ? "%" : "")")
-                        .font(.system(size: 33))
-                        .fontWeight(.heavy)
-                    
-                    Text(description)
-                        .fontWeight(.semibold)
-                }
-                
-                if secondDescription != nil && secondStat != nil {
-                    Spacer()
-                    
-                    VStack(spacing: 5) {
-                        Text(numberFormatter.string(from: NSNumber(value: secondStat!))! + "\(secondIsPercent ? "%" : "")")
-                            .font(.system(size: 33))
-                            .fontWeight(.heavy)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                        
-                        Text(secondDescription!)
-                            .fontWeight(.semibold)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.1)
-                    }
-                    
-                    Spacer()
-                }
-            }
-        }
-        .frame(height: height)
-    }
+    .previewEnvironment()
 }

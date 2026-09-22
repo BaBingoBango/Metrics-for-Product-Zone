@@ -4,7 +4,7 @@
 
 A tracking system for metrics commonly used in the Product Zone of Apple Retail stores!
 
-- Track your AppleCare+, business leads, and connecivity progress throughout the day!
+- Track your AppleCare+, business leads, connectivity, trade-in, and accessory attach progress throughout the day!
 - Quickly log transactions on iPhone, iPad, and Apple Watch!
 - Sync your data via iCloud and view historical trends on any device!
 - Share your progress with others securely over iCloud!
@@ -12,13 +12,21 @@ A tracking system for metrics commonly used in the Product Zone of Apple Retail 
 ## Quick Start
 The app is designed for iOS and watchOS! To start up the app, you can either download and run the Xcode project or get it right from the [App Store](https://apps.apple.com/us/app/metrics-for-product-zone/id1581284514)!
 
+Metrics 2.0 is built with SwiftUI, Swift Charts, Core Data with CloudKit, and WidgetKit. It requires iOS 26, iPadOS 26, and watchOS 26 or later, and builds with Xcode 26 or later.
+
+## Building and Testing
+- Open `Metrics.xcodeproj` and run the **Metrics** scheme for iPhone and iPad, or the **WatchMetrics** scheme for Apple Watch.
+- The **MetricsTests** target covers the metric calculations, CloudKit record decoding, and Core Data round trips. Run it with ⌘U.
+- To fill an empty store with three weeks of sample transactions in a Debug build, add `-seedSampleData` to the scheme's launch arguments.
+- After changing the Core Data model, run a Debug build once with the `-initializeCloudKitSchema` launch argument to update the CloudKit development schema, then deploy the schema to Production in CloudKit Console before shipping.
+
 ## Support & Feedback
 
-To view options for getting game support and leaving feedback, visit the [Support Center wiki page](https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Support-Center).
+To view options for getting app support and leaving feedback, visit the [Support Center wiki page](https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Support-Center).
 
 ## Privacy Policy
 
-To view the privacy policy for the game, visit the [Privacy Policy wiki page](https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Privacy-Policy).
+To view the privacy policy for the app, visit the [Privacy Policy wiki page](https://github.com/BaBingoBango/Metrics-for-Product-Zone/wiki/Privacy-Policy).
 
 ## Licensing and Credit
 Please see the information below about the third-party software used in the app:

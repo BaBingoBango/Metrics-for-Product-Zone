@@ -7,80 +7,49 @@
 
 import SwiftUI
 
-/// A version of the main tab view that is presented when a user taps on a user in the Sharing section of the Today view.
+/// The tabs presented when the user taps a person in the Sharing section of the Today view.
 struct SharingTabView: View {
-    // MARK: - View Variables
-    /// The system `PresentationMode` variable for this view.
-    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    /// The transactions for the Sharing user this view represents,
-    var transactions: TransactionServices
-    /// The currently selected sidebar tab.
-    @State var selection: Int? = 1
-    
-    // MARK: - View Body
+    @Environment(\.dismiss) private var dismiss
+    /// The transactions of the person being viewed.
+    let transactions: TransactionServices
+
+    private var possessive: String {
+        transactions.owner.map { "\($0)’s" } ?? "Their"
+    }
+
     var body: some View {
         TabView {
-            NavigationView {
-                ThisWeekView(navigationTitleText: transactions.owner != nil ? "\(transactions.owner!)'s Week" : "This Week", customTransactions: transactions)
-                    .toolbar(content: {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {
-                                self.presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Text("Done")
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                    })
+            Tab("This Week", systemImage: "calendar") {
+                NavigationStack {
+                    ThisWeekView(navigationTitleText: "\(possessive) Week", customTransactions: transactions)
+                        .toolbar { doneButton }
+                }
             }
-            .navigationViewStyle(StackNavigationViewStyle())
-            .tabItem {
-                Image(systemName: "calendar"); Text("This Week")
+
+            Tab("Lifetime", systemImage: "crown.fill") {
+                NavigationStack {
+                    LifetimeView(navigationTitleText: "\(possessive) Lifetime", customTransactions: transactions)
+                        .toolbar { doneButton }
+                }
             }
-            
-            NavigationView {
-                LifetimeView(navigationTitleText: transactions.owner != nil ? "\(transactions.owner!)'s Lifetime" : "Lifetime", customTransactions: transactions)
-                    .toolbar(content: {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {
-                                self.presentationMode.wrappedValue.dismiss()
-                            }) {
-                                Text("Done")
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                    })
+
+            Tab("Transactions", systemImage: "doc.on.doc.fill") {
+                NavigationStack {
+                    DataViewer(titleText: "\(possessive) Transactions", customTransactions: transactions.transactions)
+                        .toolbar { doneButton }
+                }
             }
-            .navigationViewStyle(StackNavigationViewStyle())
-            .tabItem {
-                Image(systemName: "crown.fill"); Text("Lifetime")
-            }
-            
-            DataViewer(titleText: transactions.owner != nil ? "\(transactions.owner!)'s Transactions" : "Transaction Data", customTransactions: transactions.transactions)
-                .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            self.presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Done")
-                                .fontWeight(.bold)
-                                .foregroundColor(.accentColor)
-                        }
-                    }
-                })
-                .navigationViewStyle(StackNavigationViewStyle())
-            .tabItem {
-                Image(systemName: "doc.on.doc.fill"); Text("Transactions")
-            }
+        }
+    }
+
+    private var doneButton: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Done", role: .confirm) { dismiss() }
         }
     }
 }
 
-struct SharingTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        SharingTabView(transactions: TransactionServices([]))
-            .previewInterfaceOrientation(.landscapeLeft)
-    }
+#Preview {
+    SharingTabView(transactions: TransactionServices(TransactionRecord.sampleData, owner: "Sam Appleseed"))
+        .previewEnvironment()
 }

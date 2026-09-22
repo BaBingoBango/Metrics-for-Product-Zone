@@ -5,168 +5,90 @@
 //  Created by Ethan Marshall on 8/13/21.
 //
 
+import CoreData
 import SwiftUI
 
-/// A view listing all of the user's logged transactions.
+/// A list of every logged transaction, newest first.
 struct DataViewer: View {
-    
-    // MARK: - View Variables
-    // Modal variable
-    @SwiftUI.Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
-    // View context & transaction fetch request
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(entity: Transaction.entity(), sortDescriptors: [])
-    var transactions: FetchedResults<Transaction>
-    
-    /// The navigation title text for this view.
+    /// The navigation title, which names the person when viewing shared data.
     var titleText = "Transaction Data"
-    /// A transaction list for this view that will override the one from Core Data.
-    var customTransactions: [Transaction]?
-    
-    // MARK: - View Body
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack {
-                    
-                    Image(systemName: "doc.on.doc.fill")
-                        .resizable()
-                        .foregroundColor(.green)
-                        .frame(width: 63, height: 75)
-                        .padding(.top, 30)
+    /// Transactions that replace the user's own, when viewing someone who shares with them.
+    var customTransactions: [TransactionRecord]?
 
-                    Text(titleText)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
-                        .padding([.top, .horizontal])
-                    
-                    if customTransactions != nil ? customTransactions!.isEmpty : transactions.isEmpty {
-                        ZStack {
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .opacity(0.15)
-                                .cornerRadius(20)
-                            
-                            VStack(spacing: 4) {
-                                Image(systemName: "figure.wave")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(.secondary)
-                                    .frame(height: 100)
-                                
-                                Text("No Data Yet")
-                                    .foregroundColor(.secondary)
-                                    .fontWeight(.bold)
-                                    .font(.title2)
-                                
-                                Text("Nice to see you here though!")
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.all)
-                        }
-                        .padding(.horizontal)
-                    }
-                    
-                    if customTransactions != nil {
-                        ForEach(customTransactions!.reversed()) { transaction in
-                            TransactionDataOption(transaction: transaction, allowDelete: customTransactions == nil)
-                        }
-                    } else {
-                        ForEach(transactions.reversed()) { transaction in
-                            TransactionDataOption(transaction: transaction)
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)], animation: .default)
+    private var transactions: FetchedResults<Transaction>
+
+    var body: some View {
+        Group {
+            if let customTransactions {
+                if customTransactions.isEmpty {
+                    emptyState
+                } else {
+                    List(customTransactions.sorted { $0.date > $1.date }) { record in
+                        NavigationLink {
+                            TransactionDetailView(record: record)
+                        } label: {
+                            TransactionRow(record: record)
                         }
                     }
-                    
                 }
-                .padding(.bottom)
+            } else if transactions.isEmpty {
+                emptyState
+            } else {
+                List(transactions) { transaction in
+                    NavigationLink {
+                        TransactionDetailView(record: transaction.record, transaction: transaction)
+                    } label: {
+                        TransactionRow(record: transaction.record)
+                    }
+                }
             }
-            
-            // MARK: Nav Bar Settings
-            .navigationBarTitle(Text(""), displayMode: .inline)
-            .navigationBarItems(trailing: Button(action: { self.presentationMode.wrappedValue.dismiss() }) { Text("Done").fontWeight(.bold) })
-            
         }
+        .navigationTitle(titleText)
+    }
+
+    private var emptyState: some View {
+        ContentUnavailableView("No Data Yet", systemImage: "figure.wave", description: Text("Nice to see you here though!"))
     }
 }
 
-struct DataViewer_Previews: PreviewProvider {
-    static var previews: some View {
+/// One transaction in the list: its device, when it was logged and which additions it included.
+struct TransactionRow: View {
+    let record: TransactionRecord
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: record.deviceType.symbolName)
+                .font(.title2)
+                .frame(width: 32)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(record.deviceType.name)
+                    .font(.headline)
+
+                Text(record.date.formatted(date: .numeric, time: .shortened))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                ForEach(Metric.allCases.filter(record.includes)) { metric in
+                    Image(systemName: metric.symbolName)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(metric == .appleCare && record.isAppleCareStandalone ? .standaloneGold : metric.color)
+                        .accessibilityLabel(metric.additionTitle)
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+#Preview {
+    NavigationStack {
         DataViewer()
     }
-}
-
-struct TransactionDataOption: View {
-    
-    // View context variable
-    @Environment(\.managedObjectContext) private var viewContext
-    
-    // Variables
-    var transaction: Transaction
-    var dateFormatter: DateFormatter {
-        let answer = DateFormatter()
-        answer.dateStyle = .short
-        answer.timeStyle = .short
-        return answer
-    }
-    @State var showingDetail = false
-    var allowDelete = true
-    
-    var body: some View {
-        Button(action: {
-            showingDetail = true
-        }) {
-            ZStack {
-                HStack {
-                    Image(systemName: imageDelegator())
-                        .imageScale(.small)
-                        .font(Font.title.weight(.medium))
-                        .foregroundColor(.primary)
-                    
-                    VStack(alignment: .leading) {
-                        Text(transaction.deviceType ?? "Unknown Device")
-                            .fontWeight(.bold)
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                        
-                        Text(dateFormatter.string(from: transaction.date!))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal, 30)
-                
-                Rectangle()
-                    .foregroundColor(.gray)
-                    .opacity(0.15)
-                    .cornerRadius(20)
-                    .padding(.horizontal)
-            }
-        }
-        .sheet(isPresented: $showingDetail) {
-            TransactionDetailView(transaction: transaction, allowDelete: allowDelete)
-        }
-    }
-    
-    // Functions
-    func imageDelegator() -> String {
-        switch transaction.deviceType! {
-        case "iPhone": return "iphone"
-        case "iPad": return "ipad.landscape"
-        case "Mac": return "desktopcomputer"
-        case "Apple Watch": return "applewatch"
-        case "Apple TV": return "appletv"
-        case "Headphones": return "headphones"
-        case "No Device": return "briefcase.fill"
-        default: return ""
-        }
-    }
-    
+    .previewEnvironment()
 }
