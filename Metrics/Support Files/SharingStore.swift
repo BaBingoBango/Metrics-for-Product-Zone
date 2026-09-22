@@ -97,8 +97,10 @@ final class SharingStore {
             do {
                 let records = try await allRecords(ofType: transactionRecordType, in: zone.zoneID, database: database)
                 let share = try await share(for: zone, in: database)
-                // Public-link shares hide the owner's identity; views fall back to a placeholder when this is nil.
-                let owner = share.flatMap(ownerName(of:))
+                var owner: String?
+                if let share {
+                    owner = await ownerName(of: share)
+                }
                 people.append(TransactionServices(records.compactMap(TransactionRecord.init(cloudKitRecord:)), owner: owner))
             } catch {
                 logger.error("Skipping shared zone \(zone.zoneID.zoneName): \(error.localizedDescription)")
@@ -118,7 +120,7 @@ final class SharingStore {
                 SharingUser(
                     id: share.recordID,
                     share: share,
-                    name: ownerName(of: share),
+                    name: await ownerName(of: share),
                     email: identity.lookupInfo?.emailAddress,
                     phoneNumber: identity.lookupInfo?.phoneNumber
                 )
@@ -151,9 +153,20 @@ final class SharingStore {
         return matches.lazy.compactMap { try? $0.1.get() as? CKShare }.first
     }
 
-    /// The share owner's name as they chose to share it, or `nil` if they did not.
-    private static func ownerName(of share: CKShare) -> String? {
-        guard let components = share.owner.userIdentity.nameComponents else { return nil }
+    /// The share owner's name, or `nil` if CloudKit does not provide one.
+    ///
+    /// The share record itself only carries the owner's name for people the owner invited directly. For
+    /// public-link shares the name is available through the share's metadata instead.
+    private static func ownerName(of share: CKShare) async -> String? {
+        if let name = formattedName(share.owner.userIdentity.nameComponents) {
+            return name
+        }
+        guard let url = share.url, let metadata = try? await container.shareMetadata(for: url) else { return nil }
+        return formattedName(metadata.ownerIdentity.nameComponents)
+    }
+
+    private static func formattedName(_ components: PersonNameComponents?) -> String? {
+        guard let components else { return nil }
         let name = components.formatted(.name(style: .medium))
         return name.isEmpty ? nil : name
     }

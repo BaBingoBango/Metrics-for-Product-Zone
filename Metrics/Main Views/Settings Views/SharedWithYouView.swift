@@ -36,22 +36,33 @@ struct SharedWithYouView: View {
                             Button {
                                 selectedUser = user
                             } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(user.displayName)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(.primary)
+                                HStack {
+                                    // Semantic colors, not hierarchical styles: inside a tinted list button
+                                    // `.primary` would resolve to the accent color.
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(user.displayName)
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(Color.primary)
 
-                                    if let email = user.email {
-                                        Text(email)
-                                            .foregroundStyle(.secondary)
+                                        if let email = user.email {
+                                            Text(email)
+                                                .foregroundStyle(Color.secondary)
+                                        }
+
+                                        if let phoneNumber = user.phoneNumber {
+                                            Text(phoneNumber)
+                                                .foregroundStyle(Color.secondary)
+                                        }
                                     }
 
-                                    if let phoneNumber = user.phoneNumber {
-                                        Text(phoneNumber)
-                                            .foregroundStyle(.secondary)
-                                    }
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(Color.secondary)
                                 }
                             }
+                            .accessibilityHint("Shows the share's participants and lets you leave it")
                         }
                     }
                 }
