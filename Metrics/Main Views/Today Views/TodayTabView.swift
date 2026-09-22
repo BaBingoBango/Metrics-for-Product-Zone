@@ -217,23 +217,28 @@ struct GoalRing: View {
 
 /// AppleCare+ attach for the day, broken down by device type.
 struct AppleCareSummaryCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let todayData: TransactionServices
     let columns: Int
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack {
+            let header = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) : AnyLayout(HStackLayout())
+            header {
                 Label("AppleCare+", systemImage: "applelogo")
                     .font(.headline)
                     .foregroundStyle(.red)
 
-                Spacer()
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Spacer()
+                }
 
                 Text("\(todayData.appleCarePercent)%")
                     .font(.title3.bold())
                     .foregroundStyle(.red)
-                    .contentTransition(.numericText())
+                    .numericContentTransition()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: columns), spacing: 12) {
                 ForEach(DeviceType.sellable) { device in
@@ -250,6 +255,7 @@ struct AppleCareSummaryCard: View {
 
 /// A square card with a metric's headline number for the day inside its ring.
 struct MetricSummaryCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let metric: Metric
     let todayData: TransactionServices
 
@@ -269,12 +275,13 @@ struct MetricSummaryCard: View {
                     .foregroundStyle(metric.color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
-                    .contentTransition(.numericText())
+                    .numericContentTransition()
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .aspectRatio(1, contentMode: .fit)
+        // Cards are square unless large text needs the room to grow.
+        .aspectRatio(dynamicTypeSize.isAccessibilitySize ? nil : 1, contentMode: .fit)
         .cardBackground()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(metric.title) today: \(value)")

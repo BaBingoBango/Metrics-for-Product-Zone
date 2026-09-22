@@ -57,7 +57,7 @@ struct GraphDetailView: View {
 
                         Text(periodTitle)
                             .font(.headline)
-                            .contentTransition(.numericText())
+                            .numericContentTransition()
 
                         Spacer()
 
@@ -74,7 +74,7 @@ struct GraphDetailView: View {
 
                     MetricBarChart(bars: bars, color: metric.color, maxValue: maxValue, isRate: metric.isRate, showsYAxis: true)
                         .frame(height: 260)
-                        .animation(.snappy, value: bars)
+                        .animateUnlessReduced(bars)
 
                     HighlightsCard(metric: metric, period: periodData)
                 }
@@ -144,6 +144,7 @@ struct GraphDetailView: View {
 
 /// Totals for the period on display.
 struct HighlightsCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let metric: Metric
     let period: TransactionServices
 
@@ -162,7 +163,8 @@ struct HighlightsCard: View {
             Text("Highlights")
                 .font(.title2.bold())
 
-            HStack {
+            let stats = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 16)) : AnyLayout(HStackLayout())
+            stats {
                 Spacer()
                 HighlightStat(value: period.count(for: metric).formatted(), caption: metric.unitName(for: period.count(for: metric)), color: metric.color)
                 Spacer()
@@ -173,6 +175,7 @@ struct HighlightsCard: View {
                 }
                 Spacer()
             }
+            .frame(maxWidth: .infinity)
 
             if metric.isRate {
                 HighlightStat(value: "\(period.percent(for: metric))%", caption: "Total \(metric.rateDescription)", color: metric.color)
@@ -196,7 +199,7 @@ struct HighlightStat: View {
             Text(value)
                 .font(.largeTitle.weight(.heavy))
                 .foregroundStyle(color)
-                .contentTransition(.numericText())
+                .numericContentTransition()
 
             Text(caption)
                 .font(.subheadline.weight(.semibold))

@@ -72,13 +72,16 @@ struct LifetimeStat {
 
 /// A tinted card showing one or two lifetime numbers over a faded symbol.
 struct LifetimeStatCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let color: Color
     let symbolName: String
     let primary: LifetimeStat
     var secondary: LifetimeStat? = nil
 
     var body: some View {
-        HStack(spacing: 16) {
+        // The two numbers share a row, or stack at accessibility text sizes.
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 16)) : AnyLayout(HStackLayout(spacing: 16))
+        layout {
             stat(primary)
 
             if let secondary {
@@ -105,7 +108,7 @@ struct LifetimeStatCard: View {
                 .font(.largeTitle.weight(.heavy))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .contentTransition(.numericText())
+                .numericContentTransition()
 
             Text(stat.description)
                 .font(.subheadline.weight(.semibold))

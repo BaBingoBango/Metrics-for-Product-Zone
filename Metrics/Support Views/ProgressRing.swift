@@ -27,7 +27,7 @@ struct ProgressRing<Content: View>: View {
                 .trim(from: 0, to: min(max(progress, 0), 1))
                 .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.snappy, value: progress)
+                .animateUnlessReduced(progress)
 
             content()
         }

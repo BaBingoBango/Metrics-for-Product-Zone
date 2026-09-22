@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB0000000000000000000029 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000028 /* PrivacyInfo.xcprivacy */; };
+		AB000000000000000000002B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000002A /* PrivacyInfo.xcprivacy */; };
+		AB000000000000000000002D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000002C /* PrivacyInfo.xcprivacy */; };
+		AB000000000000000000002F /* MotionModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000002E /* MotionModifiers.swift */; };
+		AB0000000000000000000030 /* MotionModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000002E /* MotionModifiers.swift */; };
 		AA0023DD28617A5200C1F1BD /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */; };
 		AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */; };
 		AA1126BB28825A2A0037F5EF /* SharingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1126BA28825A2A0037F5EF /* SharingTabView.swift */; };
@@ -124,6 +129,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB0000000000000000000028 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AB000000000000000000002A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AB000000000000000000002C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AB000000000000000000002E /* MotionModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionModifiers.swift; sourceTree = "<group>"; };
 		AA0023DC28617A5200C1F1BD /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
 		AA0023DE2861819E00C1F1BD /* Roboto Mono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto Mono.ttf"; sourceTree = "<group>"; };
 		AA1126BA28825A2A0037F5EF /* SharingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingTabView.swift; sourceTree = "<group>"; };
@@ -254,6 +263,7 @@
 				AA34429626B4FED3004A2259 /* MetricsApp.swift */,
 				AA3442A426B4FED5004A2259 /* Info.plist */,
 				AA9767B326C84B2600805514 /* Metrics.entitlements */,
+				AB0000000000000000000028 /* PrivacyInfo.xcprivacy */,
 				AA34429A26B4FED5004A2259 /* Assets.xcassets */,
 				AA3442A126B4FED5004A2259 /* Metrics.xcdatamodeld */,
 				AA34429F26B4FED5004A2259 /* Persistence.swift */,
@@ -316,6 +326,7 @@
 				AA9767AF26C84A1F00805514 /* WatchMetrics.entitlements */,
 				AA493A2526C7760300B79B92 /* Info.plist */,
 				AA493A2326C7760300B79B92 /* Assets.xcassets */,
+				AB000000000000000000002A /* PrivacyInfo.xcprivacy */,
 				AA493A3B26C7760400B79B92 /* Preview Content */,
 			);
 			path = WatchMetrics;
@@ -369,6 +380,7 @@
 				AA75C4362883371A0037C1E7 /* SendMailView.swift */,
 				AB0000000000000000000021 /* CardBackground.swift */,
 				AB0000000000000000000024 /* MetricBarChart.swift */,
+				AB000000000000000000002E /* MotionModifiers.swift */,
 			);
 			path = "Support Views";
 			sourceTree = "<group>";
@@ -394,6 +406,7 @@
 			children = (
 				AB0000000000000000000009 /* MetricsComplication.swift */,
 				AB000000000000000000000A /* Info.plist */,
+				AB000000000000000000002C /* PrivacyInfo.xcprivacy */,
 			);
 			path = MetricsComplication;
 			sourceTree = "<group>";
@@ -551,6 +564,7 @@
 				AA34429E26B4FED5004A2259 /* Preview Assets.xcassets in Resources */,
 				AA34429B26B4FED5004A2259 /* Assets.xcassets in Resources */,
 				AB0000000000000000000013 /* Metric Colors.xcassets in Resources */,
+				AB0000000000000000000029 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,6 +589,7 @@
 				AA493A2426C7760300B79B92 /* Assets.xcassets in Resources */,
 				AA493A3D26C7760400B79B92 /* Preview Assets.xcassets in Resources */,
 				AB0000000000000000000014 /* Metric Colors.xcassets in Resources */,
+				AB000000000000000000002B /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,6 +597,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB000000000000000000002D /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +615,7 @@
 				AB000000000000000000001F /* SharingStore.swift in Sources */,
 				AB0000000000000000000022 /* CardBackground.swift in Sources */,
 				AB0000000000000000000025 /* MetricBarChart.swift in Sources */,
+				AB000000000000000000002F /* MotionModifiers.swift in Sources */,
 				AA3442A026B4FED5004A2259 /* Persistence.swift in Sources */,
 				AA9140C926BC81D800C281C7 /* ThisWeekView.swift in Sources */,
 				AACEB1BC26BE2733006AACA7 /* TransactionServices.swift in Sources */,
@@ -651,6 +668,7 @@
 				AB000000000000000000001D /* TransactionRecord.swift in Sources */,
 				AB0000000000000000000020 /* SharingStore.swift in Sources */,
 				AB0000000000000000000023 /* CardBackground.swift in Sources */,
+				AB0000000000000000000030 /* MotionModifiers.swift in Sources */,
 				AA75C42B28828A650037C1E7 /* WatchMainTabView.swift in Sources */,
 				AA75C43428828F600037C1E7 /* WatchSharingRectangleView.swift in Sources */,
 				AA9767A526C8311300805514 /* MetricsApp.swift in Sources */,

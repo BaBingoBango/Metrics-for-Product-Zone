@@ -32,7 +32,7 @@ struct GoalEditorView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .frame(minWidth: 150)
-                    .contentTransition(.numericText(value: Double(goal)))
+                    .numericContentTransition()
 
                 Button("Increase", systemImage: "plus.circle.fill") {
                     goal = min(range.upperBound, goal + 1)
@@ -66,7 +66,7 @@ struct GoalEditorView: View {
         .padding()
         .navigationTitle("Daily \(metric.title) Goal")
         .navigationBarTitleDisplayMode(.inline)
-        .animation(.snappy, value: goal)
+        .animateUnlessReduced(goal)
         .sensoryFeedback(.increase, trigger: goal) { old, new in new > old }
         .sensoryFeedback(.decrease, trigger: goal) { old, new in new < old }
     }

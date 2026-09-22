@@ -59,7 +59,7 @@ struct WatchAdderView: View {
         ScrollView {
             VStack(spacing: 6) {
                 ForEach(draft.availableAdditions) { metric in
-                    WatchOptionButton(title: metric.additionTitle, symbolName: metric.symbolName, tint: tint(for: metric), isSelected: draft.includes(metric)) {
+                    WatchOptionButton(title: title(for: metric), symbolName: metric.symbolName, tint: tint(for: metric), isSelected: draft.includes(metric)) {
                         draft.toggle(metric)
                     }
                 }
@@ -75,6 +75,11 @@ struct WatchAdderView: View {
 
     private func tint(for metric: Metric) -> Color {
         metric == .appleCare && draft.record.isAppleCareStandalone ? .standaloneGold : metric.color
+    }
+
+    /// Names the standalone AppleCare+ state in words so it is not conveyed by the gold color alone.
+    private func title(for metric: Metric) -> String {
+        metric == .appleCare && draft.record.isAppleCareStandalone ? "Standalone AC+" : metric.additionTitle
     }
 
     private func save() {
@@ -114,6 +119,16 @@ struct WatchOptionButton: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
             .background(isSelected ? tint : Color(white: 0.24), in: .rect(cornerRadius: 10, style: .continuous))
+            .overlay(alignment: .topTrailing) {
+                // A check mark marks selection so it is not conveyed by color alone.
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .padding(4)
+                        .accessibilityHidden(true)
+                }
+            }
             .contentShape(.rect(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)

@@ -60,6 +60,7 @@ struct ThisWeekView: View {
 
 /// A card with a metric's bar chart for the week and its total or average.
 struct WeekMetricCard: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let metric: Metric
     let data: TransactionServices
 
@@ -76,24 +77,30 @@ struct WeekMetricCard: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack {
+            // The title and total share a row, or stack at accessibility text sizes.
+            let header = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) : AnyLayout(HStackLayout())
+            header {
                 Label(metric.title, systemImage: metric.symbolName)
                     .font(.headline)
                     .foregroundStyle(metric.color)
 
-                Spacer()
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Spacer()
+                }
 
                 HStack(spacing: 6) {
                     Text(headline.label)
                         .font(.headline)
                         .foregroundStyle(.secondary)
+                        .fixedSize()
 
                     Text(headline.value)
                         .font(.title3.bold())
                         .foregroundStyle(metric.color)
-                        .contentTransition(.numericText())
+                        .numericContentTransition()
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             MetricBarChart(
                 bars: bars,
