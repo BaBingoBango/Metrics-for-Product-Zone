@@ -58,6 +58,8 @@
 		AB000000000000000000000D /* MetricsComplication.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000008 /* MetricsComplication.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AB0000000000000000000013 /* Metric Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000012 /* Metric Colors.xcassets */; };
 		AB0000000000000000000014 /* Metric Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000012 /* Metric Colors.xcassets */; };
+		AB0000000000000000000032 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000031 /* AppIcon.icon */; };
+		AB0000000000000000000033 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000031 /* AppIcon.icon */; };
 		AB0000000000000000000016 /* Metric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000015 /* Metric.swift */; };
 		AB0000000000000000000017 /* Metric.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000015 /* Metric.swift */; };
 		AB0000000000000000000019 /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000018 /* DeviceType.swift */; };
@@ -141,6 +143,7 @@
 		AA34429326B4FED3004A2259 /* Metrics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metrics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA34429626B4FED3004A2259 /* MetricsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsApp.swift; sourceTree = "<group>"; };
 		AA34429A26B4FED5004A2259 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AB0000000000000000000031 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		AA34429D26B4FED5004A2259 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA34429F26B4FED5004A2259 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		AA3442A226B4FED5004A2259 /* Metrics.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Metrics.xcdatamodel; sourceTree = "<group>"; };
@@ -265,6 +268,7 @@
 				AA9767B326C84B2600805514 /* Metrics.entitlements */,
 				AB0000000000000000000028 /* PrivacyInfo.xcprivacy */,
 				AA34429A26B4FED5004A2259 /* Assets.xcassets */,
+				AB0000000000000000000031 /* AppIcon.icon */,
 				AA3442A126B4FED5004A2259 /* Metrics.xcdatamodeld */,
 				AA34429F26B4FED5004A2259 /* Persistence.swift */,
 				AA3442C826B4FEF9004A2259 /* Main Views */,
@@ -563,6 +567,7 @@
 				AA0023DF2861819E00C1F1BD /* Roboto Mono.ttf in Resources */,
 				AA34429E26B4FED5004A2259 /* Preview Assets.xcassets in Resources */,
 				AA34429B26B4FED5004A2259 /* Assets.xcassets in Resources */,
+				AB0000000000000000000032 /* AppIcon.icon in Resources */,
 				AB0000000000000000000013 /* Metric Colors.xcassets in Resources */,
 				AB0000000000000000000029 /* PrivacyInfo.xcprivacy in Resources */,
 			);
@@ -587,6 +592,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA493A2426C7760300B79B92 /* Assets.xcassets in Resources */,
+				AB0000000000000000000033 /* AppIcon.icon in Resources */,
 				AA493A3D26C7760400B79B92 /* Preview Assets.xcassets in Resources */,
 				AB0000000000000000000014 /* Metric Colors.xcassets in Resources */,
 				AB000000000000000000002B /* PrivacyInfo.xcprivacy in Resources */,
