@@ -30,9 +30,11 @@ struct MetricsApp: App {
         WindowGroup {
             #if os(watchOS)
             WatchMainTabView()
+                .modifier(DebugDynamicTypeSize())
             #else
             MainTabView()
                 .environment(ShareAcceptance.shared)
+                .modifier(DebugDynamicTypeSize())
                 .task {
                     #if DEBUG
                     await ShareAcceptance.shared.acceptShareFromLaunchArguments()
@@ -130,3 +132,34 @@ final class MetricsSceneDelegate: NSObject, UIWindowSceneDelegate {
     }
 }
 #endif
+
+/// Forces a Dynamic Type size in Debug builds when launched with `-dynamicTypeSize <size>`, such as
+/// `accessibility5`, for checking layouts on the watchOS simulator, which has no text size control.
+/// Release builds, and launches without the argument, are untouched.
+struct DebugDynamicTypeSize: ViewModifier {
+    private static let requested: DynamicTypeSize? = {
+        #if DEBUG
+        let arguments = CommandLine.arguments
+        guard let index = arguments.firstIndex(of: "-dynamicTypeSize"), arguments.indices.contains(index + 1) else { return nil }
+        switch arguments[index + 1] {
+        case "xSmall": return .xSmall
+        case "large": return .large
+        case "xxxLarge": return .xxxLarge
+        case "accessibility1": return .accessibility1
+        case "accessibility3": return .accessibility3
+        case "accessibility5": return .accessibility5
+        default: return nil
+        }
+        #else
+        return nil
+        #endif
+    }()
+
+    func body(content: Content) -> some View {
+        if let size = Self.requested {
+            content.dynamicTypeSize(size)
+        } else {
+            content
+        }
+    }
+}
