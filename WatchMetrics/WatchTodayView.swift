@@ -18,6 +18,10 @@ struct WatchTodayView: View {
         TransactionServices(transactions.map(\.record)).today
     }
 
+    private var logTransactionLabel: some View {
+        Label("Log Transaction", systemImage: "plus")
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -25,11 +29,22 @@ struct WatchTodayView: View {
                     Button {
                         isShowingAdder = true
                     } label: {
-                        Label("Log Transaction", systemImage: "plus")
-                            .font(.subheadline.weight(.semibold))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity)
+                        // One line at normal sizes, a step smaller when that is enough to keep one line on
+                        // 40mm watches, and two lines only at the largest Dynamic Type sizes.
+                        ViewThatFits(in: .horizontal) {
+                            logTransactionLabel
+                                .font(.subheadline.weight(.semibold))
+                                .lineLimit(1)
+                            logTransactionLabel
+                                .font(.footnote.weight(.semibold))
+                                .lineLimit(1)
+                            logTransactionLabel
+                                .font(.subheadline.weight(.semibold))
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
+                                .multilineTextAlignment(.leading)
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.green)

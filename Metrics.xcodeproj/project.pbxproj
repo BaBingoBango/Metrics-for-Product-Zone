@@ -862,7 +862,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Metrics/Metrics.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"Metrics/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
@@ -890,7 +890,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Metrics/Metrics.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"Metrics/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
@@ -1002,7 +1002,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchMetrics/WatchMetrics.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchMetrics/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
@@ -1030,7 +1030,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = WatchMetrics/WatchMetrics.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchMetrics/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
@@ -1055,7 +1055,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				INFOPLIST_FILE = MetricsComplication/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1079,7 +1079,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				INFOPLIST_FILE = MetricsComplication/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -106,26 +106,37 @@ struct WatchOptionButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: symbolName)
-
+            Group {
                 if let title {
-                    Text(title)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                    // One line at normal sizes, stepping down a text style or two when that keeps one
+                    // line on 40mm watches. At the largest text sizes, multi-word titles wrap and single
+                    // words shrink instead of breaking mid-word.
+                    ViewThatFits(in: .horizontal) {
+                        titleRow(title, font: .body, lineLimit: 1)
+                        titleRow(title, font: .subheadline, lineLimit: 1)
+                        titleRow(title, font: .footnote, lineLimit: 1)
+                        if title.contains(" ") {
+                            // Breaking at the space keeps "Standalone" whole; the scale factor then
+                            // shrinks the whole title if a word is still too wide for one line.
+                            titleRow(title.replacingOccurrences(of: " ", with: "\n"), font: .body, lineLimit: 2)
+                        }
+                    }
+                } else {
+                    Image(systemName: symbolName)
+                        .font(.body.weight(.semibold))
                 }
             }
-            .font(.body.weight(.semibold))
             .frame(maxWidth: .infinity, minHeight: 44)
             .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
             .background(isSelected ? tint : Color(white: 0.24), in: .rect(cornerRadius: 10, style: .continuous))
             .overlay(alignment: .topTrailing) {
                 // A check mark marks selection so it is not conveyed by color alone.
+                // The badge keeps a fixed size so it stays in the corner at every text size.
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.caption2.weight(.bold))
+                        .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(.white)
-                        .padding(4)
+                        .padding(3)
                         .accessibilityHidden(true)
                 }
             }
@@ -133,6 +144,20 @@ struct WatchOptionButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private func titleRow(_ title: String, font: Font, lineLimit: Int) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: symbolName)
+            Text(title)
+                .lineLimit(lineLimit)
+                .minimumScaleFactor(0.8)
+                .multilineTextAlignment(.leading)
+        }
+        .font(font.weight(.semibold))
+        // Keeps the title clear of the check mark in the corner; wrapped titles sit higher, so they need more.
+        .padding(.horizontal, lineLimit > 1 ? 16 : 14)
+        .padding(.vertical, lineLimit > 1 ? 6 : 0)
     }
 }
 
